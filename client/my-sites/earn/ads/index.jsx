@@ -230,7 +230,9 @@ class AdsSection extends Component {
 				) }
 				highlightedFeature={ FEATURE_WORDADS_INSTANT }
 				benefits={ [
-					translate( 'Instantly enroll into the %(program)s network.', { args: { program: adsProgramName }, } ),
+					translate( 'Instantly enroll into the %(program)s network.', {
+						args: { program: adsProgramName },
+					} ),
 					translate( 'Earn money from your content and traffic.' ),
 				] }
 			/>
@@ -248,7 +250,7 @@ class AdsSection extends Component {
 
 	render() {
 		const { site, translate, isUnsafe, wordAdsError } = this.props;
-		const contentUnsafe = [ 'mature', 'spam', 'other' ].includes( this.isUnsafe );
+		const contentUnsafe = [ 'mature', 'spam', 'other' ].includes( isUnsafe );
 		const jetpackPremium =
 			site.jetpack &&
 			( isPremium( site.plan ) || isBusiness( site.plan ) || isEcommerce( site.plan ) );
@@ -288,7 +290,7 @@ class AdsSection extends Component {
 			}
 		} else {
 			// If Error.
-			if ( this.wordAdsError ) {
+			if ( wordAdsError ) {
 				return (
 					<Notice
 						classname="ads__activate-notice"
@@ -301,12 +303,12 @@ class AdsSection extends Component {
 			}
 
 			// Not safe.
-			if ( this.contentUnsafe ) {
+			if ( contentUnsafe ) {
 				return <div>{ this.renderBannerApplicationDenyBrandSafety() }</div>;
 			}
 
 			// If private.
-			if ( this.props.isUnsafe === 'private' ) {
+			if ( isUnsafe === 'private' ) {
 				return (
 					<Notice
 						classname="ads__activate-notice"
