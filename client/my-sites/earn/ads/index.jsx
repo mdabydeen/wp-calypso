@@ -219,24 +219,18 @@ class AdsSection extends Component {
 	}
 
 	renderUpsell() {
-		const { translate, adsProgramName } = this.props;
+		const { translate, isJetpack, adsProgramName } = this.props;
 		return (
 			<UpgradeNudgeExpanded
-				plan={ this.isJetpack ? PLAN_JETPACK_PREMIUM : PLAN_PREMIUM }
+				plan={ isJetpack ? PLAN_JETPACK_PREMIUM : PLAN_PREMIUM }
 				title={ translate( 'Upgrade to the Premium plan and start earning' ) }
 				subtitle={ translate(
-					"By upgrading to the Premium plan, you'll be able to monetize your site through the %(program) program.",
-					{
-						// @TODO why doesn't this work?
-						args: { program: this.adsProgramName },
-					}
+					"By upgrading to the Premium plan, you'll be able to monetize your site through the %(program)s program.",
+					{ args: { program: adsProgramName } }
 				) }
 				highlightedFeature={ FEATURE_WORDADS_INSTANT }
 				benefits={ [
-					translate( 'Instantly enroll into the %(program) network.', {
-						// @TODO why doesn't this work?
-						args: { program: this.adsProgramName },
-					} ),
+					translate( 'Instantly enroll into the %(program)s network.', { args: { program: adsProgramName }, } ),
 					translate( 'Earn money from your content and traffic.' ),
 				] }
 			/>
