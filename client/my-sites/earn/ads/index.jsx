@@ -5,7 +5,7 @@
  */
 
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
 
@@ -89,92 +89,84 @@ class AdsSection extends Component {
 
 	renderBannerWelcome() {
 		return (
-			<div>
-				<ActionCard
-					headerText={ 'Start Earning Income from Your Site' }
-					mainText={
-						'WordAds is the leading advertising optimization platform for WordPress sites, where the internet’s top ad suppliers bid against each other to deliver their ads to your site, maximizing your revenue.'
-					}
-					buttonText={ 'Learn More on WordAds.co' }
-					buttonIcon="external"
-					buttonPrimary={ false }
-					buttonHref="https://wordads.co"
-					buttonTarget="_blank"
-				>
-					<img
-						src="/calypso/images/illustrations/dotcom-wordads.svg"
-						width="170"
-						height="143"
-						alt="WordPress logo"
-					/>
-				</ActionCard>
-			</div>
+			<ActionCard
+				headerText={ 'Start Earning Income from Your Site' }
+				mainText={
+					'WordAds is the leading advertising optimization platform for WordPress sites, where the internet’s top ad suppliers bid against each other to deliver their ads to your site, maximizing your revenue.'
+				}
+				buttonText={ 'Learn More on WordAds.co' }
+				buttonIcon="external"
+				buttonPrimary={ false }
+				buttonHref="https://wordads.co"
+				buttonTarget="_blank"
+			>
+				<img
+					src="/calypso/images/illustrations/dotcom-wordads.svg"
+					width="170"
+					height="143"
+					alt="WordPress logo"
+				/>
+			</ActionCard>
 		);
 	}
 
 	renderBannerApplicationReview() {
 		return (
-			<div>
-				<ActionCard
-					headerText={ "We're currently reviewing your application..." }
-					mainText={
-						"Our ads engineers are hard at work validating your site's content and traffic for advertisers. We'll be in touch shortly."
-					}
-				>
-					<img
-						src="/calypso/images/illustrations/waitTime.svg"
-						width="170"
-						height="143"
-						alt="WordPress logo"
-					/>
-				</ActionCard>
-			</div>
+			<ActionCard
+				headerText={ "We're currently reviewing your application..." }
+				mainText={
+					"Our ads engineers are hard at work validating your site's content and traffic for advertisers. We'll be in touch shortly."
+				}
+			>
+				<img
+					src="/calypso/images/illustrations/waitTime.svg"
+					width="170"
+					height="143"
+					alt="WordPress logo"
+				/>
+			</ActionCard>
 		);
 	}
 
 	renderBannerApplicationApprove() {
 		return (
-			<div>
-				<ActionCard
-					headerText={ 'Welcome to WordAds!' }
-					mainText={
-						'We’ll work behind the scenes to maximize your earning potential and monitor ad quality. On your end, the more you grow your audience and increase your pageviews, the more you can expect to earn.'
-					}
-				>
-					<img
-						src="/calypso/images/illustrations/wordAds.svg"
-						width="170"
-						height="143"
-						alt="WordPress logo"
-					/>
-				</ActionCard>
-			</div>
+			<ActionCard
+				headerText={ 'Welcome to WordAds!' }
+				mainText={
+					'We’ll work behind the scenes to maximize your earning potential and monitor ad quality. On your end, the more you grow your audience and increase your pageviews, the more you can expect to earn.'
+				}
+			>
+				<img
+					src="/calypso/images/illustrations/wordAds.svg"
+					width="170"
+					height="143"
+					alt="WordPress logo"
+				/>
+			</ActionCard>
 		);
 	}
 
 	renderBannerApplicationDenyBrandSafety() {
 		return (
-			<div>
-				<ActionCard
-					headerText={ "Your content isn't a good fit for ads." }
-					mainText={
-						"Our advertisers have strict requirements for the type of content they're willing to monetize."
-					}
-				>
-					<img
-						src="/calypso/images/illustrations/security-issue.svg"
-						width="170"
-						height="143"
-						alt="WordPress logo"
-					/>
-				</ActionCard>
-			</div>
+			<ActionCard
+				headerText={ "Your content isn't a good fit for ads." }
+				mainText={
+					"Our advertisers have strict requirements for the type of content they're willing to monetize."
+				}
+			>
+				<img
+					src="/calypso/images/illustrations/security-issue.svg"
+					width="170"
+					height="143"
+					alt="WordPress logo"
+				/>
+			</ActionCard>
 		);
 	}
 
 	renderBannerApplicationDenyTraffic() {
 		return (
-			<div>
+			<Fragment>
 				<ActionCard
 					headerText={ 'You need more traffic to join WordAds.' }
 					mainText={
@@ -200,21 +192,19 @@ class AdsSection extends Component {
 					icon="star"
 					prices={ [ 10.99, 9.99 ] }
 				/>
-			</div>
+			</Fragment>
 		);
 	}
 
 	statsNotice() {
 		return (
-			<div>
-				<ActionCard
-					buttonPrimary
-					buttonHref="https://wordpress.com"
-					headerText="Monitor Your Ads Performance"
-					mainText="In the stats section, you can monitor the daily performance of the ads running on your site. After each month is finalized, you'll find a revenue report below (usually around 15 days after the close of the month)."
-					buttonText="View Daily Stats"
-				/>
-			</div>
+			<ActionCard
+				buttonPrimary
+				buttonHref="https://wordpress.com"
+				headerText="Monitor Your Ads Performance"
+				mainText="In the stats section, you can monitor the daily performance of the ads running on your site. After each month is finalized, you'll find a revenue report below (usually around 15 days after the close of the month)."
+				buttonText="View Daily Stats"
+			/>
 		);
 	}
 
@@ -260,19 +250,17 @@ class AdsSection extends Component {
 
 		// No access.
 		if ( ! canAccessAds( site ) ) {
-			return <div>{ this.renderEmptyContent() }</div>;
+			return this.renderEmptyContent();
 		}
 
 		// Error for non-admins.
 		if ( ! userCan( 'manage_options', this.props.site ) ) {
 			return (
-				<div>
-					<Notice
-						status="is-warning"
-						text={ this.props.translate( 'Only site administrators can edit Ads settings.' ) }
-						showDismiss={ false }
-					/>
-				</div>
+				<Notice
+					status="is-warning"
+					text={ this.props.translate( 'Only site administrators can edit Ads settings.' ) }
+					showDismiss={ false }
+				/>
 			);
 		}
 
@@ -304,7 +292,7 @@ class AdsSection extends Component {
 
 			// Not safe.
 			if ( contentUnsafe ) {
-				return <div>{ this.renderBannerApplicationDenyBrandSafety() }</div>;
+				return this.renderBannerApplicationDenyBrandSafety();
 			}
 
 			// If private.
@@ -349,17 +337,16 @@ class AdsSection extends Component {
 			}
 			*/
 			return (
-				<div>
-					{ // Recently approved.
-					this.props.wordAdsSuccess && this.renderBannerApplicationApprove() }
+				<Fragment>
+					{ /* Recently approved. */ }
+					{ this.props.wordAdsSuccess && this.renderBannerApplicationApprove() }
 
-					{
-						// Regular display for WordAds Users.
-						component
-					}
-					{ // Recently approved.
-					this.props.wordAdsSuccess && this.statsNotice() }
-				</div>
+					{ /* Regular display for WordAds users. */ }
+					{ component }
+
+					{ /* Recently approved. */ }
+					{ this.props.wordAdsSuccess && this.statsNotice() }
+				</Fragment>
 			);
 		}
 	}
