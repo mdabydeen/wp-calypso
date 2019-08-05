@@ -176,7 +176,7 @@ class EarningsMain extends Component {
 				<DocumentHead title={ layoutTitles[ section ] } />
 				<SidebarNavigation />
 				{ this.getHeaderCake() }
-				{ section && this.getSectionNav( section ) }
+				{ /* section && this.getSectionNav( section ) */ }
 				{ component }
 			</Main>
 		);
