@@ -41,6 +41,13 @@
 		font-weight: normal;
 	}
 
+	&__sublabel {
+		color: var( --color-text-subtle );
+		font-size: rem( 14px );
+		font-weight: normal;
+		font-style: italic;
+	}
+
 	&__label-popover {
 		vertical-align: middle;
 	}
