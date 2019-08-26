@@ -414,23 +414,25 @@ export class CreditCardFormFields extends React.Component {
 }
 
 function PhoneNumberField( { countriesList, translate, createField, onChange, countryCode } ) {
+	const subLabel = (
+		<label className="credit-card-form-fields__sublabel">
+			{ translate(
+				"We'll use your phone number to send you text messages with billing updates and notices."
+			) }
+		</label>
+	);
 	return (
 		<React.Fragment>
 			{ createField( 'phone-number', FormPhoneMediaInput, {
 				onChange,
 				countriesList,
 				countryCode: countryCode || 'US',
-				label: translate(
-					"Phone Number {{span}}(Optional){{/span}} {{tooltip}}We'll use your phone number to send you text messages with account updates and notices.{{/tooltip}}",
-					{
-						components: {
-							span: <span className="credit-card-form-fields__explainer" />,
-							tooltip: (
-								<InfoPopover className="credit-card-form-fields__label-popover" position="right" />
-							),
-						},
-					}
-				),
+				label: translate( 'Phone Number {{span}}(Optional){{/span}}', {
+					components: {
+						span: <span className="credit-card-form-fields__explainer" />,
+					},
+				} ),
+				children: subLabel,
 			} ) }
 		</React.Fragment>
 	);
