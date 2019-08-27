@@ -2,7 +2,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import { isEmpty } from 'lodash';
+import { isEmpty, isArray } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -17,7 +17,7 @@ import BlockPreview from './block-template-preview';
 const TemplateSelectorPreview = ( { blocks, viewportWidth } ) => {
 	const previewElClasses = classnames( 'template-selector-preview', 'editor-styles-wrapper' );
 
-	if ( isEmpty( blocks ) ) {
+	if ( isEmpty( blocks ) || ! isArray( blocks ) ) {
 		return (
 			<div className={ previewElClasses }>
 				<div className="template-selector-preview__placeholder">
