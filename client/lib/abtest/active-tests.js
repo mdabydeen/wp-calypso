@@ -152,7 +152,16 @@ export default {
 		assignmentMethod: 'userId',
 	},
 	signupEscapeHatch: {
-		datestamp: '20190826',
+		datestamp: '20190903',
+		variations: {
+			variant: 50,
+			control: 50,
+		},
+		defaultVariation: 'control',
+		allowExistingUsers: true,
+	},
+	checkoutAlwaysPhoneNumber: {
+		datestamp: '20190829',
 		variations: {
 			variant: 50,
 			control: 50,
