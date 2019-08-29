@@ -21,6 +21,7 @@ import { maskField, unmaskField, getCreditCardType } from 'lib/checkout';
 import { shouldRenderAdditionalCountryFields } from 'lib/checkout/processor-specific';
 import FormInputValidation from 'components/forms/form-input-validation';
 import FormPhoneMediaInput from 'components/forms/form-phone-media-input';
+import FormSettingExplanation from 'components/forms/form-setting-explanation';
 
 const CardNumberElementWithValidation = withStripeElementValidation( CardNumberElement );
 const CardExpiryElementWithValidation = withStripeElementValidation( CardExpiryElement );
@@ -414,12 +415,12 @@ export class CreditCardFormFields extends React.Component {
 }
 
 function PhoneNumberField( { countriesList, translate, createField, onChange, countryCode } ) {
-	const subLabel = (
-		<label className="credit-card-form-fields__sublabel">
+	const explainer = (
+		<FormSettingExplanation>
 			{ translate(
 				"We'll use your phone number to send you text messages with billing updates and notices."
 			) }
-		</label>
+		</FormSettingExplanation>
 	);
 	return (
 		<React.Fragment>
@@ -432,7 +433,7 @@ function PhoneNumberField( { countriesList, translate, createField, onChange, co
 						span: <span className="credit-card-form-fields__explainer" />,
 					},
 				} ),
-				children: subLabel,
+				children: explainer,
 			} ) }
 		</React.Fragment>
 	);
