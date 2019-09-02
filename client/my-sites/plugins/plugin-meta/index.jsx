@@ -335,6 +335,7 @@ export class PluginMeta extends Component {
 			'porn-embed',
 			'propellerads-official',
 			'speed-contact-bar',
+			'really-simple-ssl',
 			'robo-gallery',
 			'video-importer',
 			'woozone',
