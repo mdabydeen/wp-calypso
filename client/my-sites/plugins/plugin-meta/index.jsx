@@ -274,7 +274,6 @@ export class PluginMeta extends Component {
 			'backup-wd',
 			'backupwordpress',
 			'backwpup',
-			'updraftplus',
 			'wp-db-backup',
 
 			// caching
