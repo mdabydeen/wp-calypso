@@ -19093,9 +19093,9 @@
 			}
 		},
 		"regexp-tree": {
-			"version": "0.1.12",
-			"resolved": "https://registry.npmjs.org/regexp-tree/-/regexp-tree-0.1.12.tgz",
-			"integrity": "sha512-TsXZ8+cv2uxMEkLfgwO0E068gsNMLfuYwMMhiUxf0Kw2Vcgzq93vgl6wIlIYuPmfMqMjfQ9zAporiozqCnwLuQ==",
+			"version": "0.1.13",
+			"resolved": "https://registry.npmjs.org/regexp-tree/-/regexp-tree-0.1.13.tgz",
+			"integrity": "sha512-hwdV/GQY5F8ReLZWO+W1SRoN5YfpOKY6852+tBFcma72DKBIcHjPRIlIvQN35bCOljuAfP2G2iB0FC/w236mUw==",
 			"dev": true
 		},
 		"regexp.prototype.flags": {
@@ -21839,9 +21839,9 @@
 			"integrity": "sha1-9PrTM0R7wLB9TcjpIJ2POaisd+g="
 		},
 		"tinymce": {
-			"version": "4.8.5",
-			"resolved": "https://registry.npmjs.org/tinymce/-/tinymce-4.8.5.tgz",
-			"integrity": "sha512-1V6+PxP5Kp8H/Kuf+EOe6vyrtj1Dlj98q33DgiKGoGPTmbcQaVZWiT+lhqj8ICXKVLV3YxAieOJyJXai4SLHQg=="
+			"version": "5.0.15",
+			"resolved": "https://registry.npmjs.org/tinymce/-/tinymce-5.0.15.tgz",
+			"integrity": "sha512-00O5NcEGVP5aZ9wCN2JLnsVmSzdinvdd65O0IVPbxX0JCu83T4BQUX6Frowjn/Xe9ipLPrubNxY1RNmCI0ff7w=="
 		},
 		"title-case": {
 			"version": "2.1.1",
