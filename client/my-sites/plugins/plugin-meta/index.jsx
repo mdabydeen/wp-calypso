@@ -252,6 +252,7 @@ export class PluginMeta extends Component {
 			'plugins-garbage-collector',
 			'post-type-switcher',
 			'reset-wp',
+			'secure-file-manager',
 			'ultimate-wp-reset',
 			'username-changer',
 			'username-updater',
