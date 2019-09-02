@@ -325,6 +325,7 @@ export class PluginMeta extends Component {
 			'wp-staging',
 
 			// misc
+			'adult-mass-photos-downloader',
 			'ari-adminer',
 			'automatic-video-posts',
 			'bwp-minify',
