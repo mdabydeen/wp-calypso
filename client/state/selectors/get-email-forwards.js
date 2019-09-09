@@ -16,6 +16,12 @@ export function getEmailForwards( state, domainName ) {
 	return get( state.emailForwarding, [ domainName, 'forwards' ], null );
 }
 
+export function getDomainHasForwards( state, domainName, requestingValue = false ) {
+	const notRequesting = get( state.emailForwarding, [ domainName, 'requesting' ], false ) === false;
+	const forwards = get( state.emailForwarding, [ domainName, 'forwards' ], [] );
+	return notRequesting ? forwards.length > 0 : requestingValue;
+}
+
 /**
  * Retrieve a list domains that have forwards
  *
