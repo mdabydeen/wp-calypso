@@ -49,7 +49,6 @@ class PostTypeList extends Component {
 		// Props
 		query: PropTypes.object,
 		scrollContainer: PropTypes.object,
-		isVipSite: PropTypes.bool,
 
 		// Connected props
 		siteId: PropTypes.number,
@@ -58,6 +57,7 @@ class PostTypeList extends Component {
 		totalPostCount: PropTypes.number,
 		totalPageCount: PropTypes.number,
 		lastPageToRequest: PropTypes.number,
+		isVip: PropTypes.bool,
 	};
 
 	constructor( props ) {
@@ -246,7 +246,7 @@ class PostTypeList extends Component {
 	}
 
 	render() {
-		const { query, siteId, isRequestingPosts, translate } = this.props;
+		const { query, siteId, isRequestingPosts, translate, isVip } = this.props;
 		const { maxRequestedPage, recentViewIds } = this.state;
 		const posts = this.props.posts || [];
 		const isLoadedAndEmpty = query && ! posts.length && ! isRequestingPosts;
@@ -255,8 +255,8 @@ class PostTypeList extends Component {
 		} );
 		const showUpgradeNudge =
 			siteId &&
-			! this.props.isVipSite &&
 			posts.length > 10 &&
+			! isVip &&
 			query &&
 			( query.type === 'post' || ! query.type ) &&
 			query.status === 'publish,private';
@@ -302,7 +302,7 @@ export default connect( ( state, ownProps ) => {
 	return {
 		siteId,
 		posts: getPostsForQueryIgnoringPage( state, siteId, ownProps.query ),
-		isVipSite: isVipSite( state, siteId ),
+		isVip: isVipSite( state, siteId ),
 		isRequestingPosts: isRequestingPostsForQueryIgnoringPage( state, siteId, ownProps.query ),
 		totalPostCount: getPostsFoundForQuery( state, siteId, ownProps.query ),
 		totalPageCount,
