@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
 import { get, includes, noop, partition } from 'lodash';
 import classNames from 'classnames';
-import Gridicon from 'gridicons';
+import Gridicon from 'components/gridicon';
 
 /**
  * Internal dependencies
@@ -21,6 +21,7 @@ import { PLAN_BUSINESS, FEATURE_UPLOAD_PLUGINS, FEATURE_UPLOAD_THEMES } from 'li
 import { recordTracksEvent } from 'state/analytics/actions';
 import { getEligibility, isEligibleForAutomatedTransfer } from 'state/automated-transfer/selectors';
 import { isJetpackSite } from 'state/sites/selectors';
+import isVipSite from 'state/selectors/is-vip-site';
 import { getSelectedSiteId, getSelectedSiteSlug } from 'state/ui/selectors';
 import Banner from 'components/banner';
 import Button from 'components/button';
@@ -41,6 +42,7 @@ export const EligibilityWarnings = ( {
 	hasBusinessPlan,
 	isEligible,
 	isJetpack,
+	isVip,
 	isPlaceholder,
 	onProceed,
 	onCancel,
@@ -60,7 +62,7 @@ export const EligibilityWarnings = ( {
 	} );
 
 	let businessUpsellBanner = null;
-	if ( ! hasBusinessPlan && ! isJetpack ) {
+	if ( ! hasBusinessPlan && ! isJetpack && ! isVip ) {
 		const description = translate(
 			'Also get unlimited themes, advanced customization, no ads, live chat support, and more.'
 		);
@@ -174,6 +176,7 @@ const mapStateToProps = state => {
 	const eligibilityHolds = get( eligibilityData, 'eligibilityHolds', [] );
 	const hasBusinessPlan = ! includes( eligibilityHolds, 'NO_BUSINESS_PLAN' );
 	const isJetpack = isJetpackSite( state, siteId );
+	const isVip = isVipSite( state, siteId );
 	const dataLoaded = !! eligibilityData.lastUpdate;
 
 	return {
@@ -181,6 +184,7 @@ const mapStateToProps = state => {
 		hasBusinessPlan,
 		isEligible,
 		isJetpack,
+		isVip,
 		isPlaceholder: ! dataLoaded,
 		siteId,
 		siteSlug,
