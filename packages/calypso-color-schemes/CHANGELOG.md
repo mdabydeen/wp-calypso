@@ -1,5 +1,10 @@
 # Release Notes
 
+## 3.0.0
+
+* Restore SASS variable SASS files.
+* Add CSS property SASS file for color-schemes.
+
 ## 2.1.0
 
 * Updated the color palette to the most recent version.
@@ -7,6 +12,11 @@
   * `--color-section-nav-item-background-hover`
   * `--color-themes-active-text`
   * `--color-themes-active-text-rgb`
+
+
+## 2.0.2
+
+* Restore missing SASS dependencies to published package.
 
 ## 2.0.1
 
