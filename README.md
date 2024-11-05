@@ -407,6 +407,37 @@ Same as `fields` property of `DataViews`.
 - `type`: either `regular` or `panel`.
 - `fields`: a list of fields ids that should be rendered.
 
+## Utilities
+
+### `filterSortAndPaginate`
+
+Utility to apply the view config (filters, search, sorting, and pagination) to a dataset client-side.
+
+Parameters:
+
+- `data`: the dataset, as described in the "data" property of DataViews.
+- `view`: the view config, as described in the "view" property of DataViews.
+- `fields`: the fields config, as described in the "fields" property of DataViews.
+
+Returns an object containing:
+
+- `data`: the new dataset, with the view config applied.
+- `paginationInfo`: object containing the following properties:
+	- `totalItems`: total number of items for the current view config.
+	- `totalPages`: total number of pages for the current view config.
+
+### `isItemValid`
+
+Utility to determine whether or not the given item's value is valid according to the current fields and form config.
+
+Parameters:
+
+- `item`: the item, as described in the "data" property of DataForm.
+- `fields`: the fields config, as described in the "fields" property of DataForm.
+- `form`: the form config, as described in the "form" property of DataForm.
+
+Returns a boolean indicating if the item is valid (true) or not (false).
+
 ## Contributing to this package
 
 This is an individual package that's part of the Gutenberg project. The project is organized as a monorepo. It's made up of multiple self-contained software packages, each with a specific purpose. The packages in this monorepo are published to [npm](https://www.npmjs.com/) and used by [WordPress](https://make.wordpress.org/core/) as well as other software projects.
