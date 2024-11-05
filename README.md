@@ -1,9 +1,9 @@
 # The `@wordpress/dataviews` package
 
-The DataViews package offers two components to work with a given dataset:
+The DataViews package offers two React components and a few utilites to work with a list of data:
 
-- `DataViews`: allows rendering a dataset using different types of layouts (table, grid, list) and interaction capabilities (search, filters, sorting, etc.).
-- `DataForm`: allows editing the items from the same dataset.
+- `DataViews`: to render the dataset using different types of layouts (table, grid, list) and interaction capabilities (search, filters, sorting, etc.).
+- `DataForm`: to edit the items of the dataset.
 
 ## Installation
 
@@ -15,15 +15,19 @@ npm install @wordpress/dataviews --save
 
 ## `DataViews`
 
+<div class="callout callout-info">At <a href="https://wordpress.github.io/gutenberg/">WordPress Gutenberg's Storybook</a> there's and <a href="https://wordpress.github.io/gutenberg/?path=/docs/dataviews-dataviews--docs">example implementation of the Dataviews component</a>.</div>
+
 ### Usage
 
-The component is data agnostic, it just requires the data to be an array of objects with an unique identifier — it can work with data coming from a static (e.g.: JSON file) or dynamic source (e.g.: HTTP Request). Consumers are responsible to query the data source appropiately:
+The `DataViews` component receives data and some other configuration to render the dataset. It'll call the `onChangeView` callback every time the user has interacted with the dataset in some way (sorted, filtered, changed layout, etc.):
 
 ![DataViews flow](https://developer.wordpress.org/files/2024/09/368600071-20aa078f-7c3d-406d-8dd0-8b764addd22a.png "DataViews flow")
 
+Example:
+
 ```jsx
 const Example = () => {
-	// Declare data, fields, etc.
+	const onChangeView = () => { /* React to user changes. */ }
 
 	return (
 		<DataViews
@@ -39,13 +43,12 @@ const Example = () => {
 };
 ```
 
-<div class="callout callout-info">At <a href="https://wordpress.github.io/gutenberg/">WordPress Gutenberg's Storybook</a> there's and <a href="https://wordpress.github.io/gutenberg/?path=/docs/dataviews-dataviews--docs">example implementation of the Dataviews component</a>.</div>
 
 ### Properties
 
 #### `data`: `Object[]`
 
-The dataset to work with, represented as a one-dimensional array.
+A one-dimensional array of objects.
 
 Example:
 
@@ -63,11 +66,28 @@ const data = [
 ];
 ```
 
-By default, dataviews would use each record's `id` as an unique identifier. If the records don't have a `id` property that identify them uniquely, they consumer needs to provide a `getItemId` function that returns an unique identifier for the record.
+The data can come from anywhere, from a static JSON file to a dynamic source like a HTTP Request. It's the consumer's responsiblity to query the data source appropiately and update the dataset based on the user's choices for sorting, filtering, etc.
+
+Each record should have an `id` that identifies them uniquely. If they don't, the consumer should provide the `getItemId` property to `DataViews`: a function that returns an unique identifier for the record.
+
+#### `getItemId`: `function`
+
+Function that receives an item and returns an unique identifier for it.
+
+It's optional. The field will get a default implementation by `DataViews` that returns the value of the `item[ id ]`.
+
+Example:
+
+```js
+// Custom getItemId function.
+{
+	getItemId={ ( item ) => item.name ?? item.id }
+}
+```
 
 #### `fields`: `Object[]`
 
-The fields describe the visible items for each record in the dataset and how they behave (how to sort them, display them, etc.). See "Fields API" as a reference for every property.
+The fields describe the visible items for each record in the dataset and how they behave (how to sort them, display them, etc.). See "Fields API" for a description of every property.
 
 Example:
 
@@ -304,12 +324,6 @@ Whether the search input is enabled. `true` by default.
 
 What text to show in the search input. "Search" by default.
 
-#### `getItemId`: `function`
-
-Function that receives an item and returns an unique identifier for it.
-
-By default, dataviews would use each record's `id` as an unique identifier. If the records don't have a `id` property that identify them uniquely, they consumer needs to provide a `getItemId` function that returns an unique identifier for the record.
-
 #### `isLoading`: `boolean`
 
 Whether the data is loading. `false` by default.
@@ -350,6 +364,8 @@ React component to be rendered next to the view config button.
 
 ## `DataForm`
 
+<div class="callout callout-info">At <a href="https://wordpress.github.io/gutenberg/">WordPress Gutenberg's Storybook</a> there's and <a href="https://wordpress.github.io/gutenberg/?path=/docs/dataviews-dataform--docs">example implementation of the DataForm component</a>.</div>
+
 ### Usage
 
 ```jsx
@@ -367,19 +383,17 @@ const Example = () => {
 }
 ```
 
-<div class="callout callout-info">At <a href="https://wordpress.github.io/gutenberg/">WordPress Gutenberg's Storybook</a> there's and <a href="https://wordpress.github.io/gutenberg/?path=/docs/dataviews-dataform--docs">example implementation of the DataForm component</a>.</div>
-
 ### Properties
 
 #### `data`: `Object`
 
 A single item to be edited.
 
-This could be thought as as a single record coming from the `data` property of `DataViews` — though it doesn't need to be; it can be, for example, a mix of records if you support bulk editing.
+It can be think of as a single record coming from the `data` property of `DataViews` — though it doesn't need to be. It can be totally separated or a mix of records if your app supports bulk editing.
 
 #### `fields`: `Object[]`
 
-The fields describe which parts of the the data are visible and how they behave (how to edit them, validating them, etc.). See "Fields API" as a reference for every property.
+The fields describe which parts of the data are visible and how they behave (how to edit them, validate them, etc.). See "Fields API" for a description of every property.
 
 Example:
 
@@ -593,7 +607,7 @@ React component that renders the control to edit the field.
   - `hideLabelFromVision`: boolean representing if the label should be hidden
 - Returns a React element to edit the field's value.
 
-Example: 
+Example:
 
 ```js
 // A custom control defined by the field.
@@ -615,18 +629,24 @@ Example:
 		);
 	}
 }
+```
 
+```js
 // Use one of the core controls.
 {
 	Edit: 'radio'
 }
+```
 
+```js
 // Edit is optional when field's type is present.
 // The field will use the default Edit function for text.
 {
 	type: 'text'
 }
+```
 
+```js
 // Edit can be provided even if field's type is present.
 // The field will use its own custom control.
 {
