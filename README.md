@@ -142,8 +142,21 @@ Each field is an object with the following properties:
 -   `enableHiding`: whether the field can be hidden. True by default.
 -   `enableGlobalSearch`: whether the field is searchable. False by default.
 -   `filterBy`: configuration for the filters enabled by the `elements` property.
-    -   `operators`: the list of [operators](#operators) supported by the field.
+    -   `operators`: the list of operators supported by the field.
     -   `isPrimary`: whether it is a primary filter. A primary filter is always visible and is not listed in the "Add filter" component, except for the list layout where it behaves like a secondary filter.
+
+##### Filter operators
+
+| Operator   | Selection      | Description                                                             | Example                                            |
+| ---------- | -------------- | ----------------------------------------------------------------------- | -------------------------------------------------- |
+| `is`       | Single item    | `EQUAL TO`. The item's field is equal to a single value.                | Author is Admin                                    |
+| `isNot`    | Single item    | `NOT EQUAL TO`. The item's field is not equal to a single value.        | Author is not Admin                                |
+| `isAny`    | Multiple items | `OR`. The item's field is present in a list of values.                  | Author is any: Admin, Editor                       |
+| `isNone`   | Multiple items | `NOT OR`. The item's field is not present in a list of values.          | Author is none: Admin, Editor                      |
+| `isAll`    | Multiple items | `AND`. The item's field has all of the values in the list.              | Category is all: Book, Review, Science Fiction     |
+| `isNotAll` | Multiple items | `NOT AND`. The item's field doesn't have all of the values in the list. | Category is not all: Book, Review, Science Fiction |
+
+`is` and `isNot` are single-selection operators, while `isAny`, `isNone`, `isAll`, and `isNotALl` are multi-selection. By default, a filter with no operators declared will support the `isAny` and `isNone` multi-selection operators. A filter cannot mix single-selection & multi-selection operators; if a single-selection operator is present in the list of valid operators, the multi-selection ones will be discarded and the filter won't allow selecting more than one item.
 
 #### `view`: `object`
 
@@ -187,23 +200,6 @@ Properties:
 
 -   `fields`: the `id` of the fields that are visible in the UI and the specific order in which they are displayed.
 -   `layout`: config that is specific to a particular layout type.
-
-##### Filter operators
-
-Allowed operators:
-
-| Operator   | Selection      | Description                                                             | Example                                            |
-| ---------- | -------------- | ----------------------------------------------------------------------- | -------------------------------------------------- |
-| `is`       | Single item    | `EQUAL TO`. The item's field is equal to a single value.                | Author is Admin                                    |
-| `isNot`    | Single item    | `NOT EQUAL TO`. The item's field is not equal to a single value.        | Author is not Admin                                |
-| `isAny`    | Multiple items | `OR`. The item's field is present in a list of values.                  | Author is any: Admin, Editor                       |
-| `isNone`   | Multiple items | `NOT OR`. The item's field is not present in a list of values.          | Author is none: Admin, Editor                      |
-| `isAll`    | Multiple items | `AND`. The item's field has all of the values in the list.              | Category is all: Book, Review, Science Fiction     |
-| `isNotAll` | Multiple items | `NOT AND`. The item's field doesn't have all of the values in the list. | Category is not all: Book, Review, Science Fiction |
-
-`is` and `isNot` are single-selection operators, while `isAny`, `isNone`, `isAll`, and `isNotALl` are multi-selection. By default, a filter with no operators declared will support the `isAny` and `isNone` multi-selection operators. A filter cannot mix single-selection & multi-selection operators; if a single-selection operator is present in the list of valid operators, the multi-selection ones will be discarded and the filter won't allow selecting more than one item.
-
-> The legacy operators `in` and `notIn` have been deprecated and will be removed soon. In the meantime, they work as `is` and `isNot` operators, respectively.
 
 ##### Properties of `layout`
 
