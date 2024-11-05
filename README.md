@@ -63,7 +63,7 @@ const data = [
 ];
 ```
 
-By default, dataviews would use each record's `id` as an unique identifier. If it's not, the consumer should provide a `getItemId` function that returns one.
+By default, dataviews would use each record's `id` as an unique identifier. If the records don't have a `id` property that identify them uniquely, they consumer needs to provide a `getItemId` function that returns an unique identifier for the record.
 
 #### `fields`: `Object[]`
 
@@ -109,8 +109,8 @@ const fields = [
 		enableSorting: false,
 	},
 	{
-		label: __( 'Status' ),
 		id: 'status',
+		label: __( 'Status' ),
 		getValue: ( { item } ) =>
 			STATUSES.find( ( { value } ) => value === item.status )?.label ??
 			item.status,
@@ -126,26 +126,34 @@ const fields = [
 Each field is an object with the following properties:
 
 -   `id`: identifier for the field. Unique.
+-   `type`: the type of the field. See "Field types" section.
 -   `label`: the field's name to be shown in the UI.
+-   `header`: defaults to the label. Allows providing a React element to render the field labels.
 -   `getValue`: function that returns the value of the field, defaults to `field[id]`.
 -   `render`: function that renders the field. Optional, `getValue` will be used if `render` is not defined.
--   <code id="fields-elements">elements</code>: The list of options to pick from when using the field as a filter or when editing (DataForm component). It expects an array of objects with the following properties:
-
-    -   `value`: The id of the value to filter to (for internal use)
-    -   `label`: The text that will be displayed in the UI for the item.
-    -   `description`: A longer description that describes the element, to also be displayed. Optional.
-
-    To enable the filter by a field we just need to set a proper value to the `elements` property of the field we'd like to filter by.
-
--   `type`: the type of the field. See "Field types".
+-   `Edit`: function that renders an edit control for the field. Alternatively, can provide a string declaring one of default controls provided by DataForm `text`, `integer`, `datetime`, `radio`, `select`.
+-   `sort`: a compare function that determines the order of the records.
+-   `isValid`: callback to decide if a field should be displayed.
+-   `isVisible`: callback to decide if a field should be visible.
 -   `enableSorting`: whether the data can be sorted by the given field. True by default.
 -   `enableHiding`: whether the field can be hidden. True by default.
 -   `enableGlobalSearch`: whether the field is searchable. False by default.
+-   <code id="fields-elements">elements</code>: The list of options to pick from when using the field as a filter or when editing (DataForm component). Providing a list of to the field automatically creates a filter for it. It expects an array of objects with the following properties:
+    -   `value`: The id of the value to filter to (for internal use)
+    -   `label`: The text that will be displayed in the UI for the item.
+    -   `description`: A longer description that describes the element, to also be displayed. Optional.
 -   `filterBy`: configuration for the filters enabled by the `elements` property.
-    -   `operators`: the list of operators supported by the field.
+    -   `operators`: the list of operators supported by the field. See "Filter operators" below.
     -   `isPrimary`: whether it is a primary filter. A primary filter is always visible and is not listed in the "Add filter" component, except for the list layout where it behaves like a secondary filter.
 
+##### Field types
+
+Current supported types include: `text`, `integer`, `datetime`.
+
+If a field declares a `type` the `sort`, `isValid`, and `Edit` functions will be provided with default implementations. They will overriden if the field provides its own.
+
 ##### Filter operators
+
 
 | Operator   | Selection      | Description                                                             | Example                                            |
 | ---------- | -------------- | ----------------------------------------------------------------------- | -------------------------------------------------- |
@@ -158,7 +166,7 @@ Each field is an object with the following properties:
 
 `is` and `isNot` are single-selection operators, while `isAny`, `isNone`, `isAll`, and `isNotALl` are multi-selection. By default, a filter with no operators declared will support the `isAny` and `isNone` multi-selection operators. A filter cannot mix single-selection & multi-selection operators; if a single-selection operator is present in the list of valid operators, the multi-selection ones will be discarded and the filter won't allow selecting more than one item.
 
-#### `view`: `object`
+#### `view`: `Object`
 
 The view object configures how the dataset is visible to the user.
 
@@ -198,7 +206,7 @@ Properties:
     -   `field`: the field used for sorting the dataset.
     -   `direction`: the direction to use for sorting, one of `asc` or `desc`.
 
--   `fields`: the `id` of the fields that are visible in the UI and the specific order in which they are displayed.
+-   `fields`: a list of field `id` that are visible in the UI and the specific order in which they are displayed.
 -   `layout`: config that is specific to a particular layout type.
 
 ##### Properties of `layout`
@@ -243,9 +251,9 @@ For example, this is how you'd define a `site` field which is a combination of a
 
 #### `onChangeView`: `function`
 
-The view is a representation of the visible state of the dataset: what type of layout is used to display it (table, grid, etc.), how the dataset is filtered, how it is sorted or paginated.
+Callback executed when the view has changed. It receives the new view object as a parameter.
 
-It's the consumer's responsibility to work with the data provider to make sure the user options defined through the view's config (sort, pagination, filters, etc.) are respected. The `onChangeView` prop allows the consumer to provide a callback to be called when the view config changes, to process the data accordingly.
+The view is a representation of the visible state of the dataset: what type of layout is used to display it (table, grid, etc.), how the dataset is filtered, how it is sorted or paginated. It's the consumer's responsibility to use the view config to query the data provider and make sure the user decisions (sort, pagination, filters, etc.) are respected.
 
 The following example shows how a view object is used to query the WordPress REST API via the entities abstraction. The same can be done with any other data provider.
 
@@ -313,16 +321,18 @@ Collection of operations that can be performed upon each record.
 Each action is an object with the following properties:
 
 -   `id`: string, required. Unique identifier of the action. For example, `move-to-trash`.
--   `label`: string|function, required. User facing description of the action. For example, `Move to Trash`. In case we want to adjust the label based on the selected items, a function which accepts the selected records as input can be provided. This function should always return a `string` value.
+-   `label`: string|function, required. User facing description of the action. For example, `Move to Trash`. It can also take a function that takes the selected items as a parameter and returns a string: this can be useful to provide a dynamic label based on the selection.
 -   `isPrimary`: boolean, optional. Whether the action should be listed inline (primary) or in hidden in the more actions menu (secondary).
--   `icon`: icon to show for primary actions. It's required for a primary action, otherwise the action would be considered secondary.
+-   `icon`: SVG element. Icon to show for primary actions. It's required for a primary action, otherwise the action would be considered secondary.
 -   `isEligible`: function, optional. Whether the action can be performed for a given record. If not present, the action is considered to be eligible for all items. It takes the given record as input.
 -   `isDestructive`: boolean, optional. Whether the action can delete data, in which case the UI would communicate it via red color.
--   `callback`: function, required unless `RenderModal` is provided. Callback function that takes the record as input and performs the required action.
--   `RenderModal`: ReactElement, optional. If an action requires that some UI be rendered in a modal, it can provide a component which takes as props the record as `item` and a `closeModal` function. When this prop is provided, the `callback` property is ignored.
--   `hideModalHeader`: boolean, optional. This property is used in combination with `RenderModal` and controls the visibility of the modal's header. If the action renders a modal and doesn't hide the header, the action's label is going to be used in the modal's header.
 -   `supportsBulk`: Whether the action can be used as a bulk action. False by default.
 -   `disabled`: Whether the action is disabled. False by default.
+-   `context`: where this action would be visible. One of `list`, `single`.
+-   `callback`: function, required unless `RenderModal` is provided. Callback function that takes as input the list of items to operate with, and performs the required action.
+-   `RenderModal`: ReactElement, optional. If an action requires that some UI be rendered in a modal, it can provide a component which takes as input the the list of `items` to operate with, `closeModal` function, and `onActionPerformed` function. When this prop is provided, the `callback` property is ignored.
+-   `hideModalHeader`: boolean, optional. This property is used in combination with `RenderModal` and controls the visibility of the modal's header. If the action renders a modal and doesn't hide the header, the action's label is going to be used in the modal's header.
+-   `modalHeader`: string, optional. The header of the modal.
 
 #### `paginationInfo`: `Object`
 
@@ -339,7 +349,9 @@ What text to show in the search input. "Search" by default.
 
 #### `getItemId`: `function`
 
-Function that receives an item and returns an unique identifier for it. By default, it uses the `id` of the item as unique identifier. If it's not, the consumer should provide their own.
+Function that receives an item and returns an unique identifier for it.
+
+By default, dataviews would use each record's `id` as an unique identifier. If the records don't have a `id` property that identify them uniquely, they consumer needs to provide a `getItemId` function that returns an unique identifier for the record.
 
 #### `isLoading`: `boolean`
 
@@ -361,11 +373,23 @@ const defaultLayouts = {
 };
 ```
 
-The `defaultLayouts` property should be an object that includes properties named `table`, `grid`, or `list`. Each of these properties should contain a `layout` property, which holds the configuration for each specific layout type. Check [here](#properties-of-layout) the full list of properties available for each layout's configuration
+The `defaultLayouts` property should be an object that includes properties named `table`, `grid`, or `list`. Each of these properties should contain a `layout` property, which holds the configuration for each specific layout type. Check "Properties of layout" for the full list of properties available for each layout's configuration
+
+#### `selection`: `string[]`
+
+The list of selected items' ids.
+
+If `selection` and `onChangeSelection` are provided, the `DataViews` component behaves as a controlled component, otherwise, it behaves like an uncontrolled component.
 
 #### `onChangeSelection`: `function`
 
-Callback that signals the user selected one of more items, and takes them as parameter. So far, only the `list` view implements it.
+Callback that signals the user selected one of more items. It receives the list of selected items' ids as a parameter.
+
+If `selection` and `onChangeSelection` are provided, the `DataViews` component behaves as a controlled component, otherwise, it behaves like an uncontrolled component.
+
+#### `header`: React component
+
+React component to be rendered next to the view config button.
 
 ## `DataForm`
 
@@ -388,11 +412,13 @@ const Example = () => {
 
 <div class="callout callout-info">At <a href="https://wordpress.github.io/gutenberg/">WordPress Gutenberg's Storybook</a> there's and <a href="https://wordpress.github.io/gutenberg/?path=/docs/dataviews-dataform--docs">example implementation of the DataForm component</a>.</div>
 
-### Props
+### Properties
 
-#### `data`: `Object[]`
+#### `data`: `Object`
 
-Same as `data` property of `DataViews`.
+A single item to be edited.
+
+This could be thought as as a single record coming from the `data` property of `DataViews` — though it doesn't need to be; it can be, for example, a mix of records if you support bulk editing.
 
 #### `fields`: `Object[]`
 
@@ -402,6 +428,43 @@ Same as `fields` property of `DataViews`.
 
 - `type`: either `regular` or `panel`.
 - `fields`: a list of fields ids that should be rendered.
+
+#### `onChange`: `function`
+
+Callback function that receives an object with the edits done by the user.
+
+Example:
+
+```js
+const data = {
+	id: 1,
+	title: 'Title',
+	author: 'Admin',
+	date: '2012-04-23T18:25:43.511Z',
+};
+
+const onChange = ( edits ) => {
+	/*
+	 * edits will contain user edits.
+	 * For example, if the user edited the title
+	 * edits will be:
+	 *
+	 * {
+	 *   title: 'New title'
+	 * }
+	 *
+	 */
+};
+
+return (
+	<DataForm
+		data={data}
+		fields={fields}
+		form={form}
+		onChange={onChange}
+	/>
+);
+```
 
 ## Utilities
 
