@@ -67,7 +67,7 @@ By default, dataviews would use each record's `id` as an unique identifier. If t
 
 #### `fields`: `Object[]`
 
-The fields describe the visible items for each record in the dataset.
+The fields describe the visible items for each record in the dataset and how they behave (how to sort them, display them, etc.). See "Fields API" as a reference for every property.
 
 Example:
 
@@ -95,7 +95,7 @@ const fields = [
 	},
 	{
 		id: 'author',
-		label: __( 'Author' ),
+		label: 'Author',
 		render: ( { item } ) => {
 			return <a href="...">{ item.author }</a>;
 		},
@@ -110,7 +110,7 @@ const fields = [
 	},
 	{
 		id: 'status',
-		label: __( 'Status' ),
+		label: 'Status',
 		getValue: ( { item } ) =>
 			STATUSES.find( ( { value } ) => value === item.status )?.label ??
 			item.status,
@@ -122,49 +122,6 @@ const fields = [
 	},
 ];
 ```
-
-Each field is an object with the following properties:
-
--   `id`: identifier for the field. Unique.
--   `type`: the type of the field. See "Field types" section.
--   `label`: the field's name to be shown in the UI.
--   `header`: defaults to the label. Allows providing a React element to render the field labels.
--   `getValue`: function that returns the value of the field, defaults to `field[id]`.
--   `render`: function that renders the field. Optional, `getValue` will be used if `render` is not defined.
--   `Edit`: function that renders an edit control for the field. Alternatively, can provide a string declaring one of default controls provided by DataForm `text`, `integer`, `datetime`, `radio`, `select`.
--   `sort`: a compare function that determines the order of the records.
--   `isValid`: callback to decide if a field should be displayed.
--   `isVisible`: callback to decide if a field should be visible.
--   `enableSorting`: whether the data can be sorted by the given field. True by default.
--   `enableHiding`: whether the field can be hidden. True by default.
--   `enableGlobalSearch`: whether the field is searchable. False by default.
--   <code id="fields-elements">elements</code>: The list of options to pick from when using the field as a filter or when editing (DataForm component). Providing a list of to the field automatically creates a filter for it. It expects an array of objects with the following properties:
-    -   `value`: The id of the value to filter to (for internal use)
-    -   `label`: The text that will be displayed in the UI for the item.
-    -   `description`: A longer description that describes the element, to also be displayed. Optional.
--   `filterBy`: configuration for the filters enabled by the `elements` property.
-    -   `operators`: the list of operators supported by the field. See "Filter operators" below.
-    -   `isPrimary`: whether it is a primary filter. A primary filter is always visible and is not listed in the "Add filter" component, except for the list layout where it behaves like a secondary filter.
-
-##### Field types
-
-Current supported types include: `text`, `integer`, `datetime`.
-
-If a field declares a `type` the `sort`, `isValid`, and `Edit` functions will be provided with default implementations. They will overriden if the field provides its own.
-
-##### Filter operators
-
-
-| Operator   | Selection      | Description                                                             | Example                                            |
-| ---------- | -------------- | ----------------------------------------------------------------------- | -------------------------------------------------- |
-| `is`       | Single item    | `EQUAL TO`. The item's field is equal to a single value.                | Author is Admin                                    |
-| `isNot`    | Single item    | `NOT EQUAL TO`. The item's field is not equal to a single value.        | Author is not Admin                                |
-| `isAny`    | Multiple items | `OR`. The item's field is present in a list of values.                  | Author is any: Admin, Editor                       |
-| `isNone`   | Multiple items | `NOT OR`. The item's field is not present in a list of values.          | Author is none: Admin, Editor                      |
-| `isAll`    | Multiple items | `AND`. The item's field has all of the values in the list.              | Category is all: Book, Review, Science Fiction     |
-| `isNotAll` | Multiple items | `NOT AND`. The item's field doesn't have all of the values in the list. | Category is not all: Book, Review, Science Fiction |
-
-`is` and `isNot` are single-selection operators, while `isAny`, `isNone`, `isAll`, and `isNotALl` are multi-selection. By default, a filter with no operators declared will support the `isAny` and `isNone` multi-selection operators. A filter cannot mix single-selection & multi-selection operators; if a single-selection operator is present in the list of valid operators, the multi-selection ones will be discarded and the filter won't allow selecting more than one item.
 
 #### `view`: `Object`
 
@@ -422,7 +379,33 @@ This could be thought as as a single record coming from the `data` property of `
 
 #### `fields`: `Object[]`
 
-Same as `fields` property of `DataViews`.
+The fields describe which parts of the the data are visible and how they behave (how to edit them, validating them, etc.). See "Fields API" as a reference for every property.
+
+Example:
+
+```js
+const fields = [
+	{
+		id: 'title',
+		type: 'text',
+		label: 'Title',
+	},
+	{
+		id: 'date',
+		type: 'datetime',
+		label: 'Date',
+	},
+	{
+		id: 'author',
+		type: 'text'
+		label: 'Author',
+		elements: [
+			{ value: 1, label: 'Admin' },
+			{ value: 2, label: 'User' },
+		],
+	},
+];
+```
 
 #### `form`: `Object[]`
 
@@ -496,6 +479,383 @@ Parameters:
 - `form`: the form config, as described in the "form" property of DataForm.
 
 Returns a boolean indicating if the item is valid (true) or not (false).
+
+## Fields API
+
+### `id`
+
+The unique identifier of the field.
+
+- Type: `string`.
+- Required.
+
+Example:
+
+```js
+{ id: 'field_id' }
+```
+
+### `type`
+
+Field type. One of `text`, `integer`, `datetime`.
+
+If a field declares a `type`, it gets default implementations for the `sort`, `isValid`, and `Edit` functions. They will overriden if the field provides its own.
+
+- Type: `string`.
+- Optional.
+
+Example:
+
+```js
+{ type: 'text' }
+```
+
+### `label`
+
+The field's name. This will be used across the UI.
+
+- Type: `string`.
+- Optional.
+- Defaults to the `id` value.
+
+Example:
+
+```js
+{ label: 'Title' }
+```
+
+### `header`
+
+React component used by the layouts to display the field name — useful to add icons, etc. It's complementary to the `label` property.
+
+- Type: React component.
+- Optional.
+- Defaults to the `label` value.
+- Props: none.
+- Returns a React element that represents the field's name.
+
+Example:
+
+```js
+{
+	header: () => { /* Returns a react element. */ }
+}
+```
+
+### `getValue`
+
+React component that returns the value of a field. This value is used in sorting the fields, or when filtering.
+
+- Type: React component.
+- Optional.
+- Defaults to `item[ id ]`.
+- Props:
+  - `item` value to be processed.
+- Returns a value that represents the field.
+
+Example:
+
+```js
+{
+	getValue: ( { item } ) => { /* The field's value.  */ };
+}
+```
+
+### `render`
+
+React component that renders the field. This is used by the layouts.
+
+- Type: React component.
+- Optional.
+- Defaults to `getValue`.
+- Props
+  - `item` value to be processed.
+- Returns a React element that represents the field's value.
+
+Example:
+
+```js
+{
+	render: ( { item} ) => { /* React element to be displayed. */ }
+}
+```
+
+### `Edit`
+
+React component that renders the control to edit the field.
+
+- Type: React component | `string`. If it's a string, it needs to be one of `text`, `integer`, `datetime`, `radio`, `select`.
+- Required by DataForm. Optional if the field provided a `type`.
+- Props:
+  - `data`: the item to be processed
+  - `field`: the field definition
+  - `onChange`: the callback with the updates
+  - `hideLabelFromVision`: boolean representing if the label should be hidden
+- Returns a React element to edit the field's value.
+
+Example: 
+
+```js
+// A custom control defined by the field.
+{
+	Edit: ( {
+		data,
+		field,
+		onChange,
+		hideLabelFromVision
+	} ) => {
+		const value = field.getValue( { item: data } );
+
+		return (
+			<CustomTimePicker
+				value={ value }
+				onChange={ onChange }
+				hideLabelFromVision
+			/>
+		);
+	}
+}
+
+// Use one of the core controls.
+{
+	Edit: 'radio'
+}
+
+// Edit is optional when field's type is present.
+// The field will use the default Edit function for text.
+{
+	type: 'text'
+}
+
+// Edit can be provided even if field's type is present.
+// The field will use its own custom control.
+{
+	type: 'text',
+	Edit: 'radio'
+}
+```
+
+### `sort`
+
+Function to sort the records.
+
+- Type: `function`.
+- Optional.
+- Args
+  - `a`: the first item to compare
+  - `b`: the second item to compare
+  - `direction`: either `asc` (ascending) or `desc` (descending)
+- Returns a number where:
+  - a negative value indicates that `a` should come before `b`
+  - a positive value indicates that `a` should come after `b`
+  - 0 indicates that `a` and `b` are considered equal
+
+Example:
+
+```js
+// A custom sort function defined by the field.
+{
+	sort: ( a, b, direction ) => {
+		return direction === 'asc'
+			? a.localeCompare( b )
+			: b.localeCompare( a );
+	}
+}
+```
+
+```js
+// If field type is provided,
+// the field gets a default sort function.
+{
+	type: 'number'
+}
+```
+
+```js
+// Even if a field type is provided,
+// fields can override the default sort function assigned for that type.
+{
+	type: 'number'
+	sort: ( a, b, direction ) => { /* Custom sort */ }
+}
+```
+
+### `isValid`
+
+Function to validate a field's value.
+
+- Type: function.
+- Optional.
+- Args
+  - `item`: the data to validate
+  - `context`: an object containing the following props:
+    - `elements`: the elements defined by the field
+- Returns a boolean, indicating if the field is valid or not.
+
+Example:
+
+```js
+// Custom isValid function.
+{
+	isValid: ( item, context ) => {
+		return !! item;
+	}
+}
+```
+
+```js
+// If the field defines a type,
+// it'll get a default isValid function for the type.
+{
+	type: 'number',
+}
+```
+
+```js
+// Even if the field provides a type,
+// the field can override the default isValid function.
+{
+	type: 'number',
+	isValid: ( item, context ) => { /* Custom function. */ }
+}
+```
+
+### `isVisible`
+
+Function that indicates if the field should be visible.
+
+- Type: `function`.
+- Optional.
+- Args
+  - `item`: the data to be processed
+- Returns a `boolean` indicating if the field should be visible (`true`) or not (`false`).
+
+Example:
+
+```js
+// Custom isVisible function.
+{
+	isVisible: ( item ) => { /* Custom implementation. */ }
+}
+```
+
+### `enableSorting`
+
+Boolean indicating if the field is sortable.
+
+- Type: `boolean`.
+- Optional.
+- Defaults to `true`.
+
+Example:
+
+```js
+{ enableSorting: true }
+```
+
+### `enableHiding`
+
+Boolean indicating if the field can be hidden.
+
+- Type: `boolean`.
+- Optional.
+- Defaults to `true`.
+
+Example:
+
+```js
+{ enableHiding: true }
+```
+
+### `enableGlobalSearch`
+
+Boolean indicating if the field is searchable.
+
+- Type: `boolean`.
+- Optional.
+- Defaults to `false`.
+
+Example:
+
+```js
+{ enableGlobalSearch: true }
+```
+
+### `elements`
+
+List of valid values for a field. If provided, it creates a DataViews' filter for the field. DataForm's edit control will use these values as well (see `Edit` field property).
+
+- Type: `array` of objects.
+- Optional.
+- Each object can have the following properties:
+  - `value`: required, the value to match against the field's value.
+  - `label`: required, the name to display to users.
+  - `description`: optional, a longer description of the item.
+
+Example:
+
+```js
+{
+	elements: [
+		{ value: '1', label: 'Product A' },
+		{ value: '2', label: 'Product B' },
+		{ value: '3', label: 'Product C' },
+		{ value: '4', label: 'Product D' },
+	]
+}
+```
+
+### `filterBy`
+
+Configuration of the filters.
+
+- Type: `object`.
+- Optional.
+- Properties:
+  - `operators`: the list of operators supported by the field. See "operators" below. By default, a filter will support the `isAny` and `isNone` multi-selection operators.
+  - `isPrimary`: boolean, optional. Indicates if the filter is primary. A primary filter is always visible and is not listed in the "Add filter" component, except for the list layout where it behaves like a secondary filter.
+
+Operators:
+
+| Operator   | Selection      | Description                                                             | Example                                            |
+| ---------- | -------------- | ----------------------------------------------------------------------- | -------------------------------------------------- |
+| `is`       | Single item    | `EQUAL TO`. The item's field is equal to a single value.                | Author is Admin                                    |
+| `isNot`    | Single item    | `NOT EQUAL TO`. The item's field is not equal to a single value.        | Author is not Admin                                |
+| `isAny`    | Multiple items | `OR`. The item's field is present in a list of values.                  | Author is any: Admin, Editor                       |
+| `isNone`   | Multiple items | `NOT OR`. The item's field is not present in a list of values.          | Author is none: Admin, Editor                      |
+| `isAll`    | Multiple items | `AND`. The item's field has all of the values in the list.              | Category is all: Book, Review, Science Fiction     |
+| `isNotAll` | Multiple items | `NOT AND`. The item's field doesn't have all of the values in the list. | Category is not all: Book, Review, Science Fiction |
+
+`is` and `isNot` are single-selection operators, while `isAny`, `isNone`, `isAll`, and `isNotALl` are multi-selection. By default, a filter with no operators declared will support the `isAny` and `isNone` multi-selection operators. A filter cannot mix single-selection & multi-selection operators; if a single-selection operator is present in the list of valid operators, the multi-selection ones will be discarded and the filter won't allow selecting more than one item.
+
+Example:
+
+```js
+// Set a filter as primary.
+{
+	filterBy: {
+		isPrimary: true
+	}
+}
+```
+
+```js
+// Configure a filter as single-selection.
+{
+	filterBy: {
+		operators: [ `is`, `isNot` ]
+	}
+}
+```
+
+```js
+// Configure a filter as multi-selection with all the options.
+{
+	filterBy: {
+		operators: [ `isAny`, `isNone`, `isAll`, `isNotAll` ]
+	}
+}
+```
 
 ## Contributing to this package
 
