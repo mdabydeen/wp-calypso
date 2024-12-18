@@ -163,7 +163,6 @@
 	top: $grid-unit-10;
 }
 
-/* stylelint-disable-next-line scss/at-rule-no-unknown -- '@container' not globally permitted */
 @container (max-width: 430px) {
 	.dataviews-view-grid {
 		padding-left: $grid-unit-30;
