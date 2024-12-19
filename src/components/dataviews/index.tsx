@@ -8,6 +8,7 @@ import type { ReactNode } from 'react';
  */
 import { __experimentalHStack as HStack } from '@wordpress/components';
 import { useMemo, useState } from '@wordpress/element';
+import { useResizeObserver } from '@wordpress/compose';
 
 /**
  * Internal dependencies
@@ -75,6 +76,15 @@ export default function DataViews< Item >( {
 	isItemClickable = defaultIsItemClickable,
 	header,
 }: DataViewsProps< Item > ) {
+	const [ containerWidth, setContainerWidth ] = useState( 0 );
+	const containerRef = useResizeObserver(
+		( resizeObserverEntries: any ) => {
+			setContainerWidth(
+				resizeObserverEntries[ 0 ].borderBoxSize[ 0 ].inlineSize
+			);
+		},
+		{ box: 'border-box' }
+	);
 	const [ selectionState, setSelectionState ] = useState< string[] >( [] );
 	const isUncontrolled =
 		selectionProperty === undefined || onChangeSelection === undefined;
@@ -120,9 +130,10 @@ export default function DataViews< Item >( {
 				getItemLevel,
 				isItemClickable,
 				onClickItem,
+				containerWidth,
 			} }
 		>
-			<div className="dataviews-wrapper">
+			<div className="dataviews-wrapper" ref={ containerRef }>
 				<HStack
 					alignment="top"
 					justify="space-between"
