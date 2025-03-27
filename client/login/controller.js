@@ -269,6 +269,7 @@ export async function jetpackGoogleAuth( context, next ) {
 				callback: () => {},
 			} )
 			.requestCode();
+		return;
 	} catch {
 		context.store.dispatch( {
 			type: 'NOTICE_CREATE',
@@ -279,8 +280,6 @@ export async function jetpackGoogleAuth( context, next ) {
 		} );
 		return redirectJetpackDirectAuthError( context, next );
 	}
-
-	next();
 }
 
 export async function jetpackGoogleAuthCallback( context, next ) {
@@ -295,6 +294,22 @@ export async function jetpackGoogleAuthCallback( context, next ) {
 		return next();
 	}
 
+	let state;
+
+	try {
+		const stateData = JSON.parse( stateString || '{}' );
+
+		state = {
+			redirect_to: stateData.redirect_to || '/',
+			is_jetpack: stateData.is_jetpack || true,
+			locale: stateData.locale || getLocaleSlug(),
+			wpcomNonce: stateData.wpcomNonce || '',
+			queryParams: stateData.queryParams || {},
+		};
+	} catch {
+		state = {}; // Fallback to empty state if JSON parsing fails
+	}
+
 	// Handle error from Google
 	if ( error ) {
 		context.store.dispatch( {
@@ -304,7 +319,10 @@ export async function jetpackGoogleAuthCallback( context, next ) {
 				text: `Error during Google authentication: ${ error }`,
 			},
 		} );
-		return redirectJetpackDirectAuthError( context, next );
+		return redirectJetpackDirectAuthError( context, next, {
+			code: null,
+			redirect_to: state.redirect_to,
+		} );
 	}
 
 	try {
@@ -315,24 +333,7 @@ export async function jetpackGoogleAuthCallback( context, next ) {
 			throw new Error( 'Missing state parameter' );
 		}
 
-		let state;
-
-		try {
-			const stateData = JSON.parse( stateString );
-
-			if ( stateData.wpcomNonce !== storedNonce ) {
-				throw new Error();
-			}
-
-			state = {
-				redirect_to: stateData.redirect_to || '/',
-				is_jetpack: stateData.is_jetpack || true,
-				locale: stateData.locale || getLocaleSlug(),
-				wpcomNonce: stateData.wpcomNonce || '',
-				queryParams: stateData.queryParams || {},
-			};
-		} catch {
-			// Not a valid JSON, and not a direct match - state validation fails
+		if ( state.wpcomNonce !== storedNonce ) {
 			throw new Error( 'Invalid state parameter' );
 		}
 
@@ -392,7 +393,10 @@ export async function jetpackGoogleAuthCallback( context, next ) {
 				},
 			} );
 
-			return redirectJetpackDirectAuthError( context, next );
+			return redirectJetpackDirectAuthError( context, next, {
+				code: null,
+				redirect_to: state.redirect_to,
+			} );
 		}
 	} catch {
 		context.store.dispatch( {
@@ -403,7 +407,10 @@ export async function jetpackGoogleAuthCallback( context, next ) {
 			},
 		} );
 
-		return redirectJetpackDirectAuthError( context, next );
+		return redirectJetpackDirectAuthError( context, next, {
+			code: null,
+			redirect_to: state.redirect_to,
+		} );
 	}
 }
 
@@ -464,6 +471,7 @@ export async function jetpackAppleAuth( context, next ) {
 
 		// Trigger the sign-in
 		window.AppleID.auth.signIn();
+		return;
 	} catch {
 		context.store.dispatch( {
 			type: 'NOTICE_CREATE',
@@ -475,8 +483,6 @@ export async function jetpackAppleAuth( context, next ) {
 
 		return redirectJetpackDirectAuthError( context, next );
 	}
-
-	next();
 }
 
 export async function jetpackAppleAuthCallback( context, next ) {
