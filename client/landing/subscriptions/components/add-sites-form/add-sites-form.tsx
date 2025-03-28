@@ -5,16 +5,18 @@ import { check, Icon } from '@wordpress/icons';
 import clsx from 'clsx';
 import { useTranslate } from 'i18n-calypso';
 import { useState } from 'react';
+import FeedPreview from 'calypso/landing/subscriptions/components/add-sites-form/feed-preview/feed-preview';
+import { useAddSitesModalNotices } from 'calypso/landing/subscriptions/hooks';
+import { useRecordSiteSubscribed } from 'calypso/landing/subscriptions/tracks';
 import { isValidUrl, parseUrl } from 'calypso/lib/importer/url-validation';
-import { useAddSitesModalNotices } from '../../hooks';
-import { useRecordSiteSubscribed } from '../../tracks';
 import './styles.scss';
 
-type AddSitesFormProps = {
-	onAddFinished?: () => void;
+export type AddSitesFormProps = {
 	placeholder?: string;
 	buttonText?: string;
 	source: string;
+	onChangeFeedPreview?: ( hasPreview: boolean ) => void;
+	onChangeSubscribe?: ( subscribed: boolean ) => void;
 };
 
 type SubscriptionError = {
@@ -23,10 +25,11 @@ type SubscriptionError = {
 };
 
 const AddSitesForm = ( {
-	onAddFinished = () => {},
 	placeholder,
 	buttonText,
 	source,
+	onChangeFeedPreview,
+	onChangeSubscribe,
 }: AddSitesFormProps ) => {
 	const translate = useTranslate();
 	const [ inputValue, setInputValue ] = useState( '' );
@@ -44,6 +47,7 @@ const AddSitesForm = ( {
 		if ( url.length === 0 ) {
 			setIsValidInput( false );
 			setInputFieldError( null );
+			onChangeFeedPreview?.( false );
 			return;
 		}
 
@@ -52,6 +56,7 @@ const AddSitesForm = ( {
 			setIsValidInput( true );
 		} else {
 			setIsValidInput( false );
+			onChangeFeedPreview?.( false );
 			if ( showError ) {
 				setInputFieldError( translate( 'Please enter a valid URL' ) );
 			}
@@ -84,16 +89,12 @@ const AddSitesForm = ( {
 							}
 
 							showSuccessNotice( inputValue );
-
-							// Reset fields.
-							setInputValue( '' );
-							setIsValidInput( false );
+							onSubscribeToggle( true );
 						}
-						onAddFinished();
 					},
 					onError: ( error: SubscriptionError ) => {
 						showErrorNotice( inputValue, error );
-						onAddFinished();
+						onChangeSubscribe?.( false );
 					},
 					onSettled: (): void => {
 						setIsSubmitting( false );
@@ -102,6 +103,14 @@ const AddSitesForm = ( {
 			);
 		}
 	};
+
+	function onSubscribeToggle( subscribed: boolean ): void {
+		// Reset form.
+		setInputValue( '' );
+		setIsValidInput( false );
+
+		onChangeSubscribe?.( subscribed );
+	}
 
 	return (
 		<>
@@ -115,7 +124,6 @@ const AddSitesForm = ( {
 						disabled={ subscribing }
 						placeholder={ placeholder || translate( 'https://www.site.com' ) }
 						value={ inputValue }
-						type="url"
 						onChange={ onTextFieldChange }
 						help={ isValidInput ? <Icon icon={ check } data-testid="check-icon" /> : undefined }
 						onBlur={ () => validateInputValue( inputValue, true ) }
@@ -135,6 +143,13 @@ const AddSitesForm = ( {
 					{ buttonText || translate( 'Add site' ) }
 				</Button>
 			</form>
+
+			<FeedPreview
+				url={ isValidInput ? inputValue : '' } // Passing empty state to make sure that debounce works correctly else it was firing events 2 times.
+				source={ source }
+				onChangeFeedPreview={ onChangeFeedPreview }
+				onChangeSubscribe={ onSubscribeToggle }
+			/>
 		</>
 	);
 };
