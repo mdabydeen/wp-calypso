@@ -157,6 +157,8 @@ const onboarding: Flow = {
 		);
 		const coupon = useQuery().get( 'coupon' );
 
+		const [ redirectedToUseMyDomain, setRedirectedToUseMyDomain ] = useState( false );
+		const [ useMyDomainQueryParams, setUseMyDomainQueryParams ] = useState( {} );
 		const [ useMyDomainTracksEventProps, setUseMyDomainTracksEventProps ] = useState( {} );
 
 		const [ , isGoalsAtFrontExperiment ] = useGoalsFirstExperiment();
@@ -305,6 +307,7 @@ const onboarding: Flow = {
 						const currentQueryArgs = getQueryArgs( window.location.href );
 						currentQueryArgs.step = 'domain-input';
 
+						setRedirectedToUseMyDomain( true );
 						let useMyDomainURL = addQueryArgs( '/use-my-domain', currentQueryArgs );
 
 						const lastQueryParam = ( providedDependencies?.domainForm as { lastQuery?: string } )
@@ -323,6 +326,7 @@ const onboarding: Flow = {
 						return navigate( useMyDomainURL );
 					}
 
+					setRedirectedToUseMyDomain( false );
 					return navigate( 'plans' );
 				case 'use-my-domain':
 					setSignupDomainOrigin( SIGNUP_DOMAIN_ORIGIN.USE_YOUR_DOMAIN );
@@ -350,6 +354,7 @@ const onboarding: Flow = {
 						providedDependencies: useMyDomainTracksEventProps,
 					} );
 
+					setUseMyDomainQueryParams( getQueryArgs( window.location.href ) );
 					return navigate( 'plans' );
 				case 'plans': {
 					const cartItems = providedDependencies.cartItems as Array< typeof planCartItem >;
@@ -431,7 +436,56 @@ const onboarding: Flow = {
 			}
 		};
 
-		return { submit };
+		const goBack = () => {
+			switch ( currentStepSlug ) {
+				case 'use-my-domain':
+					if ( getQueryArg( window.location.href, 'step' ) === 'transfer-or-connect' ) {
+						const destination = addQueryArgs( '/use-my-domain', {
+							...getQueryArgs( window.location.href ),
+							step: 'domain-input',
+							initialQuery: getQueryArg( window.location.href, 'initialQuery' ),
+						} );
+						return navigate( destination );
+					}
+
+					if ( window.location.search ) {
+						window.history.replaceState( {}, document.title, window.location.pathname );
+					}
+					return navigate( 'domains' );
+				case 'plans':
+					if ( redirectedToUseMyDomain ) {
+						if ( Object.keys( useMyDomainQueryParams ).length ) {
+							// restore query params
+							const useMyDomainURL = addQueryArgs( 'use-my-domain', useMyDomainQueryParams );
+							return navigate( useMyDomainURL );
+						}
+						return navigate( 'use-my-domain' );
+					}
+					return navigate( 'domains' );
+				case 'domains':
+					if ( isGoalsAtFrontExperiment ) {
+						if ( isBigSkyBeforePlansExperiment && createWithBigSky ) {
+							return navigate( 'design-choices' );
+						}
+						return navigate( 'design-setup' );
+					}
+				case 'design-setup':
+					if ( isDesignChoicesStepEnabled ) {
+						return navigate( 'design-choices' );
+					}
+					if ( isGoalsAtFrontExperiment ) {
+						return navigate( 'goals' );
+					}
+				case 'difmStartingPoint':
+					return navigate( 'goals' );
+				case 'design-choices':
+					return navigate( 'goals' );
+				default:
+					return;
+			}
+		};
+
+		return { goBack, submit };
 	},
 	useAssertConditions() {
 		const [ isLoading ] = useGoalsFirstExperiment();
