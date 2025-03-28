@@ -57,7 +57,6 @@ const siteMigration: Flow = {
 			STEPS.SITE_MIGRATION_UPGRADE_PLAN,
 			STEPS.SITE_MIGRATION_INSTRUCTIONS,
 			STEPS.ERROR,
-			STEPS.SITE_MIGRATION_ASSISTED_MIGRATION,
 			STEPS.SITE_MIGRATION_FALLBACK_CREDENTIALS,
 			STEPS.SITE_MIGRATION_CREDENTIALS,
 			STEPS.SITE_MIGRATION_ALREADY_WPCOM,
@@ -420,12 +419,7 @@ const siteMigration: Flow = {
 					};
 
 					if ( action === 'skip' ) {
-						return navigate(
-							addQueryArgs(
-								{ siteId, from: from || fromQueryParam, siteSlug },
-								STEPS.SITE_MIGRATION_ASSISTED_MIGRATION.slug
-							)
-						);
+						return exitFlow( addQueryArgs( { ref: 'site-migration' }, `/overview/${ siteSlug }` ) );
 					}
 
 					if ( action === 'already-wpcom' ) {
@@ -474,50 +468,11 @@ const siteMigration: Flow = {
 						);
 					}
 
-					return navigate(
-						addQueryArgs(
-							{ siteId, from: from || fromQueryParam, siteSlug, preventTicketCreation: true },
-							STEPS.SITE_MIGRATION_ASSISTED_MIGRATION.slug
-						)
-					);
+					return exitFlow( addQueryArgs( { ref: 'site-migration' }, `/overview/${ siteSlug }` ) );
 				}
 
 				case STEPS.SITE_MIGRATION_FALLBACK_CREDENTIALS.slug: {
-					const { action, from } = providedDependencies as {
-						action: 'skip' | 'submit';
-						from: string;
-					};
-
-					if ( action === 'skip' ) {
-						return navigate(
-							addQueryArgs(
-								{ siteId, from: from || fromQueryParam, siteSlug, preventTicketCreation: true },
-								STEPS.SITE_MIGRATION_ASSISTED_MIGRATION.slug
-							)
-						);
-					}
-					//TODO: Check if both conditions are needed.
-					return navigate(
-						addQueryArgs(
-							{ siteId, from: from || fromQueryParam, siteSlug, preventTicketCreation: true },
-							STEPS.SITE_MIGRATION_ASSISTED_MIGRATION.slug
-						)
-					);
-				}
-
-				case STEPS.SITE_MIGRATION_ASSISTED_MIGRATION.slug: {
-					const { hasError } = providedDependencies as {
-						hasError?: 'ticket-creation';
-					};
-
-					if ( hasError === 'ticket-creation' ) {
-						return navigate(
-							addQueryArgs(
-								{ siteId, siteSlug, from: fromQueryParam, error: hasError },
-								STEPS.SITE_MIGRATION_CREDENTIALS.slug
-							)
-						);
-					}
+					return exitFlow( addQueryArgs( { ref: 'site-migration' }, `/overview/${ siteSlug }` ) );
 				}
 
 				case STEPS.SITE_MIGRATION_ALREADY_WPCOM.slug: {
@@ -549,9 +504,8 @@ const siteMigration: Flow = {
 				}
 
 				case STEPS.SITE_MIGRATION_APPLICATION_PASSWORD_AUTHORIZATION.slug: {
-					const { action, authorizationUrl, from } = providedDependencies as {
+					const { action, authorizationUrl } = providedDependencies as {
 						action: string;
-						from: string;
 						authorizationUrl: string;
 					};
 
@@ -576,13 +530,7 @@ const siteMigration: Flow = {
 						);
 					}
 
-					//TODO: Add a skip flag to track the user is having trouble to share the credentials.
-					return navigate(
-						addQueryArgs(
-							{ siteId, from: from || fromQueryParam, siteSlug, preventTicketCreation: true },
-							STEPS.SITE_MIGRATION_ASSISTED_MIGRATION.slug
-						)
-					);
+					return exitFlow( addQueryArgs( { ref: 'site-migration' }, `/overview/${ siteSlug }` ) );
 				}
 			}
 		}
