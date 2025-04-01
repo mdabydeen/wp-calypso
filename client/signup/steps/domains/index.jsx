@@ -11,6 +11,7 @@ import {
 	Step,
 } from '@automattic/onboarding';
 import { withShoppingCart } from '@automattic/shopping-cart';
+import { subscribeIsWithinBreakpoint, isWithinBreakpoint } from '@automattic/viewport';
 import { getQueryArg } from '@wordpress/url';
 import clsx from 'clsx';
 import { localize } from 'i18n-calypso';
@@ -171,6 +172,7 @@ export class RenderDomainsStep extends Component {
 			checkDomainAvailabilityPromises: [],
 			removeDomainTimeout: 0,
 			addDomainTimeout: 0,
+			isDesktopViewport: false,
 		};
 	}
 
@@ -187,6 +189,7 @@ export class RenderDomainsStep extends Component {
 			// This call is expensive, so we only do it if the mini-cart hasDomainRegistration.
 			this.props.shoppingCartManager.addProductsToCart( [ this.props.multiDomainDefaultPlan ] );
 		}
+		this.subscribeToViewPortChanges();
 	}
 
 	componentDidUpdate( prevProps ) {
@@ -200,6 +203,20 @@ export class RenderDomainsStep extends Component {
 				this.props.shoppingCartManager.addProductsToCart( [ this.props.multiDomainDefaultPlan ] );
 			}
 		}
+	}
+
+	subscribeToViewPortChanges() {
+		this.unsubscribeToViewPortChanges = subscribeIsWithinBreakpoint(
+			'>=960px',
+			( isDesktopViewport ) => this.setState( { isDesktopViewport } )
+		);
+		if ( isWithinBreakpoint( '>=960px' ) ) {
+			this.setState( { isDesktopViewport: true } );
+		}
+	}
+
+	componentWillUnmount() {
+		this.unsubscribeToViewPortChanges?.();
 	}
 
 	getLocale() {
@@ -1438,6 +1455,7 @@ export class RenderDomainsStep extends Component {
 
 			return (
 				<Step.TwoColumnLayout
+					isLargeViewport={ this.state.isDesktopViewport }
 					firstColumnWidth={ 7 }
 					secondColumnWidth={ 3 }
 					topBar={ <Step.TopBar leftElement={ ! hideBack && backButton } /> }
