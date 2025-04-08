@@ -74,7 +74,7 @@ if ( envVariables.JETPACK_TARGET === 'wpcom-deployment' ) {
 /**
  * Tests features offered by Jetpack Social on a Simple site with Free plan.
  *
- * Keywords: Social, Jetpack, Publicize
+ * Keywords: Social, Jetpack, Publicize, Editor
  */
 describe( DataHelper.createSuiteTitle( 'Social: Editor features' ), function () {
 	for ( const { plan, platform, testAccountName, features } of testCases ) {
@@ -253,11 +253,7 @@ describe( DataHelper.createSuiteTitle( 'Social: Editor features' ), function () 
 					name: 'Manual sharing',
 				} );
 
-				// For some reason the manual sharing is not visible on the post publish panel for Simple sites with a paid plan.
-				const isPostPublishManualSharingVisible =
-					features.manualSharing && ! ( platform === 'Simple' && plan !== 'Free' );
-
-				if ( isPostPublishManualSharingVisible ) {
+				if ( features.manualSharing ) {
 					await manualSharing.waitFor();
 				}
 
