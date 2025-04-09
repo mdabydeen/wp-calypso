@@ -125,9 +125,12 @@ class MagicLogin extends Component {
 		showEmailCodeVerification: false,
 		maskedEmailAddress: '',
 		hashedEmail: null,
+		isFormReady: false,
 	};
 
-	isInitialMount = true;
+	handleFormReady = () => {
+		this.setState( { isFormReady: true } );
+	};
 
 	componentDidMount() {
 		const { userEmail, oauth2Client, query } = this.props;
@@ -146,8 +149,6 @@ class MagicLogin extends Component {
 				is_initial_view: true,
 			} );
 		}
-
-		this.isInitialMount = false;
 
 		// If the auto_trigger query parameter is set to true, automatically trigger the email send.
 		if ( query?.auto_trigger !== undefined ) {
@@ -1367,7 +1368,7 @@ class MagicLogin extends Component {
 		const shouldShowLoadingEllipsis =
 			isFromJetpackOnboarding &&
 			isJetpackMagicLinkSignUpEnabled &&
-			( isSendingEmail || this.isInitialMount );
+			( isSendingEmail || ! this.state.isFormReady );
 
 		// If this is part of the Jetpack login flow and the `jetpack/magic-link-signup` feature
 		// flag is enabled, some steps will display a different UI
@@ -1376,6 +1377,7 @@ class MagicLogin extends Component {
 			...( isJetpackMagicLinkSignUpEnabled ? { isJetpackMagicLinkSignUpEnabled: true } : {} ),
 			createAccountForNewUser: true,
 			shouldShowLoadingEllipsis,
+			onReady: this.handleFormReady,
 			isFromJetpackOnboarding,
 		};
 
