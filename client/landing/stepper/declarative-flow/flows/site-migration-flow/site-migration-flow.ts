@@ -9,6 +9,10 @@ import { HOW_TO_MIGRATE_OPTIONS } from 'calypso/landing/stepper/constants';
 import { useFlowState } from 'calypso/landing/stepper/declarative-flow/internals/state-manager/store';
 import { STEPS } from 'calypso/landing/stepper/declarative-flow/internals/steps';
 //TODO: Move to a shared place
+import {
+	isPlatformImportable,
+	getFullImporterUrl,
+} from 'calypso/landing/stepper/declarative-flow/internals/steps-repository/import/helper';
 import { getSiteIdParam } from 'calypso/landing/stepper/declarative-flow/internals/steps-repository/import/util';
 import { type SiteMigrationIdentifyAction } from 'calypso/landing/stepper/declarative-flow/internals/steps-repository/site-migration-identify';
 import { AssertConditionState } from 'calypso/landing/stepper/declarative-flow/internals/types';
@@ -121,6 +125,7 @@ const siteMigration: FlowV2 = {
 		const urlQueryParams = useQuery();
 		const fromQueryParam = urlQueryParams.get( 'from' );
 		const actionQueryParam = urlQueryParams.get( 'action' );
+		const platformQueryParam = urlQueryParams.get( 'platform' );
 		const { getSiteIdBySlug } = useSelect( ( select ) => select( SITE_STORE ) as SiteSelect, [] );
 
 		const { get, sessionId } = useFlowState();
@@ -248,6 +253,20 @@ const siteMigration: FlowV2 = {
 
 				case STEPS.PROCESSING.slug: {
 					if ( providedDependencies?.siteCreated ) {
+						if (
+							platformQueryParam &&
+							platformQueryParam !== 'wordpress' &&
+							isPlatformImportable( platformQueryParam as ImporterPlatform ) &&
+							fromQueryParam
+						) {
+							return exitFlow(
+								getFullImporterUrl(
+									platformQueryParam as ImporterPlatform,
+									siteSlug,
+									fromQueryParam
+								)
+							);
+						}
 						if ( ! fromQueryParam || providedDependencies?.skipMigration ) {
 							// If we get to this point without a fromQueryParam then we are coming from a direct
 							// pick your current platform link. That's why we navigate to the importList step.
