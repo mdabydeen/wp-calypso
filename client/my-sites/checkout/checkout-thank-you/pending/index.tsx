@@ -95,7 +95,7 @@ function CheckoutPending( {
 	} );
 
 	const content = shouldUseStepContainerV2( getSignupCompleteFlowName() ) ? (
-		<Step.Loading title={ headingText } />
+		<Step.Loading title={ headingText } delay={ 2000 } />
 	) : (
 		<Main className="checkout-thank-you__pending">
 			<Loading className="checkout__pending-content" title={ headingText } />

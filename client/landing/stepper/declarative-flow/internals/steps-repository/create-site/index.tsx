@@ -234,7 +234,7 @@ const CreateSite: StepType = function CreateSite( { navigation, flow, data } ) {
 		return (
 			<>
 				<DocumentHead title={ title } />
-				<Step.Loading title={ title } progress={ progress } />
+				<Step.Loading title={ title } progress={ progress } delay={ 1000 } />
 			</>
 		);
 	}
