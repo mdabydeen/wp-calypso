@@ -23,8 +23,6 @@ import { stepsWithRequiredLogin } from '../../../utils/steps-with-required-login
 import { STEPS } from '../../internals/steps';
 import { Flow, ProvidedDependencies } from '../../internals/types';
 import type { OnboardSelect } from '@automattic/data-stores';
-import type { MinimalRequestCartProduct } from '@automattic/shopping-cart';
-import './new-hosted-site-flow.scss';
 
 function useShowDomainStep(): boolean {
 	const query = useQuery();
@@ -38,15 +36,23 @@ const hosting: Flow = {
 	useSteps() {
 		const showDomainStep = useShowDomainStep();
 		return stepsWithRequiredLogin( [
-			...( showDomainStep ? [ STEPS.DOMAINS ] : [] ),
-			STEPS.PLANS,
+			...( showDomainStep ? [ STEPS.UNIFIED_DOMAINS ] : [] ),
+			STEPS.UNIFIED_PLANS,
 			STEPS.TRIAL_ACKNOWLEDGE,
 			STEPS.SITE_CREATION_STEP,
 			STEPS.PROCESSING,
 		] );
 	},
 	useStepNavigation( _currentStepSlug, navigate ) {
-		const { setPlanCartItem, resetCouponCode } = useDispatch( ONBOARD_STORE );
+		const {
+			setDomain,
+			setDomainCartItem,
+			setDomainCartItems,
+			setPlanCartItem,
+			setSiteUrl,
+			setSignupDomainOrigin,
+			resetCouponCode,
+		} = useDispatch( ONBOARD_STORE );
 		const planCartItem = useSelect(
 			( select ) => ( select( ONBOARD_STORE ) as OnboardSelect ).getPlanCartItem(),
 			[]
@@ -63,15 +69,13 @@ const hosting: Flow = {
 		const showDomainStep = useShowDomainStep();
 		const isWooPartner = useIsValidWooPartner();
 
-		const goBack = () => {
-			if ( _currentStepSlug === 'plans' ) {
-				if ( showDomainStep ) {
-					return navigate( 'domains' );
-				}
-				return window.location.assign( '/sites?hosting-flow=true' );
+		const getGoBack = () => {
+			if ( _currentStepSlug === STEPS.UNIFIED_PLANS.slug && showDomainStep ) {
+				return () => navigate( STEPS.UNIFIED_DOMAINS.slug );
 			}
-			if ( _currentStepSlug === 'trialAcknowledge' ) {
-				navigate( 'plans' );
+
+			if ( _currentStepSlug === STEPS.TRIAL_ACKNOWLEDGE.slug ) {
+				return () => navigate( STEPS.UNIFIED_PLANS.slug );
 			}
 		};
 
@@ -82,6 +86,12 @@ const hosting: Flow = {
 
 			switch ( _currentStepSlug ) {
 				case 'domains': {
+					setSiteUrl( providedDependencies.siteUrl );
+					setDomain( providedDependencies.suggestion );
+					setDomainCartItem( providedDependencies.domainItem );
+					setDomainCartItems( providedDependencies.domainCart );
+					setSignupDomainOrigin( providedDependencies.signupDomainOrigin );
+
 					// If the plan is already supplied as a query param, add it to cart, and skip plans step
 					if ( plan && isDotComPlan( { product_slug: plan } ) ) {
 						setPlanCartItem( {
@@ -92,8 +102,12 @@ const hosting: Flow = {
 					return navigate( 'plans' );
 				}
 				case 'plans': {
-					const productSlug = ( providedDependencies.plan as MinimalRequestCartProduct )
-						.product_slug;
+					const cartItems = providedDependencies.cartItems as Array< typeof planCartItem >;
+					const productSlug = cartItems?.[ 0 ]?.product_slug;
+
+					if ( ! productSlug ) {
+						throw new Error( 'No product slug found' );
+					}
 
 					setPlanCartItem( {
 						product_slug: productSlug,
@@ -166,7 +180,7 @@ const hosting: Flow = {
 		};
 
 		return {
-			goBack,
+			goBack: getGoBack(),
 			submit,
 		};
 	},
