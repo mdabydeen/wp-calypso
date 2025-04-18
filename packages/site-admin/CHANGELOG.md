@@ -29,6 +29,7 @@ Initial release of the site-admin package providing a framework for building mod
 - Set `SiteNavigationItem`’s `as` prop automatically based on to or onClick.
 
 ### Components
+
 - `SiteHub`: Site navigation and context switcher
 - `Link`: Router component providing declarative navigation
 
@@ -40,3 +41,7 @@ Initial release of the site-admin package providing a framework for building mod
 - Expose the `SiteHub` component publicly
 
 ## Next
+
+### Components
+
+- `Page`: component wrapper for the page content.
