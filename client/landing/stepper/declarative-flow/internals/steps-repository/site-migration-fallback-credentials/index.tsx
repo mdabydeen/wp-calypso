@@ -10,10 +10,12 @@ import type { Step as StepType } from '../../types';
 import './style.scss';
 
 const SiteMigrationFallbackCredentials: StepType< {
-	submits: {
-		action: 'submit' | 'skip';
-		from?: string;
-	};
+	submits:
+		| {
+				action: 'submit' | 'skip';
+				from?: string;
+		  }
+		| undefined;
 } > = function ( { navigation, flow } ) {
 	const translate = useTranslate();
 	const siteURL = useQuery().get( 'from' ) || '';
@@ -65,7 +67,7 @@ const SiteMigrationFallbackCredentials: StepType< {
 				stepName="site-migration-fallback-credentials"
 				flowName="site-migration"
 				goBack={ navigation?.goBack }
-				goNext={ navigation?.submit }
+				goNext={ () => navigation?.submit?.( undefined ) }
 				hideSkip
 				isFullLayout
 				formattedHeader={
