@@ -192,7 +192,7 @@ export default function Sites() {
 	const { data: filteredData, paginationInfo } = filterSortAndPaginate( sites, view, fields );
 
 	const onClickItem = ( item: Site ) => {
-		navigate( { to: `/sites/${ item.ID }` } );
+		navigate( { to: `/sites/${ item.slug }` } );
 	};
 
 	return (
