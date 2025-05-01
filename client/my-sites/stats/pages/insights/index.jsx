@@ -8,6 +8,7 @@ import { navItems } from 'calypso/blocks/stats-navigation/constants';
 import DocumentHead from 'calypso/components/data/document-head';
 import JetpackColophon from 'calypso/components/jetpack-colophon';
 import NavigationHeader from 'calypso/components/navigation-header';
+import PageHeader from 'calypso/my-sites/stats/components/headers/page-header';
 import Main from 'calypso/my-sites/stats/components/stats-main';
 import { STATS_FEATURE_PAGE_INSIGHTS, STATS_PRODUCT_NAME } from 'calypso/my-sites/stats/constants';
 import StatsModuleComments from 'calypso/my-sites/stats/features/modules/stats-comments';
@@ -52,6 +53,7 @@ function StatsInsights() {
 
 	const shouldGateInsights = useShouldGateStats( STATS_FEATURE_PAGE_INSIGHTS );
 	const shouldRendeUpsell = config.isEnabled( 'stats/paid-wpcom-v3' ) && shouldGateInsights;
+	const isStatsNavigationImprovementEnabled = config.isEnabled( 'stats/navigation-improvement' );
 
 	// Track the last viewed tab.
 	// Necessary to properly configure the fixed navigation headers.
@@ -67,13 +69,17 @@ function StatsInsights() {
 			<DocumentHead title={ STATS_PRODUCT_NAME } />
 			<PageViewTracker path="/stats/insights/:site" title="Stats > Insights" />
 			<div className={ insightsPageClasses }>
-				<NavigationHeader
-					className="stats__section-header modernized-header"
-					title={ STATS_PRODUCT_NAME }
-					subtitle={ translate( "View your site's performance and learn from trends." ) }
-					screenReader={ navItems.insights?.label }
-					navigationItems={ [] }
-				></NavigationHeader>
+				{ ! isStatsNavigationImprovementEnabled ? (
+					<NavigationHeader
+						className="stats__section-header modernized-header"
+						title={ STATS_PRODUCT_NAME }
+						subtitle={ translate( "View your site's performance and learn from trends." ) }
+						screenReader={ navItems.insights?.label }
+						navigationItems={ [] }
+					></NavigationHeader>
+				) : (
+					<PageHeader />
+				) }
 				<StatsNavigation selectedItem="insights" siteId={ siteId } slug={ siteSlug } />
 				{ shouldRendeUpsell ? (
 					<div id="my-stats-content" className="stats-content">
