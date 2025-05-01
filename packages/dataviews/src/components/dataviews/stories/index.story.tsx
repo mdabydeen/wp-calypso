@@ -2,12 +2,27 @@
  * WordPress dependencies
  */
 import { useState, useMemo } from '@wordpress/element';
-
+import { createInterpolateElement } from '@wordpress/element';
+import {
+	Card,
+	CardHeader,
+	CardBody,
+	__experimentalHeading as Heading,
+	__experimentalText as Text,
+	__experimentalVStack as VStack,
+} from '@wordpress/components';
+import { __, _n } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
 import DataViews from '../index';
-import { DEFAULT_VIEW, actions, data, fields } from './fixtures';
+import {
+	DEFAULT_VIEW,
+	actions,
+	data,
+	fields,
+	type SpaceObject,
+} from './fixtures';
 import { LAYOUT_GRID, LAYOUT_LIST, LAYOUT_TABLE } from '../../../constants';
 import { filterSortAndPaginate } from '../../../filter-and-sort-data-view';
 import type { View } from '../../../types';
@@ -103,5 +118,107 @@ export const FieldsNoSortableNoHidable = () => {
 				table: {},
 			} }
 		/>
+	);
+};
+
+/**
+ * Custom composition example
+ */
+function PlanetOverview( { planets }: { planets: SpaceObject[] } ) {
+	const moons = planets.reduce( ( sum, item ) => sum + item.satellites, 0 );
+
+	return (
+		<Card isBorderless style={ { padding: '12px 24px' } }>
+			<CardHeader>
+				<Heading level={ 2 }>{ __( 'Solar System numbers' ) }</Heading>
+			</CardHeader>
+
+			<CardBody>
+				<VStack spacing={ 2 }>
+					<Text size={ 18 } as="p">
+						{ createInterpolateElement(
+							_n(
+								'<PlanetsNumber /> planet',
+								'<PlanetsNumber /> planets',
+								planets.length
+							),
+							{
+								PlanetsNumber: (
+									<strong>{ planets.length } </strong>
+								),
+							}
+						) }
+					</Text>
+
+					<Text size={ 18 } as="p">
+						{ createInterpolateElement(
+							_n(
+								'<SatellitesNumber /> moon',
+								'<SatellitesNumber /> moons',
+								moons
+							),
+							{
+								SatellitesNumber: <strong>{ moons } </strong>,
+							}
+						) }
+					</Text>
+				</VStack>
+			</CardBody>
+		</Card>
+	);
+}
+
+/**
+ * This is a basic example of using the DataViews component in
+ * a free composition mode.
+ *
+ * Unlike the default usage where DataViews renders its own UI,
+ * here we use it purely to provide context and handle data-related logic.
+ *
+ * The UI is fully custom and composed externally via the
+ * `PlanetOverview` component.
+ *
+ * In future iterations, this story will showcase more advanced compositions
+ * using built-in subcomponents like <Search />, filters,
+ * or pagination controls.
+ */
+export const FreeComposition = () => {
+	const view = {
+		type: 'table' as const,
+		search: '',
+		page: 1,
+		perPage: 10,
+		layout: {},
+		filters: [],
+	};
+
+	const paginationInfo = {
+		totalItems: data.length,
+		totalPages: 1,
+	};
+
+	const { data: shownData } = useMemo( () => {
+		return filterSortAndPaginate( data, DEFAULT_VIEW, fields );
+	}, [] );
+
+	const planets = shownData.filter( ( item ) =>
+		item.categories.includes( 'Planet' )
+	);
+
+	// id` is a number in the data, but a string in the DataViews component.
+	const getItemId = ( item: SpaceObject ) => item.id.toString();
+
+	return (
+		<DataViews
+			data={ shownData }
+			getItemId={ getItemId }
+			view={ view }
+			onChangeView={ () => {} }
+			fields={ fields }
+			paginationInfo={ paginationInfo }
+			defaultLayouts={ defaultLayouts }
+		>
+			<PlanetOverview planets={ planets } />
+		</DataViews>
 	);
 };

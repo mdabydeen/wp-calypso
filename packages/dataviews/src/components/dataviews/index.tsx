@@ -49,6 +49,7 @@ type DataViewsProps< Item > = {
 	isItemClickable?: ( item: Item ) => boolean;
 	header?: ReactNode;
 	getItemLevel?: ( item: Item ) => number;
+	children?: ReactNode;
 } & ( Item extends ItemWithId
 	? { getItemId?: ( item: Item ) => string }
 	: { getItemId: ( item: Item ) => string } );
@@ -75,6 +76,7 @@ export default function DataViews< Item >( {
 	onClickItem,
 	isItemClickable = defaultIsItemClickable,
 	header,
+	children,
 }: DataViewsProps< Item > ) {
 	const [ containerWidth, setContainerWidth ] = useState( 0 );
 	const containerRef = useResizeObserver(
@@ -112,6 +114,44 @@ export default function DataViews< Item >( {
 		( filters || [] ).some( ( filter ) => filter.isPrimary )
 	);
 
+	const defaultUI = (
+		<div className="dataviews-wrapper" ref={ containerRef }>
+			<HStack
+				alignment="top"
+				justify="space-between"
+				className="dataviews__view-actions"
+				spacing={ 1 }
+			>
+				<HStack
+					justify="start"
+					expanded={ false }
+					className="dataviews__search"
+				>
+					{ search && <DataViewsSearch label={ searchLabel } /> }
+					<FiltersToggle
+						filters={ filters }
+						view={ view! }
+						onChangeView={ onChangeView! }
+						setOpenedFilter={ setOpenedFilter }
+						setIsShowingFilter={ setIsShowingFilter }
+						isShowingFilter={ isShowingFilter }
+					/>
+				</HStack>
+				<HStack
+					spacing={ 1 }
+					expanded={ false }
+					style={ { flexShrink: 0 } }
+				>
+					<DataViewsViewConfig defaultLayouts={ defaultLayouts! } />
+					{ header }
+				</HStack>
+			</HStack>
+			{ isShowingFilter && <DataViewsFilters /> }
+			<DataViewsLayout />
+			<DataViewsFooter />
+		</div>
+	);
+
 	return (
 		<DataViewsContext.Provider
 			value={ {
@@ -133,43 +173,7 @@ export default function DataViews< Item >( {
 				containerWidth,
 			} }
 		>
-			<div className="dataviews-wrapper" ref={ containerRef }>
-				<HStack
-					alignment="top"
-					justify="space-between"
-					className="dataviews__view-actions"
-					spacing={ 1 }
-				>
-					<HStack
-						justify="start"
-						expanded={ false }
-						className="dataviews__search"
-					>
-						{ search && <DataViewsSearch label={ searchLabel } /> }
-						<FiltersToggle
-							filters={ filters }
-							view={ view }
-							onChangeView={ onChangeView }
-							setOpenedFilter={ setOpenedFilter }
-							setIsShowingFilter={ setIsShowingFilter }
-							isShowingFilter={ isShowingFilter }
-						/>
-					</HStack>
-					<HStack
-						spacing={ 1 }
-						expanded={ false }
-						style={ { flexShrink: 0 } }
-					>
-						<DataViewsViewConfig
-							defaultLayouts={ defaultLayouts }
-						/>
-						{ header }
-					</HStack>
-				</HStack>
-				{ isShowingFilter && <DataViewsFilters /> }
-				<DataViewsLayout />
-				<DataViewsFooter />
-			</div>
+			{ children || defaultUI }
 		</DataViewsContext.Provider>
 	);
 }
