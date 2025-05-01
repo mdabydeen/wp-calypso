@@ -1,4 +1,6 @@
 import config from '@automattic/calypso-config';
+import page from '@automattic/calypso-router';
+import { TabPanel } from '@wordpress/components';
 import clsx from 'clsx';
 import { localize } from 'i18n-calypso';
 import PropTypes from 'prop-types';
@@ -183,50 +185,82 @@ class StatsNavigation extends Component {
 		return (
 			<div className={ wrapperClass }>
 				{ siteId && <QueryJetpackModules siteId={ siteId } /> }
-				<SectionNav selectedText={ label }>
-					<NavTabs selectedText={ label }>
-						{ Object.keys( navItems )
+				{ isStatsNavigationImprovementEnabled ? (
+					<TabPanel
+						className="stats-navigation__tabs"
+						tabs={ Object.keys( navItems )
 							.filter( this.isValidItem )
 							.map( ( item ) => {
 								const navItem = navItems[ item ];
 								const intervalPath = navItem.showIntervals ? `/${ interval || 'day' }` : '';
 								const itemPath = `${ navItem.path }${ intervalPath }${ slugPath }`;
-								const className = 'stats-navigation__' + item;
-								if ( item === 'store' && config.isEnabled( 'is_running_in_jetpack_site' ) ) {
-									return (
-										<NavItem
-											className={ className }
-											key={ item }
-											onClick={ () =>
-												( window.location.href = `${ this.props.adminUrl }admin.php?page=wc-admin&path=%2Fanalytics%2Foverview` )
-											}
-											selected={ false }
-										>
-											{ navItem.label }
-										</NavItem>
-									);
-								}
-								return (
-									<NavItem
-										className={ className }
-										key={ item }
-										path={ itemPath }
-										selected={ selectedItem === item }
-									>
-										{ navItem.label }
-										{ navItem.paywall && showLock && ' 🔒' }
-									</NavItem>
-								);
+								return {
+									name: item,
+									title: navItem.label + ( navItem.paywall && showLock ? ' 🔒' : '' ),
+									className: 'stats-navigation__' + item,
+									path: itemPath,
+								};
 							} ) }
-					</NavTabs>
+						initialTabName={ selectedItem }
+					>
+						{ ( tab ) => {
+							if ( tab.name === 'store' && config.isEnabled( 'is_running_in_jetpack_site' ) ) {
+								window.location.href = `${ this.props.adminUrl }admin.php?page=wc-admin&path=%2Fanalytics%2Foverview`;
+							} else if ( tab.path ) {
+								page( tab.path );
+							}
+							return <div className="stats-navigation__content" />; // Placeholder div since content is rendered elsewhere
+						} }
+					</TabPanel>
+				) : (
+					//TODO: remove this SectionNav in favour of above TabPanel once Navigation Improvement is fully launched
+					<>
+						<SectionNav selectedText={ label }>
+							<NavTabs selectedText={ label }>
+								{ Object.keys( navItems )
+									.filter( this.isValidItem )
+									.map( ( item ) => {
+										const navItem = navItems[ item ];
+										const intervalPath = navItem.showIntervals ? `/${ interval || 'day' }` : '';
+										const itemPath = `${ navItem.path }${ intervalPath }${ slugPath }`;
+										const className = 'stats-navigation__' + item;
+										if ( item === 'store' && config.isEnabled( 'is_running_in_jetpack_site' ) ) {
+											return (
+												<NavItem
+													className={ className }
+													key={ item }
+													onClick={ () =>
+														( window.location.href = `${ this.props.adminUrl }admin.php?page=wc-admin&path=%2Fanalytics%2Foverview` )
+													}
+													selected={ false }
+												>
+													{ navItem.label }
+												</NavItem>
+											);
+										}
+										return (
+											<NavItem
+												className={ className }
+												key={ item }
+												path={ itemPath }
+												selected={ selectedItem === item }
+											>
+												{ navItem.label }
+												{ navItem.paywall && showLock && ' 🔒' }
+											</NavItem>
+										);
+									} ) }
+							</NavTabs>
 
-					{ isLegacy && showIntervals && (
-						<Intervals selected={ interval } pathTemplate={ pathTemplate } />
-					) }
-				</SectionNav>
+							{ isLegacy && showIntervals && (
+								<Intervals selected={ interval } pathTemplate={ pathTemplate } />
+							) }
+						</SectionNav>
 
-				{ isLegacy && showIntervals && (
-					<Intervals selected={ interval } pathTemplate={ pathTemplate } standalone />
+						{ isLegacy && showIntervals && (
+							<Intervals selected={ interval } pathTemplate={ pathTemplate } standalone />
+						) }
+					</>
 				) }
 
 				{ ! isStatsNavigationImprovementEnabled && shouldRenderModuleToggler && (
