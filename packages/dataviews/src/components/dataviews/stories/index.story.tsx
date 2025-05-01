@@ -1,6 +1,7 @@
 /**
  * WordPress dependencies
  */
+import type { Meta } from '@storybook/react';
 import { useState, useMemo } from '@wordpress/element';
 import { createInterpolateElement } from '@wordpress/element';
 import {
@@ -32,7 +33,8 @@ import './style.css';
 const meta = {
 	title: 'DataViews/DataViews',
 	component: DataViews,
-};
+} as Meta< typeof DataViews >;
+
 export default meta;
 
 const defaultLayouts = {
@@ -131,6 +133,7 @@ function PlanetOverview( { planets }: { planets: SpaceObject[] } ) {
 		<Card isBorderless style={ { padding: '12px 24px' } }>
 			<CardHeader>
 				<Heading level={ 2 }>{ __( 'Solar System numbers' ) }</Heading>
+				<DataViews.Search label={ __( 'moons by planet' ) } />
 			</CardHeader>
 
 			<CardBody>
@@ -183,39 +186,30 @@ function PlanetOverview( { planets }: { planets: SpaceObject[] } ) {
  * or pagination controls.
  */
 export const FreeComposition = () => {
-	const view = {
-		type: 'table' as const,
-		search: '',
-		page: 1,
-		perPage: 10,
-		layout: {},
-		filters: [],
-	};
+	const [ view, setView ] = useState< View >( {
+		...DEFAULT_VIEW,
+		fields: [ 'categories' ],
+		titleField: 'title',
+		descriptionField: 'description',
+		mediaField: 'image',
+	} );
 
-	const paginationInfo = {
-		totalItems: data.length,
-		totalPages: 1,
-	};
+	const { data: processedData, paginationInfo } = useMemo( () => {
+		return filterSortAndPaginate( data, view, fields );
+	}, [ view ] );
 
-	const { data: shownData } = useMemo( () => {
-		return filterSortAndPaginate( data, DEFAULT_VIEW, fields );
-	}, [] );
-
-	const planets = shownData.filter( ( item ) =>
+	const planets = processedData.filter( ( item ) =>
 		item.categories.includes( 'Planet' )
 	);
 
-	// id` is a number in the data, but a string in the DataViews component.
-	const getItemId = ( item: SpaceObject ) => item.id.toString();
-
 	return (
 		<DataViews
-			data={ shownData }
-			getItemId={ getItemId }
-			view={ view }
-			onChangeView={ () => {} }
-			fields={ fields }
+			getItemId={ ( item ) => item.id.toString() }
 			paginationInfo={ paginationInfo }
+			data={ processedData }
+			view={ view }
+			fields={ [] }
+			onChangeView={ setView }
 			defaultLayouts={ defaultLayouts }
 		>
 			<PlanetOverview planets={ planets } />
