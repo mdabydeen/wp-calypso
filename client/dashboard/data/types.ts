@@ -140,9 +140,20 @@ export interface EngagementStats {
 	previousData: EngagementStatsDataPoint;
 }
 
-export type PerformanceReport = {
+export interface SiteSettings {
+	settings: {
+		wpcom_performance_report_url?: string;
+	};
+}
+
+export interface BasicMetricsData {
+	token?: string;
+}
+
+export interface PerformanceReport {
 	overall_score: number;
-};
+}
+
 export interface UrlPerformanceInsights {
 	pagespeed: {
 		status: string;
