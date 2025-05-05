@@ -22,11 +22,15 @@ import {
 import DataViewsLayout from '../dataviews-layout';
 import DataViewsFooter from '../dataviews-footer';
 import DataViewsSearch from '../dataviews-search';
-import DataViewsViewConfig from '../dataviews-view-config';
+import { BulkActionsFooter } from '../dataviews-bulk-actions';
+import { DataViewsPagination } from '../dataviews-pagination';
+import DataViewsViewConfig, {
+	DataviewsViewConfigDropdown,
+	ViewTypeMenu,
+} from '../dataviews-view-config';
 import { normalizeFields } from '../../normalize-fields';
 import type { Action, Field, View, SupportedLayouts } from '../../types';
 import type { SelectionOrUpdater } from '../../private-types';
-
 type ItemWithId = { id: string };
 
 type DataViewsProps< Item > = {
@@ -115,7 +119,7 @@ function DataViews< Item >( {
 	);
 
 	const defaultUI = (
-		<div className="dataviews-wrapper" ref={ containerRef }>
+		<>
 			<HStack
 				alignment="top"
 				justify="space-between"
@@ -142,14 +146,14 @@ function DataViews< Item >( {
 					expanded={ false }
 					style={ { flexShrink: 0 } }
 				>
-					<DataViewsViewConfig defaultLayouts={ defaultLayouts! } />
+					<DataViewsViewConfig />
 					{ header }
 				</HStack>
 			</HStack>
 			{ isShowingFilter && <DataViewsFilters /> }
 			<DataViewsLayout />
 			<DataViewsFooter />
-		</div>
+		</>
 	);
 
 	return (
@@ -171,18 +175,31 @@ function DataViews< Item >( {
 				isItemClickable,
 				onClickItem,
 				containerWidth,
+				defaultLayouts,
 			} }
 		>
-			{ children || defaultUI }
+			<div className="dataviews-wrapper" ref={ containerRef }>
+				{ children || defaultUI }
+			</div>
 		</DataViewsContext.Provider>
 	);
 }
 
 // Populate the DataViews sub components
 const DataViewsSubComponents = DataViews as typeof DataViews & {
+	BulkActionToolbar: typeof BulkActionsFooter;
+	Layout: typeof DataViewsLayout;
+	LayoutSwitcher: typeof ViewTypeMenu;
+	Pagination: typeof DataViewsPagination;
 	Search: typeof DataViewsSearch;
+	ViewConfig: typeof DataviewsViewConfigDropdown;
 };
 
+DataViewsSubComponents.BulkActionToolbar = BulkActionsFooter;
+DataViewsSubComponents.Layout = DataViewsLayout;
+DataViewsSubComponents.LayoutSwitcher = ViewTypeMenu;
+DataViewsSubComponents.Pagination = DataViewsPagination;
 DataViewsSubComponents.Search = DataViewsSearch;
+DataViewsSubComponents.ViewConfig = DataviewsViewConfigDropdown;
 
 export default DataViewsSubComponents;
