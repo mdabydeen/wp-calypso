@@ -1,6 +1,7 @@
 import { Blueprint } from '@wp-playground/blueprints';
 import { resolveBlueprintFromURL } from './resolve-blueprint-from-url';
 
+const BLUEPRINT_LIB_HOST = 'blueprintlibrary.wordpress.com';
 const FALLBACK_PHP_VERSION = '8.3';
 const DEFAULT_BLUEPRINT: Blueprint = {
 	preferredVersions: {
@@ -105,12 +106,33 @@ function getDefaultBlueprint( recommendedPhpVersion: string ): Blueprint {
 	};
 }
 
-export function getBlueprintName( name: string | null ): string | null {
+function getBlueprintName( name: string | null ): string | null {
 	if ( name && name in PREDEFINED_BLUEPRINTS ) {
 		return name;
 	}
 
 	return null;
+}
+
+// Used in sending the Tracks event
+export function getBlueprintLabelForTracking( query: URLSearchParams ): string {
+	const name = query.get( 'blueprint' );
+
+	if ( name && name in PREDEFINED_BLUEPRINTS ) {
+		return name;
+	}
+
+	// If it's a blueprintlibrary.wordpress.com url for blueprint, use it's id to construct the label
+	const blueprintUrl = query.get( 'blueprint-url' );
+	if ( blueprintUrl ) {
+		const src = new URL( blueprintUrl );
+		if ( src.host === BLUEPRINT_LIB_HOST ) {
+			const id = src.searchParams.get( 'blueprint' );
+			return 'bpl-' + id;
+		}
+	}
+
+	return 'unknown';
 }
 
 async function getBlueprintFromUrl( recommendedPhpVersion: string ): Blueprint {
