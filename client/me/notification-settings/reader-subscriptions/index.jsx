@@ -11,6 +11,7 @@ import FormLegend from 'calypso/components/forms/form-legend';
 import FormSectionHeading from 'calypso/components/forms/form-section-heading';
 import FormSelect from 'calypso/components/forms/form-select';
 import FormSettingExplanation from 'calypso/components/forms/form-setting-explanation';
+import InlineSupportLink from 'calypso/components/inline-support-link';
 import { withLocalizedMoment } from 'calypso/components/localized-moment';
 import Main from 'calypso/components/main';
 import NavigationHeader from 'calypso/components/navigation-header';
@@ -156,23 +157,6 @@ class NotificationSubscriptions extends Component {
 						</FormFieldset>
 
 						<FormFieldset>
-							<FormLegend>{ this.props.translate( 'Jabber subscription delivery' ) }</FormLegend>
-							<FormLabel>
-								<FormCheckbox
-									checked={ this.props.getSetting( 'subscription_delivery_jabber_default' ) }
-									disabled={ this.props.getDisabledState() }
-									id="subscription_delivery_jabber_default"
-									name="subscription_delivery_jabber_default"
-									onChange={ this.props.toggleSetting }
-									onClick={ this.handleCheckboxEvent( 'Notification delivery by Jabber' ) }
-								/>
-								<span>
-									{ this.props.translate( 'Default delivery via Jabber instant message' ) }
-								</span>
-							</FormLabel>
-						</FormFieldset>
-
-						<FormFieldset>
 							<FormLabel htmlFor="subscription_delivery_mail_option">
 								{ this.props.translate( 'Email delivery format' ) }
 							</FormLabel>
@@ -238,6 +222,27 @@ class NotificationSubscriptions extends Component {
 									'When choosing daily or weekly email delivery, which time of day would you prefer?'
 								) }
 							</FormSettingExplanation>
+						</FormFieldset>
+
+						<FormFieldset>
+							<FormLegend>{ this.props.translate( 'Jabber subscription delivery' ) }</FormLegend>
+							<FormLabel>
+								<FormCheckbox
+									checked={ this.props.getSetting( 'subscription_delivery_jabber_default' ) }
+									disabled={ this.props.getDisabledState() }
+									id="subscription_delivery_jabber_default"
+									name="subscription_delivery_jabber_default"
+									onChange={ this.props.toggleSetting }
+									onClick={ this.handleCheckboxEvent( 'Notification delivery by Jabber' ) }
+								/>
+								<span>
+									{ this.props.translate( 'Receive subscription updates via instant message.' ) }{ ' ' }
+									<InlineSupportLink
+										supportContext="jabber-subscription-updates"
+										showIcon={ false }
+									/>
+								</span>
+							</FormLabel>
 						</FormFieldset>
 
 						<FormFieldset>
