@@ -1,3 +1,4 @@
+import config from '@automattic/calypso-config';
 import { formatNumber } from '@automattic/number-formatters';
 import { useTranslate } from 'i18n-calypso';
 import { useMemo } from 'react';
@@ -6,6 +7,7 @@ import NavigationHeader from 'calypso/components/navigation-header';
 import Main from 'calypso/my-sites/stats/components/stats-main';
 import { useSelector } from 'calypso/state';
 import { getSelectedSiteId, getSelectedSiteSlug } from 'calypso/state/ui/selectors';
+import PageHeader from '../components/headers/page-header';
 import {
 	TooltipWrapper,
 	OpensTooltipContent,
@@ -56,84 +58,109 @@ const StatsEmailSummary = ( { period, query } ) => {
 		return [ { label: backLabel, href: backLink }, { label: title } ];
 	}, [ translate, siteSlug ] );
 
+	const isStatsNavigationImprovementEnabled = config.isEnabled( 'stats/navigation-improvement' );
+
+	const backLinkProps = {
+		text: navigationItems[ 0 ].label,
+		url: navigationItems[ 0 ].href,
+	};
+	const titleProps = {
+		title: navigationItems[ 1 ].label,
+		// Remove the default logo for Odyssey stats.
+		titleLogo: null,
+	};
+
 	return (
-		<Main className="has-fixed-nav" wideLayout>
+		<Main className="has-fixed-nav" fullWidthLayout>
 			<PageViewTracker path="/stats/emails/:site" title="Stats > Emails" />
-			<NavigationHeader className="stats-summary-view" navigationItems={ navigationItems } />
-			<div id="my-stats-content" className="stats-summary-view stats-summary__positioned">
-				<div className="stats-summary-nav">
-					<div className="stats-summary-nav__header">
-						<div>
-							<div className="stats-section-title">
-								<h3>{ translate( 'Stats for Emails' ) }</h3>
+			<div className="stats stats-summary-view">
+				{ isStatsNavigationImprovementEnabled && (
+					<PageHeader
+						className="stats__section-header modernized-header"
+						titleProps={ titleProps }
+						backLinkProps={ backLinkProps }
+					/>
+				) }
+
+				{ ! isStatsNavigationImprovementEnabled && (
+					<NavigationHeader className="stats-summary-view" navigationItems={ navigationItems } />
+				) }
+
+				<div id="my-stats-content" className="stats-summary-view stats-summary__positioned">
+					<div className="stats-summary-nav">
+						<div className="stats-summary-nav__header">
+							<div>
+								<div className="stats-section-title">
+									<h3>{ translate( 'Stats for Emails' ) }</h3>
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
 
-				<StatsModule
-					additionalColumns={ {
-						header: (
-							<>
-								<span>{ translate( 'Opens' ) }</span>
-							</>
-						),
-						body: ( item ) => {
-							const opensUnique = parseInt( item.unique_opens, 10 );
-							const opens = parseInt( item.opens, 10 );
-							const hasUniquesData = opensUnique > 0 || opens === 0;
-							return (
-								<TooltipWrapper
-									value={
-										hasUniquesData
-											? `${ formatNumber( item.opens_rate, {
-													numberFormatOptions: {
-														maximumFractionDigits: 2,
-													},
-											  } ) }%`
-											: '—'
-									}
-									item={ item }
-									TooltipContent={ OpensTooltipContent }
-								/>
-							);
-						},
-					} }
-					path="emails"
-					moduleStrings={ { ...StatsStrings.emails, title: '' } }
-					period={ period }
-					query={ query }
-					statType="statsEmailsSummary"
-					mainItemLabel={ translate( 'Latest Emails' ) }
-					hideSummaryLink
-					metricLabel={ translate( 'Clicks' ) }
-					valueField="clicks_rate"
-					formatValue={ ( value, item ) => {
-						if ( item?.clicks !== undefined ) {
-							const clicksUnique = parseInt( item.unique_clicks, 10 );
-							const clicks = parseInt( item.clicks, 10 );
-							const hasUniquesData = clicksUnique > 0 || clicks === 0;
-							return (
-								<TooltipWrapper
-									value={
-										hasUniquesData
-											? `${ formatNumber( item.clicks_rate, {
-													numberFormatOptions: {
-														maximumFractionDigits: 2,
-													},
-											  } ) }%`
-											: '—'
-									}
-									item={ item }
-									TooltipContent={ ClicksTooltipContent }
-								/>
-							);
-						}
-						return <span>{ value }</span>;
-					} }
-					listItemClassName="stats__summary--narrow-mobile"
-				/>
-				<JetpackColophon />
+					<StatsModule
+						additionalColumns={ {
+							header: (
+								<>
+									<span>{ translate( 'Opens' ) }</span>
+								</>
+							),
+							body: ( item ) => {
+								const opensUnique = parseInt( item.unique_opens, 10 );
+								const opens = parseInt( item.opens, 10 );
+								const hasUniquesData = opensUnique > 0 || opens === 0;
+								return (
+									<TooltipWrapper
+										value={
+											hasUniquesData
+												? `${ formatNumber( item.opens_rate, {
+														numberFormatOptions: {
+															maximumFractionDigits: 2,
+														},
+												  } ) }%`
+												: '—'
+										}
+										item={ item }
+										TooltipContent={ OpensTooltipContent }
+									/>
+								);
+							},
+						} }
+						path="emails"
+						moduleStrings={ { ...StatsStrings.emails, title: '' } }
+						period={ period }
+						query={ query }
+						statType="statsEmailsSummary"
+						mainItemLabel={ translate( 'Latest Emails' ) }
+						hideSummaryLink
+						metricLabel={ translate( 'Clicks' ) }
+						valueField="clicks_rate"
+						formatValue={ ( value, item ) => {
+							if ( item?.clicks !== undefined ) {
+								const clicksUnique = parseInt( item.unique_clicks, 10 );
+								const clicks = parseInt( item.clicks, 10 );
+								const hasUniquesData = clicksUnique > 0 || clicks === 0;
+								return (
+									<TooltipWrapper
+										value={
+											hasUniquesData
+												? `${ formatNumber( item.clicks_rate, {
+														numberFormatOptions: {
+															maximumFractionDigits: 2,
+														},
+												  } ) }%`
+												: '—'
+										}
+										item={ item }
+										TooltipContent={ ClicksTooltipContent }
+									/>
+								);
+							}
+							return <span>{ value }</span>;
+						} }
+						listItemClassName="stats__summary--narrow-mobile"
+					/>
+					<JetpackColophon />
+				</div>
 			</div>
 		</Main>
 	);
