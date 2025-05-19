@@ -19,14 +19,23 @@ import './style.scss';
 
 interface Props {
 	onContinue: ( data: Partial< AgencyDetailsSignupPayload > ) => void;
+	onSubmit?: ( data: Partial< AgencyDetailsSignupPayload > ) => void;
 	goBack: () => void;
 	initialFormData: Partial< AgencyDetailsSignupPayload >;
+	isFinalStep?: boolean;
 }
 
-export default function PersonalizationForm( { onContinue, goBack, initialFormData }: Props ) {
+export default function PersonalizationForm( {
+	onContinue,
+	onSubmit,
+	goBack,
+	initialFormData,
+	isFinalStep = false,
+}: Props ) {
 	const translate = useTranslate();
 	const { countryOptions } = useCountriesAndStates();
 	const { validate, validationError, updateValidationError } = usePersonalizationFormValidation();
+	const [ isSubmitting, setIsSubmitting ] = useState( false );
 
 	const [ formData, setFormData ] = useState< Partial< AgencyDetailsSignupPayload > >( {
 		country: initialFormData.country || '',
@@ -102,7 +111,13 @@ export default function PersonalizationForm( { onContinue, goBack, initialFormDa
 		if ( error ) {
 			return;
 		}
-		onContinue( formData );
+
+		if ( isFinalStep ) {
+			setIsSubmitting( true );
+			onSubmit?.( formData );
+		} else {
+			onContinue( formData );
+		}
 	};
 
 	const isUserSiteOwner = formData.userType === 'site_owner';
@@ -112,7 +127,9 @@ export default function PersonalizationForm( { onContinue, goBack, initialFormDa
 			<Form
 				className="a4a-form"
 				title={ translate( 'Personalize your experience' ) }
-				description={ translate( "We'll tailor the product and onboarding for you." ) }
+				description={ translate(
+					'Give us some details about your agency, so we can shape the Automattic for Agencies program to meet your specific needs and help grow your business.'
+				) }
 			>
 				<div className="field-mandatory-message">
 					{ translate( 'Fields marked with * are required' ) }
@@ -203,6 +220,14 @@ export default function PersonalizationForm( { onContinue, goBack, initialFormDa
 							</FormField>
 						</FormFieldset>
 
+						{ isFinalStep && (
+							<span className="signup-personalization-form__description">
+								{ translate(
+									"Next, we'll link your WordPress.com account to your agency dashboard. If you don't have an account you can create one on the next screen."
+								) }
+							</span>
+						) }
+
 						<FormFooter>
 							<Button
 								className="signup-multi-step-form__back-button"
@@ -214,8 +239,13 @@ export default function PersonalizationForm( { onContinue, goBack, initialFormDa
 								{ translate( 'Back' ) }
 							</Button>
 
-							<Button __next40pxDefaultSize variant="primary" onClick={ handleSubmit }>
-								{ translate( 'Continue' ) }
+							<Button
+								__next40pxDefaultSize
+								variant="primary"
+								onClick={ handleSubmit }
+								isBusy={ isSubmitting }
+							>
+								{ isFinalStep ? translate( 'Finish and Log in' ) : translate( 'Continue' ) }
 							</Button>
 						</FormFooter>
 					</>
