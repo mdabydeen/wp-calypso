@@ -10,6 +10,7 @@ import { PageHeader } from '../../components/page-header';
 import PageLayout from '../../components/page-layout';
 import SiteVisibilitySettingsSummary from '../settings-site-visibility/summary';
 import SubscriptionGiftingSettingsSummary from '../settings-subscription-gifting/summary';
+import SiteActions from './site-actions';
 
 export default function SiteSettings( { siteSlug }: { siteSlug: string } ) {
 	const { data: siteData } = useQuery( siteQuery( siteSlug ) );
@@ -34,6 +35,7 @@ export default function SiteSettings( { siteSlug }: { siteSlug: string } ) {
 					/>
 				</VStack>
 			</Card>
+			<SiteActions site={ site } />
 		</PageLayout>
 	);
 }
