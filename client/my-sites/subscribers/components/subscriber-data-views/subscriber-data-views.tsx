@@ -559,7 +559,7 @@ export default function SubscriberDataViews( {
 		>
 			<section className="subscriber-data-views__list">
 				<SubscribersHeader
-					selectedSiteId={ siteId || undefined }
+					siteId={ siteId }
 					disableCta={ isUnverified || isStaging }
 					hideSubtitle={ !! selectedSubscriber }
 					hideAddButtonLabel={ isMobile || !! selectedSubscriber }
