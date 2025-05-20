@@ -32,43 +32,49 @@ export function sitesQuery() {
 export function siteQuery( siteIdOrSlug: string ) {
 	return {
 		queryKey: [ 'site', siteIdOrSlug, SITE_FIELDS ],
-		queryFn: async () => {
-			// Site usually takes the longest, so kick it off first.
-			const sitePromise = fetchSite( siteIdOrSlug );
-			// Kick off all independent promises in parallel.
-			const mediaStoragePromise = fetchSiteMediaStorage( siteIdOrSlug );
-			const currentPlanPromise = fetchCurrentPlan( siteIdOrSlug );
-			const primaryDomainPromise = fetchSitePrimaryDomain( siteIdOrSlug );
-			const engagementStatsPromise = fetchSiteEngagementStats( siteIdOrSlug );
-			const site = await sitePromise;
-			const [
-				mediaStorage,
-				currentPlan,
-				primaryDomain,
-				engagementStats,
-				siteMonitorUptime,
-				phpVersion,
-			] = await Promise.all( [
-				mediaStoragePromise,
-				currentPlanPromise,
-				primaryDomainPromise,
-				engagementStatsPromise,
-				// Kick off dependent promises in parallel.
-				site.jetpack && site.jetpack_modules.includes( 'monitor' )
-					? fetchSiteMonitorUptime( site.ID )
-					: undefined,
-				site.is_wpcom_atomic ? fetchPHPVersion( site.ID ) : undefined,
-			] );
-			return {
-				site,
-				mediaStorage,
-				siteMonitorUptime,
-				phpVersion,
-				currentPlan,
-				primaryDomain,
-				engagementStats,
-			};
-		},
+		queryFn: () => fetchSite( siteIdOrSlug ),
+	};
+}
+
+export function siteCurrentPlanQuery( siteIdOrSlug: string ) {
+	return {
+		queryKey: [ 'site', siteIdOrSlug, 'current-plan' ],
+		queryFn: () => fetchCurrentPlan( siteIdOrSlug ),
+	};
+}
+
+export function sitePrimaryDomainQuery( siteIdOrSlug: string ) {
+	return {
+		queryKey: [ 'site', siteIdOrSlug, 'primary-domain' ],
+		queryFn: () => fetchSitePrimaryDomain( siteIdOrSlug ),
+	};
+}
+
+export function siteEngagementStatsQuery( siteIdOrSlug: string ) {
+	return {
+		queryKey: [ 'site', siteIdOrSlug, 'engagement-stats' ],
+		queryFn: () => fetchSiteEngagementStats( siteIdOrSlug ),
+	};
+}
+
+export function siteMediaStorageQuery( siteIdOrSlug: string ) {
+	return {
+		queryKey: [ 'site', siteIdOrSlug, 'media-storage' ],
+		queryFn: () => fetchSiteMediaStorage( siteIdOrSlug ),
+	};
+}
+
+export function siteMonitorUptimeQuery( siteIdOrSlug: string ) {
+	return {
+		queryKey: [ 'site', siteIdOrSlug, 'monitor-uptime' ],
+		queryFn: () => fetchSiteMonitorUptime( siteIdOrSlug ),
+	};
+}
+
+export function sitePHPVersionQuery( siteIdOrSlug: string ) {
+	return {
+		queryKey: [ 'site', siteIdOrSlug, 'php-version' ],
+		queryFn: () => fetchPHPVersion( siteIdOrSlug ),
 	};
 }
 
