@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import type { ReactElement, ComponentType } from 'react';
+import type { ReactElement, ComponentType, ComponentProps } from 'react';
 
 /**
  * Internal dependencies
@@ -522,6 +522,11 @@ export interface ViewBaseProps< Item > {
 	selection: string[];
 	setOpenedFilter: ( fieldId: string ) => void;
 	onClickItem?: ( item: Item ) => void;
+	renderItemLink?: (
+		props: {
+			item: Item;
+		} & ComponentProps< 'a' >
+	) => ReactElement;
 	isItemClickable: ( item: Item ) => boolean;
 	view: View;
 }
