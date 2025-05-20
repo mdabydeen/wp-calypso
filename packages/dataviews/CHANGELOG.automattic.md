@@ -10,6 +10,7 @@
 - Add `renderItemLink` prop support in the `DataViews` component. It replaces `onClickItem`prop and allows integration with router libraries.
 - Enhance filter component styles.
 - Adds new story that combines DataViews and DataForm.
+- Add user input filter support based on the `Edit` property of the field type definitions.
 
 ## 0.1.1
 
