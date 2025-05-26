@@ -5,35 +5,28 @@ import {
 	CardBody,
 	__experimentalHStack as HStack,
 	__experimentalVStack as VStack,
-	__experimentalText as Text,
 	Button,
-	Notice,
 } from '@wordpress/components';
 import { useDispatch } from '@wordpress/data';
-import { createInterpolateElement } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import { store as noticesStore } from '@wordpress/notices';
 import { useState } from 'react';
-import {
-	siteQuery,
-	siteWordPressVersionQuery,
-	siteWordPressVersionMutation,
-} from '../../app/queries';
+import { getPHPVersions } from 'calypso/data/php-versions';
+import { siteQuery, sitePHPVersionQuery, sitePHPVersionMutation } from '../../app/queries';
 import PageLayout from '../../components/page-layout';
-import { getFormattedWordPressVersion } from '../../utils/wp-version';
 import SettingsPageHeader from '../settings-page-header';
-import { canUpdateWordPressVersion } from './utils';
+import { canUpdatePHPVersion } from './utils';
 import type { Field } from '@automattic/dataviews';
 
-export default function WordPressVersionSettings( { siteSlug }: { siteSlug: string } ) {
+export default function PHPVersionSettings( { siteSlug }: { siteSlug: string } ) {
 	const { data: site } = useQuery( siteQuery( siteSlug ) );
-	const canUpdate = site && canUpdateWordPressVersion( site );
+	const canUpdate = site && canUpdatePHPVersion( site );
 
 	const { data: currentVersion } = useQuery( {
-		...siteWordPressVersionQuery( siteSlug ),
+		...sitePHPVersionQuery( siteSlug ),
 		enabled: canUpdate,
 	} );
-	const mutation = useMutation( siteWordPressVersionMutation( siteSlug ) );
+	const mutation = useMutation( sitePHPVersionMutation( siteSlug ) );
 	const { createSuccessNotice, createErrorNotice } = useDispatch( noticesStore );
 
 	const [ formData, setFormData ] = useState< { version: string } >( {
@@ -44,15 +37,20 @@ export default function WordPressVersionSettings( { siteSlug }: { siteSlug: stri
 		return null;
 	}
 
+	const { phpVersions } = getPHPVersions();
+
 	const fields: Field< { version: string } >[] = [
 		{
 			id: 'version',
-			label: __( 'WordPress version' ),
+			label: __( 'PHP version' ),
 			Edit: 'select',
-			elements: [
-				{ value: 'latest', label: getFormattedWordPressVersion( site, 'latest' ) },
-				{ value: 'beta', label: getFormattedWordPressVersion( site, 'beta' ) },
-			],
+			elements: phpVersions.filter( ( option ) => {
+				// Show disabled PHP version only if the site is still using it.
+				if ( option.disabled && option.value !== currentVersion ) {
+					return false;
+				}
+				return true;
+			} ),
 		},
 	];
 
@@ -109,39 +107,14 @@ export default function WordPressVersionSettings( { siteSlug }: { siteSlug: stri
 		);
 	};
 
-	const renderNotice = () => {
-		return (
-			<Notice isDismissible={ false }>
-				<Text>
-					{ site.is_wpcom_atomic
-						? createInterpolateElement(
-								sprintf(
-									// translators: %s: WordPress version, e.g. 6.8
-									__(
-										'Every WordPress.com site runs the latest WordPress version (%s). For testing purposes, you can switch to the beta version of the next WordPress release on <a>your staging site</a>.'
-									),
-									getFormattedWordPressVersion( site )
-								),
-								{
-									// TODO: use correct staging site URL when it's available.
-									// eslint-disable-next-line jsx-a11y/anchor-is-valid
-									a: <a href="#" />,
-								}
-						  )
-						: sprintf(
-								// translators: %s: WordPress version, e.g. 6.8
-								__( 'Every WordPress.com site runs the latest WordPress version (%s).' ),
-								getFormattedWordPressVersion( site )
-						  ) }
-				</Text>
-			</Notice>
-		);
+	const renderCallout = () => {
+		return <p>TODO: callout</p>;
 	};
 
 	return (
 		<PageLayout size="small">
-			<SettingsPageHeader title="WordPress" />
-			{ canUpdate ? renderForm() : renderNotice() }
+			<SettingsPageHeader title="PHP" />
+			{ canUpdate ? renderForm() : renderCallout() }
 		</PageLayout>
 	);
 }
