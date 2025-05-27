@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-router';
 import { fetchTwoStep } from '../data';
 import { canUpdatePHPVersion } from '../sites/settings-php/utils';
+import { canGetPrimaryDataCenter } from '../sites/settings-primary-data-center';
 import { canSetStaticFile404Handling } from '../sites/settings-static-file-404';
 import { canUpdateWordPressVersion } from '../sites/settings-wordpress/utils';
 import NotFound from './404';
@@ -23,6 +24,7 @@ import {
 	siteStaticFile404Query,
 	siteWordPressVersionQuery,
 	sitePHPVersionQuery,
+	sitePrimaryDataCenterQuery,
 } from './queries';
 import { queryClient } from './query-client';
 import Root from './root';
@@ -196,6 +198,23 @@ const siteSettingsPHPRoute = createRoute( {
 } ).lazy( () =>
 	import( '../sites/settings-php' ).then( ( d ) =>
 		createLazyRoute( 'site-settings-php' )( {
+			component: () => <d.default siteSlug={ siteRoute.useParams().siteSlug } />,
+		} )
+	)
+);
+
+const siteSettingsPrimaryDataCenterRoute = createRoute( {
+	getParentRoute: () => siteRoute,
+	path: 'settings/primary-data-center',
+	loader: async ( { params: { siteSlug } } ) => {
+		const site = await queryClient.ensureQueryData( siteQuery( siteSlug ) );
+		if ( canGetPrimaryDataCenter( site ) ) {
+			await queryClient.ensureQueryData( sitePrimaryDataCenterQuery( siteSlug ) );
+		}
+	},
+} ).lazy( () =>
+	import( '../sites/settings-primary-data-center' ).then( ( d ) =>
+		createLazyRoute( 'site-settings-primary-data-center' )( {
 			component: () => <d.default siteSlug={ siteRoute.useParams().siteSlug } />,
 		} )
 	)
@@ -397,6 +416,7 @@ const createRouteTree = ( config: AppConfig ) => {
 				siteSettingsDatabaseRoute,
 				siteSettingsWordPressRoute,
 				siteSettingsPHPRoute,
+				siteSettingsPrimaryDataCenterRoute,
 				siteSettingsStaticFile404Route,
 				siteSettingsTransferSiteRoute,
 			] )
