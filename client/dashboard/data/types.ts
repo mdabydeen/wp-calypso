@@ -18,6 +18,10 @@ export interface User {
 	email: string;
 }
 
+export interface SiteUser {
+	id: number;
+}
+
 export interface SiteDomain {
 	id: number;
 	domain: string;
@@ -102,6 +106,14 @@ export interface Site {
 	site_owner: number;
 	jetpack: boolean;
 	jetpack_modules: string[] | null;
+}
+
+export interface Purchase {
+	ID: number | string;
+	active: boolean;
+	is_cancelable: boolean;
+	product_slug: string;
+	user_id: number | string;
 }
 
 export type EmailProvider = 'titan' | 'google-workspace' | 'forwarding';

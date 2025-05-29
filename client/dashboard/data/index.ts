@@ -7,7 +7,9 @@ import type {
 	MonitorUptime,
 	Plan,
 	Site,
+	Purchase,
 	User,
+	SiteUser,
 	Profile,
 	TwoStep,
 	EngagementStatsDataPoint,
@@ -496,4 +498,23 @@ export const updateEdgeCacheDefensiveMode = async (
 		},
 		data
 	);
+};
+
+export const fetchPurchases = async ( siteIdOrSlug: string ): Promise< Purchase[] > => {
+	return wpcom.req.get( {
+		path: `/sites/${ siteIdOrSlug }/purchases`,
+	} );
+};
+
+export const fetchSiteUserMe = async ( siteIdOrSlug: string ): Promise< SiteUser > => {
+	return wpcom.req.get( {
+		path: `/sites/${ siteIdOrSlug }/users/me`,
+		apiNamespace: 'wp/v2',
+	} );
+};
+
+export const leaveSite = async ( siteIdOrSlug: string, userId: number ) => {
+	return wpcom.req.post( {
+		path: `/sites/${ siteIdOrSlug }/users/${ userId }/delete`,
+	} );
 };
