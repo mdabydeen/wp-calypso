@@ -16,6 +16,9 @@ import {
 	fetchPerformanceInsights,
 	updateSiteSettings,
 	restoreSitePlanSoftware,
+	siteOwnerTransfer,
+	siteOwnerTransferEligibilityCheck,
+	siteOwnerTransferConfirm,
 	fetchWordPressVersion,
 	updateWordPressVersion,
 	fetchPrimaryDataCenter,
@@ -32,6 +35,7 @@ import type {
 	UrlPerformanceInsights,
 	DefensiveModeSettings,
 	DefensiveModeSettingsUpdate,
+	SiteTransferConfirmation,
 } from '../data/types';
 import type { Query } from '@tanstack/react-query';
 
@@ -168,6 +172,31 @@ export function siteSettingsMutation( siteId: string ) {
 export function restoreSitePlanSoftwareMutation( siteId: string ) {
 	return {
 		mutationFn: () => restoreSitePlanSoftware( siteId ),
+	};
+}
+
+export function siteOwnerTransferMutation( siteId: string ) {
+	return {
+		mutationFn: ( data: { new_site_owner: string } ) => siteOwnerTransfer( siteId, data ),
+	};
+}
+
+export function siteOwnerTransferEligibilityCheckMutation( siteId: string ) {
+	return {
+		mutationFn: ( data: { new_site_owner: string } ) =>
+			siteOwnerTransferEligibilityCheck( siteId, data ),
+	};
+}
+
+export function siteOwnerTransferConfirmMutation( siteId: string ) {
+	return {
+		mutationFn: ( data: { hash: string } ) => siteOwnerTransferConfirm( siteId, data ),
+		onSuccess: ( { transfer }: SiteTransferConfirmation ) => {
+			if ( transfer ) {
+				// Invalidate queries as the site has been transferred to new owner.
+				queryClient.invalidateQueries( { queryKey: [ 'site', siteId ] } );
+			}
+		},
 	};
 }
 

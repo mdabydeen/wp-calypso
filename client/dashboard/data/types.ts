@@ -15,6 +15,7 @@ export interface User {
 	avatar_URL?: string;
 	language: string;
 	locale_variant: string;
+	email: string;
 }
 
 export interface SiteDomain {
@@ -186,4 +187,10 @@ export interface DefensiveModeSettings {
 export interface DefensiveModeSettingsUpdate {
 	active: boolean;
 	ttl?: number;
+}
+
+export interface SiteTransferConfirmation {
+	transfer: boolean;
+	email_sent: boolean;
+	new_owner_email: string;
 }

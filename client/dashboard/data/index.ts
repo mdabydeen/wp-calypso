@@ -17,6 +17,7 @@ import type {
 	PhpMyAdminToken,
 	DefensiveModeSettings,
 	DefensiveModeSettingsUpdate,
+	SiteTransferConfirmation,
 } from './types';
 import type { DataCenterOption } from 'calypso/data/data-center/types';
 
@@ -361,6 +362,51 @@ export const restoreSitePlanSoftware = async ( siteIdOrSlug: string ) => {
 		path: `/sites/${ siteIdOrSlug }/hosting/restore-plan-software`,
 		apiNamespace: 'wpcom/v2',
 	} );
+};
+
+export const siteOwnerTransfer = async (
+	siteIdOrSlug: string,
+	data: { new_site_owner: string }
+) => {
+	return wpcom.req.post(
+		{
+			path: `/sites/${ siteIdOrSlug }/site-owner-transfer`,
+			apiNamespace: 'wpcom/v2',
+		},
+		{
+			calypso_origin: window.location.origin,
+		},
+		{
+			context: 'dashboard_v2',
+			...data,
+		}
+	);
+};
+
+export const siteOwnerTransferEligibilityCheck = async (
+	siteIdOrSlug: string,
+	data: { new_site_owner: string }
+) => {
+	return wpcom.req.post(
+		{
+			path: `/sites/${ siteIdOrSlug }/site-owner-transfer/eligibility`,
+			apiNamespace: 'wpcom/v2',
+		},
+		data
+	);
+};
+
+export const siteOwnerTransferConfirm = async (
+	siteIdOrSlug: string,
+	data: { hash: string }
+): Promise< SiteTransferConfirmation > => {
+	return wpcom.req.post(
+		{
+			path: `/sites/${ siteIdOrSlug }/site-owner-transfer/confirm`,
+			apiNamespace: 'wpcom/v2',
+		},
+		data
+	);
 };
 
 export const fetchBasicMetrics = async ( url: string ): Promise< BasicMetricsData > => {
