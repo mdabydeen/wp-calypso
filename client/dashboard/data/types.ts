@@ -50,6 +50,7 @@ export interface Domain {
 }
 
 export interface SitePlan {
+	product_slug: string;
 	product_name: string;
 	product_name_short: string;
 	expired: boolean;
@@ -76,6 +77,8 @@ export interface SiteOptions {
 	software_version: string;
 	admin_url: string;
 	is_redirect?: boolean;
+	p2_hub_blog_id?: number;
+	is_wpforteams_site?: boolean;
 }
 
 export interface Site {
@@ -97,6 +100,7 @@ export interface Site {
 	is_private: boolean;
 	is_wpcom_atomic: boolean;
 	is_wpcom_staging_site: boolean;
+	is_vip: boolean;
 	launch_status: string | boolean;
 	site_migration: {
 		migration_status?: string;

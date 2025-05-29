@@ -5,6 +5,7 @@ import { ActionList } from '../../components/action-list';
 import RouterLinkButton from '../../components/router-link-button';
 import { SectionHeader } from '../../components/section-header';
 import { useCanTransferSite } from '../hooks/use-can-transfer-site';
+import SiteDeleteModal from '../site-delete-modal';
 import SiteLeaveModal from '../site-leave-modal';
 import type { Site } from '../../data/types';
 
@@ -47,12 +48,41 @@ const SiteLeaveAction = ( { site }: { site: Site } ) => {
 	);
 };
 
+const showSiteDeleteAction = ( site: Site ) => ! site.is_wpcom_staging_site;
+
+const SiteDeleteAction = ( { site }: { site: Site } ) => {
+	const [ isOpen, setIsOpen ] = useState( false );
+
+	return (
+		<>
+			<ActionList.ActionItem
+				title={ __( 'Delete site' ) }
+				description={ __(
+					"Delete all your posts, pages, media, and data, and give up your site's address."
+				) }
+				actions={
+					<Button
+						variant="secondary"
+						size="compact"
+						isDestructive
+						onClick={ () => setIsOpen( true ) }
+					>
+						{ __( 'Delete' ) }
+					</Button>
+				}
+			/>
+			{ isOpen && <SiteDeleteModal site={ site } onClose={ () => setIsOpen( false ) } /> }
+		</>
+	);
+};
+
 export default function DangerZone( { site }: { site: Site } ) {
 	const canTransferSite = useCanTransferSite( { site } );
 
 	const actions = [
 		canTransferSite && <SiteTransferAction key="transfer-site" site={ site } />,
 		<SiteLeaveAction key="leave-site" site={ site } />,
+		showSiteDeleteAction( site ) && <SiteDeleteAction key="delete-site" site={ site } />,
 	].filter( Boolean );
 
 	if ( ! actions.length ) {

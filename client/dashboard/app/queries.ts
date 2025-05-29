@@ -19,6 +19,7 @@ import {
 	siteOwnerTransfer,
 	siteOwnerTransferEligibilityCheck,
 	siteOwnerTransferConfirm,
+	deleteSite,
 	fetchWordPressVersion,
 	updateWordPressVersion,
 	fetchPrimaryDataCenter,
@@ -29,6 +30,7 @@ import {
 	fetchPurchases,
 	fetchSiteUserMe,
 	leaveSite,
+	fetchP2HubP2s,
 } from '../data';
 import { SITE_FIELDS, SITE_OPTIONS } from '../data/constants';
 import { queryClient } from './query-client';
@@ -204,6 +206,15 @@ export function siteOwnerTransferConfirmMutation( siteId: string ) {
 	};
 }
 
+export function deleteSiteMutation( siteId: string ) {
+	return {
+		mutationFn: () => deleteSite( siteId ),
+		onSuccess: () => {
+			queryClient.invalidateQueries( { queryKey: [ 'site', siteId ] } );
+		},
+	};
+}
+
 export function basicMetricsQuery( url: string ) {
 	return {
 		queryKey: [ 'url', 'basic-metrics', url ],
@@ -309,5 +320,14 @@ export function siteUserMeQuery( siteId: string ) {
 export function leaveSiteMutation( siteId: string ) {
 	return {
 		mutationFn: ( userId: number ) => leaveSite( siteId, userId ),
+	};
+}
+
+export function p2HubP2sQuery( siteId: string, options: { limit?: number } = {} ) {
+	return {
+		queryKey: [ 'p2-hub-p2s', siteId, options ],
+		queryFn: () => {
+			return fetchP2HubP2s( siteId, options );
+		},
 	};
 }

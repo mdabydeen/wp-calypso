@@ -411,6 +411,12 @@ export const siteOwnerTransferConfirm = async (
 	);
 };
 
+export const deleteSite = async ( siteIdOrSlug: string ) => {
+	return wpcom.req.post( {
+		path: `/sites/${ siteIdOrSlug }/delete`,
+	} );
+};
+
 export const fetchBasicMetrics = async ( url: string ): Promise< BasicMetricsData > => {
 	return wpcom.req.get(
 		{
@@ -517,4 +523,20 @@ export const leaveSite = async ( siteIdOrSlug: string, userId: number ) => {
 	return wpcom.req.post( {
 		path: `/sites/${ siteIdOrSlug }/users/${ userId }/delete`,
 	} );
+};
+
+export const fetchP2HubP2s = async (
+	siteId: string,
+	options: { limit?: number } = {}
+): Promise< { totalItems: number } > => {
+	return wpcom.req.get(
+		{
+			path: '/p2/workspace/sites/all',
+			apiNamespace: 'wpcom/v2',
+		},
+		{
+			hub_id: siteId,
+			...options,
+		}
+	);
 };
