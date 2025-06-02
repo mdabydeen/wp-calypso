@@ -27,6 +27,7 @@ import {
 	sitePHPVersionQuery,
 	sitePrimaryDataCenterQuery,
 	siteDefensiveModeQuery,
+	agencyBlogQuery,
 } from './queries';
 import { queryClient } from './query-client';
 import Root from './root';
@@ -202,6 +203,23 @@ const siteSettingsPHPRoute = createRoute( {
 } ).lazy( () =>
 	import( '../sites/settings-php' ).then( ( d ) =>
 		createLazyRoute( 'site-settings-php' )( {
+			component: () => <d.default siteSlug={ siteRoute.useParams().siteSlug } />,
+		} )
+	)
+);
+
+const siteSettingsAgencyRoute = createRoute( {
+	getParentRoute: () => siteRoute,
+	path: 'settings/agency',
+	loader: async ( { params: { siteSlug } } ) => {
+		const site = await queryClient.ensureQueryData( siteQuery( siteSlug ) );
+		if ( site.is_wpcom_atomic ) {
+			await queryClient.ensureQueryData( agencyBlogQuery( site.ID ) );
+		}
+	},
+} ).lazy( () =>
+	import( '../sites/settings-agency' ).then( ( d ) =>
+		createLazyRoute( 'site-settings-agency' )( {
 			component: () => <d.default siteSlug={ siteRoute.useParams().siteSlug } />,
 		} )
 	)
@@ -437,6 +455,7 @@ const createRouteTree = ( config: AppConfig ) => {
 				siteSettingsDatabaseRoute,
 				siteSettingsWordPressRoute,
 				siteSettingsPHPRoute,
+				siteSettingsAgencyRoute,
 				siteSettingsPrimaryDataCenterRoute,
 				siteSettingsStaticFile404Route,
 				siteSettingsDefensiveModeRoute,
