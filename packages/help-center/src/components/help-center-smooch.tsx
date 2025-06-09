@@ -114,6 +114,7 @@ const HelpCenterSmooch: React.FC< { enableAuth: boolean } > = ( { enableAuth } )
 	// Initialize Smooch which communicates with Zendesk
 	useEffect( () => {
 		if (
+			isChatLoaded ||
 			! isMessagingScriptLoaded ||
 			! authData?.isLoggedIn ||
 			! authData?.jwt ||
@@ -153,7 +154,7 @@ const HelpCenterSmooch: React.FC< { enableAuth: boolean } > = ( { enableAuth } )
 			clearTimeout( retryTimeout );
 			destroy();
 		};
-	}, [ isMessagingScriptLoaded, authData, setIsChatLoaded ] );
+	}, [ isMessagingScriptLoaded, authData, setIsChatLoaded, isChatLoaded ] );
 
 	useEffect( () => {
 		if ( isChatLoaded && getZendeskConversations ) {
