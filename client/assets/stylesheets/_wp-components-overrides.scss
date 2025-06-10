@@ -62,7 +62,7 @@
 }
 
 /* Gravatar & WP Job Manager */
-.layout.is-section-login.is-grav-powered-client {
+.is-grav-powered-client {
 	.components-button:not(.is-destructive) {
 		--color-gravatar-darker: color-mix(in srgb, var(--color-gravatar), #000 13%);
 
