@@ -1,0 +1,136 @@
+@import "@wordpress/base-styles/breakpoints";
+@import "@wordpress/base-styles/mixins";
+@import "@wordpress/base-styles/variables";
+
+$hint-container-bg-color: #EBF7FF;
+
+.onboarding-tour-modal-wrapper {
+	max-width: 700px;
+
+	.components-modal__content {
+		padding: 0;
+	}
+}
+
+.onboarding-tour-modal {
+	display: flex;
+	flex-direction: column-reverse;
+
+	@include break-mobile {
+		flex-direction: row;
+	}
+}
+
+.onboarding-tour-modal__aside {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	padding: 12px;
+	width: 220px;
+}
+
+.onboarding-tour-modal__aside-menu-item.is-active {
+	background-color: var(--color-primary-0);
+	color: var(--color-primary-60);
+}
+
+.onboarding-tour-modal__main {
+	flex: 1;
+	border-inline-start: 1px solid var(--color-neutral-0);
+	max-width: 100%;
+
+	@include break-mobile {
+		max-width: calc( 100% - 220px );
+	}
+}
+
+.onboarding-tour-modal__main-banner-container {
+	width: 100%;
+	height: 260px;
+	position: relative;
+}
+
+.onboarding-tour-modal__main-banner {
+	background-size: cover;
+	width: 100%;
+	height: 260px;
+	position: absolute;
+	top: 0;
+	opacity: 0;
+	transition: opacity 0.2s ease-out;
+
+	&.is-visible {
+		opacity: 1;
+	}
+}
+
+.onboarding-tour-modal__main-content {
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	padding: 24px 0;
+}
+
+.onboarding-tour-modal__main-content-body {
+	display: flex;
+	flex-direction: row;
+	transition: transform 0.2s ease-out;
+
+	> * {
+		min-width: 100%;
+	}
+}
+
+.onboarding-tour-modal__main-content-footer {
+	display: flex;
+	justify-content: flex-end;
+	gap: 16px;
+	padding: 0 24px;
+	margin-block-start: 16px;
+}
+
+
+.onboarding-tour-modal__section {
+	padding: 0 24px;
+}
+
+.onboarding-tour-modal__close-button {
+	position: absolute;
+	right: 8px;
+	top: 8px;
+	z-index: 1000;
+
+	&.is-light {
+		color: var(--color-text-inverted);
+	}
+}
+
+
+
+.onboarding-tour-modal__section-content {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.onboarding-tour-modal__section-content-title {
+	@include heading-large;
+}
+
+.onboarding-tour-modal__section-content-descriptions {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	margin-block-end: 8px;
+
+	p {
+		@include body-small;
+		margin: 0;
+	}
+}
+
+.onboarding-tour-modal__section-content-hint {
+	@include body-small;
+	padding: 12px;
+	background-color: $hint-container-bg-color;
+}
