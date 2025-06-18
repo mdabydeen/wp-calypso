@@ -13,6 +13,7 @@ import ComponentViewTracker from '../components/component-view-tracker';
 import DataViewsCard from '../components/dataviews-card';
 import { PageHeader } from '../components/page-header';
 import PageLayout from '../components/page-layout';
+import TimeSince from '../components/time-since';
 import { STATUS_LABELS, getSiteStatus, getSiteStatusLabel } from '../utils/site-status';
 import { getFormattedWordPressVersion } from '../utils/wp-version';
 import AddNewSite from './add-new-site';
@@ -155,6 +156,13 @@ const DEFAULT_FIELDS: Field< Site >[] = [
 			);
 		},
 		enableSorting: false,
+	},
+	{
+		id: 'last_published',
+		label: __( 'Last published' ),
+		getValue: ( { item } ) => item.options?.updated_at ?? '',
+		render: ( { item } ) =>
+			item.options?.updated_at ? <TimeSince date={ item.options.updated_at } /> : '',
 	},
 ];
 
