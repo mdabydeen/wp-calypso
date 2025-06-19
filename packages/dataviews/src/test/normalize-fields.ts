@@ -53,6 +53,22 @@ describe( 'normalizeFields: default getValue', () => {
 			const result = normalizedFields[ 0 ].filterBy;
 			expect( result ).toStrictEqual( { operators: [ 'is', 'isNot' ] } );
 		} );
+		it( 'returns the default field type definition if undefined for untyped field (for primary filters)', () => {
+			const fields: Field< {} >[] = [
+				{
+					id: 'user',
+					filterBy: {
+						isPrimary: true,
+					},
+				},
+			];
+			const normalizedFields = normalizeFields( fields );
+			const result = normalizedFields[ 0 ].filterBy;
+			expect( result ).toStrictEqual( {
+				isPrimary: true,
+				operators: [ 'is', 'isNot' ],
+			} );
+		} );
 
 		it( 'returns the field type definition for typed fields', () => {
 			const fields: Field< {} >[] = [
@@ -72,6 +88,31 @@ describe( 'normalizeFields: default getValue', () => {
 					'lessThanOrEqual',
 					'greaterThanOrEqual',
 					'between',
+				],
+			} );
+		} );
+
+		it( 'returns the field type definition for typed fields (for primary filters)', () => {
+			const fields: Field< {} >[] = [
+				{
+					id: 'user',
+					type: 'integer',
+					filterBy: {
+						isPrimary: true,
+					},
+				},
+			];
+			const normalizedFields = normalizeFields( fields );
+			const result = normalizedFields[ 0 ].filterBy;
+			expect( result ).toStrictEqual( {
+				isPrimary: true,
+				operators: [
+					'is',
+					'isNot',
+					'lessThan',
+					'greaterThan',
+					'lessThanOrEqual',
+					'greaterThanOrEqual',
 				],
 			} );
 		} );
