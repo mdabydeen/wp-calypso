@@ -50,19 +50,27 @@ const DEFAULT_FIELDS: Field< Site >[] = [
 		label: __( 'Site' ),
 		enableGlobalSearch: true,
 		getValue: ( { item } ) => item.name || new URL( item.URL ).hostname,
+		render: ( { field, item } ) => (
+			<span style={ { overflowX: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }>
+				{ field.getValue( { item } ) }
+			</span>
+		),
 	},
 	{
 		id: 'URL',
 		label: __( 'URL' ),
 		enableGlobalSearch: true,
-		render: ( { item }: { item: Site } ) => (
-			<span style={ { overflowWrap: 'anywhere' } }>{ new URL( item.URL ).hostname }</span>
+		getValue: ( { item } ) => new URL( item.URL ).hostname,
+		render: ( { field, item } ) => (
+			<span style={ { overflowX: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }>
+				{ field.getValue( { item } ) }
+			</span>
 		),
 	},
 	{
 		id: 'icon.ico',
 		label: __( 'Media' ),
-		render: ( { item }: { item: Site } ) => <SiteIcon site={ item } />,
+		render: ( { item } ) => <SiteIcon site={ item } />,
 		enableSorting: false,
 	},
 	{
@@ -73,12 +81,12 @@ const DEFAULT_FIELDS: Field< Site >[] = [
 		id: 'backups',
 		type: 'boolean',
 		label: __( 'Backups' ),
-		getValue: ( { item }: { item: Site } ) => !! item.plan?.features?.active?.includes( 'backups' ),
+		getValue: ( { item } ) => !! item.plan?.features?.active?.includes( 'backups' ),
 		elements: [
 			{ value: true, label: __( 'Enabled' ) },
 			{ value: false, label: __( 'Disabled' ) },
 		],
-		render: ( { item }: { item: Site } ) =>
+		render: ( { item } ) =>
 			item.plan?.features?.active?.includes( 'backups' ) ? (
 				<Icon icon={ check } />
 			) : (
@@ -91,12 +99,12 @@ const DEFAULT_FIELDS: Field< Site >[] = [
 	{
 		id: 'status',
 		label: __( 'Status' ),
-		getValue: ( { item }: { item: Site } ) => getSiteStatus( item ),
+		getValue: ( { item } ) => getSiteStatus( item ),
 		elements: Object.entries( STATUS_LABELS ).map( ( [ value, label ] ) => ( { value, label } ) ),
 		filterBy: {
 			operators: [ 'is' ],
 		},
-		render: ( { item }: { item: Site } ) => {
+		render: ( { item } ) => {
 			const label = getSiteStatusLabel( item );
 			if ( item.launch_status !== 'unlaunched' ) {
 				return label;
@@ -110,7 +118,7 @@ const DEFAULT_FIELDS: Field< Site >[] = [
 	{
 		id: 'wp_version',
 		label: __( 'WP version' ),
-		getValue: ( { item }: { item: Site } ) => getFormattedWordPressVersion( item ),
+		getValue: ( { item } ) => getFormattedWordPressVersion( item ),
 	},
 	{
 		id: 'is_a8c',
@@ -123,12 +131,12 @@ const DEFAULT_FIELDS: Field< Site >[] = [
 		filterBy: {
 			operators: [ 'is' as Operator ],
 		},
-		render: ( { item }: { item: Site } ) => ( item.is_a8c ? __( 'Yes' ) : __( 'No' ) ),
+		render: ( { item } ) => ( item.is_a8c ? __( 'Yes' ) : __( 'No' ) ),
 	},
 	{
 		id: 'preview',
 		label: __( 'Preview' ),
-		render: function PreviewRender( { item }: { item: Site } ) {
+		render: function PreviewRender( { item } ) {
 			const [ resizeListener, { width } ] = useResizeObserver();
 			const { is_deleted, is_private, URL: url } = item;
 			// If the site is a private A8C site, X-Frame-Options is set to same
@@ -295,7 +303,7 @@ export default function Sites() {
 								},
 							} );
 						} }
-						renderItemLink={ ( { item, ...props }: { item: Site } ) => (
+						renderItemLink={ ( { item, ...props } ) => (
 							<Link to={ `/sites/${ item.slug }` } { ...props } />
 						) }
 						defaultLayouts={ DEFAULT_LAYOUTS }
