@@ -17,7 +17,7 @@ import TimeSince from '../components/time-since';
 import { STATUS_LABELS, getSiteStatus, getSiteStatusLabel } from '../utils/site-status';
 import { getFormattedWordPressVersion } from '../utils/wp-version';
 import AddNewSite from './add-new-site';
-import { EngagementStat, Uptime, PHPVersion } from './site-fields';
+import { EngagementStat, Uptime, PHPVersion, MediaStorage } from './site-fields';
 import SiteIcon from './site-icon';
 import SitePreview from './site-preview';
 import type { FetchSitesOptions, Site } from '../data/types';
@@ -200,6 +200,11 @@ const DEFAULT_FIELDS: Field< Site >[] = [
 		id: 'php_version',
 		label: __( 'PHP version' ),
 		render: ( { item }: { item: Site } ) => <PHPVersion site={ item } />,
+	},
+	{
+		id: 'storage',
+		label: __( 'Storage' ),
+		render: ( { item } ) => <MediaStorage site={ item } />,
 		enableSorting: false,
 	},
 ];
