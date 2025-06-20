@@ -6,7 +6,6 @@ export type ComponentData = {
 	name: string;
 	whereUsed: ComponentWhereUsed;
 	status: ComponentStatus;
-	figma?: string;
 	docs: string;
 	notes?: string;
 };
@@ -50,8 +49,6 @@ export const data: ComponentData[] = [
 		name: 'AlignmentMatrixControl',
 		whereUsed: 'editor',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=16471-139353',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-alignmentmatrixcontrol--docs',
 	},
 	{
@@ -59,8 +56,6 @@ export const data: ComponentData[] = [
 		name: 'AnglePickerControl',
 		whereUsed: 'editor',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=16471-149161',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-anglepickercontrol--docs',
 	},
 	{
@@ -97,8 +92,6 @@ export const data: ComponentData[] = [
 		name: 'BoxControl',
 		whereUsed: 'editor',
 		status: 'use-with-caution',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=15567-13250',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-boxcontrol--docs',
 		notes:
 			'Overall design review needed. This component is a fallback for themes that do not supply spacing presets. Most of the time `SpacingSizesControl` is used instead.',
@@ -108,8 +101,6 @@ export const data: ComponentData[] = [
 		name: 'Button',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=991-34617',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-button--docs',
 		notes: 'Stable but needs update. Bloated props and large dependencies.',
 	},
@@ -118,8 +109,6 @@ export const data: ComponentData[] = [
 		name: 'Card',
 		whereUsed: 'global',
 		status: 'use-with-caution',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=16471-137689',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-card--docs',
 		notes: 'Needs usage review and better guidelines.',
 	},
@@ -128,8 +117,6 @@ export const data: ComponentData[] = [
 		name: 'CheckboxControl',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=991-34618',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-checkboxcontrol--docs',
 	},
 	{
@@ -137,8 +124,6 @@ export const data: ComponentData[] = [
 		name: 'CircularOptionPicker',
 		whereUsed: 'global',
 		status: 'use-with-caution',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=16471-149388',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-circularoptionpicker--docs',
 		notes: 'Mostly intended for internal use. Needs review for reusability.',
 	},
@@ -154,8 +139,6 @@ export const data: ComponentData[] = [
 		name: 'ColorPalette',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=16471-149532',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-colorpalette--docs',
 	},
 	{
@@ -163,8 +146,6 @@ export const data: ComponentData[] = [
 		name: 'ColorPicker',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=16471-149732',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-colorpicker--docs',
 	},
 	{
@@ -172,8 +153,6 @@ export const data: ComponentData[] = [
 		name: 'ComboboxControl',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=15598-11365',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-comboboxcontrol--docs',
 		notes: 'Stable, but a v2 is planned.',
 	},
@@ -189,8 +168,6 @@ export const data: ComponentData[] = [
 		name: 'ConfirmDialog',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=16547-38990',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-experimental-confirmdialog--docs',
 	},
 	{
@@ -198,8 +175,6 @@ export const data: ComponentData[] = [
 		name: 'CustomGradientPicker',
 		whereUsed: 'global',
 		status: 'not-recommended',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=16530-41873',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-customgradientpicker--docs',
 		notes: 'Mostly an internal component. Use `GradientPicker` instead.',
 	},
@@ -264,8 +239,6 @@ export const data: ComponentData[] = [
 		name: 'Dropdown',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=16471-138943',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-dropdown--docs',
 	},
 	{
@@ -281,8 +254,6 @@ export const data: ComponentData[] = [
 		name: 'DropZone',
 		whereUsed: 'global',
 		status: 'use-with-caution',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=16530-40169',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-dropzone--docs',
 		notes: 'Needs design updates.',
 	},
@@ -291,8 +262,6 @@ export const data: ComponentData[] = [
 		name: 'DuotonePicker',
 		whereUsed: 'editor',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=16471-150251',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-duotonepicker--docs',
 	},
 	{
@@ -300,8 +269,6 @@ export const data: ComponentData[] = [
 		name: 'DuotoneSwatch',
 		whereUsed: 'editor',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=16471-149894',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-duotoneswatch--docs',
 	},
 	{
@@ -317,8 +284,6 @@ export const data: ComponentData[] = [
 		name: 'ExternalLink',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=16471-137598',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-externallink--docs',
 	},
 	{
@@ -335,18 +300,13 @@ export const data: ComponentData[] = [
 		name: 'FocalPointPicker',
 		whereUsed: 'editor',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=16530-42220',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-focalpointpicker--docs',
-		notes: 'Needs Figma component.',
 	},
 	{
 		id: 'font-size-picker',
 		name: 'FontSizePicker',
 		whereUsed: 'editor',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=16530-44047',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-fontsizepicker--docs',
 	},
 	{
@@ -354,8 +314,6 @@ export const data: ComponentData[] = [
 		name: 'FormFileUpload',
 		whereUsed: 'global',
 		status: 'use-with-caution',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=16530-22089',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-formfileupload--docs',
 		notes: 'Needs design update.',
 	},
@@ -373,8 +331,6 @@ export const data: ComponentData[] = [
 		name: 'FormTokenField',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=16530-21625',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-formtokenfield--docs',
 		notes: 'Stable, but a v2 is planned.',
 	},
@@ -383,8 +339,6 @@ export const data: ComponentData[] = [
 		name: 'GradientPicker',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=16530-42457',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-gradientpicker--docs',
 	},
 	{
@@ -400,8 +354,6 @@ export const data: ComponentData[] = [
 		name: 'Guide',
 		whereUsed: 'editor',
 		status: 'use-with-caution',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=16471-139278',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-guide--docs',
 		notes: 'Needs design update. May become a pattern, rather than a standalone component.',
 	},
@@ -435,8 +387,6 @@ export const data: ComponentData[] = [
 		name: 'InputControl',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=991-34623',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-experimental-inputcontrol--docs',
 	},
 	{
@@ -444,8 +394,6 @@ export const data: ComponentData[] = [
 		name: 'ItemGroup',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=2244-18011',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-experimental-itemgroup--docs',
 	},
 	{
@@ -460,8 +408,6 @@ export const data: ComponentData[] = [
 		name: 'Menu',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=991-34615',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-menu--docs',
 		notes:
 			'If possible, use this component instead of `DropdownMenu`. It may still be marked as private but is pretty much ready.',
@@ -495,8 +441,6 @@ export const data: ComponentData[] = [
 		name: 'Modal',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=2036-43132',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-modal--docs',
 		notes: 'Stable, but a v2 is planned.',
 	},
@@ -519,8 +463,6 @@ export const data: ComponentData[] = [
 		name: 'Notice',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=2274-38167',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-notice--docs',
 		notes:
 			'A design update is in the works. Search for the "Components: Notice" project on Linear.',
@@ -530,8 +472,6 @@ export const data: ComponentData[] = [
 		name: 'NumberControl',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=16471-138738',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-experimental-numbercontrol--docs',
 	},
 	{
@@ -546,8 +486,6 @@ export const data: ComponentData[] = [
 		name: 'Panel',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=16471-138147',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-panel--docs',
 	},
 	{
@@ -555,8 +493,6 @@ export const data: ComponentData[] = [
 		name: 'Placeholder',
 		whereUsed: 'editor',
 		status: 'unaudited',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=16471-137924',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-placeholder--docs',
 		notes: 'Needs review.',
 	},
@@ -586,8 +522,6 @@ export const data: ComponentData[] = [
 		name: 'RadioControl',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=13532-31910',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-radiocontrol--docs',
 	},
 	{
@@ -595,8 +529,6 @@ export const data: ComponentData[] = [
 		name: 'RangeControl',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=991-34621',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-rangecontrol--docs',
 		notes: 'Stable, but a more modular v2 is planned.',
 	},
@@ -605,8 +537,6 @@ export const data: ComponentData[] = [
 		name: 'ResizableBox',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=16530-42695',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-resizablebox--docs',
 	},
 	{
@@ -644,8 +574,6 @@ export const data: ComponentData[] = [
 		name: 'SearchControl',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=3025-46718',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-searchcontrol--docs',
 		notes: 'Design may be updated.',
 	},
@@ -654,8 +582,6 @@ export const data: ComponentData[] = [
 		name: 'SelectControl',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=991-41941',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-selectcontrol--docs',
 	},
 	{
@@ -677,8 +603,6 @@ export const data: ComponentData[] = [
 		name: 'Snackbar',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=2274-38166',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-snackbar--docs',
 		notes: 'May need design update.',
 	},
@@ -687,8 +611,6 @@ export const data: ComponentData[] = [
 		name: 'SnackbarList',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=16530-40546',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-snackbarlist--docs',
 	},
 	{
@@ -704,8 +626,6 @@ export const data: ComponentData[] = [
 		name: 'Spinner',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=3343-37987',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-spinner--docs',
 	},
 	{
@@ -737,8 +657,6 @@ export const data: ComponentData[] = [
 		name: 'Tabs',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=991-34616',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-tabs--docs',
 		notes: 'If possible, use this component instead of `TabPanel`.',
 	},
@@ -756,8 +674,6 @@ export const data: ComponentData[] = [
 		name: 'TextareaControl',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=2518-56299',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-textareacontrol--docs',
 	},
 	{
@@ -789,8 +705,6 @@ export const data: ComponentData[] = [
 		name: 'TimePicker',
 		whereUsed: 'global',
 		status: 'use-with-caution',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=16530-21978',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-timepicker--docs',
 		notes: 'Consider using an `TextControl` with `type="date"` or `type="datetime-local"` instead.',
 	},
@@ -807,8 +721,6 @@ export const data: ComponentData[] = [
 		name: 'ToggleControl',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=991-34620',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-togglecontrol--docs',
 	},
 	{
@@ -816,8 +728,6 @@ export const data: ComponentData[] = [
 		name: 'ToggleGroupControl',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=2244-1941',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-togglegroupcontrol--docs',
 		notes: 'Stable, but design may be updated.',
 	},
@@ -826,8 +736,6 @@ export const data: ComponentData[] = [
 		name: 'Toolbar',
 		whereUsed: 'editor',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=13919-17541',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-toolbar--docs',
 		notes: 'Stable, but design may be updated.',
 	},
@@ -843,8 +751,6 @@ export const data: ComponentData[] = [
 		name: 'Tooltip',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=13919-17539',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-tooltip--docs',
 	},
 	{
@@ -873,8 +779,6 @@ export const data: ComponentData[] = [
 		name: 'UnitControl',
 		whereUsed: 'global',
 		status: 'stable',
-		figma:
-			'https://www.figma.com/design/804HN2REV2iap2ytjRQ055/WordPress-Design-System?node-id=16471-138481',
 		docs: 'https://wordpress.github.io/gutenberg/?path=/docs/components-experimental-unitcontrol--docs',
 	},
 	{
