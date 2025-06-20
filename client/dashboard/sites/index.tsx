@@ -111,9 +111,7 @@ const DEFAULT_FIELDS: Field< Site >[] = [
 				return label;
 			}
 
-			return (
-				<ComingSoonStatusButton href={ `/home/${ item.slug }` }>{ label }</ComingSoonStatusButton>
-			);
+			return <UnlaunchedStatusLink href={ `/home/${ item.slug }` }>{ label }</UnlaunchedStatusLink>;
 		},
 	},
 	{
@@ -334,9 +332,11 @@ export default function Sites() {
 	);
 }
 
-function ComingSoonStatusButton( { href, children }: { href: string; children: React.ReactNode } ) {
+function UnlaunchedStatusLink( { href, children }: { href: string; children: React.ReactNode } ) {
 	const { recordTracksEvent } = useAnalytics();
 
+	// TODO: We have to fix the obscured focus ring issue as the dataview's field value container
+	// uses `overflow:hidden` to prevent any of the fields from overflowing.
 	return (
 		<>
 			<ComponentViewTracker eventName="calypso_dashboard_site_launch_nag_impression" />
@@ -345,7 +345,6 @@ function ComingSoonStatusButton( { href, children }: { href: string; children: R
 				onClick={ () => {
 					recordTracksEvent( 'calypso_dashboard_site_launch_nag_click' );
 				} }
-				style={ { position: 'absolute' } }
 			>
 				{ children }
 			</ExternalLink>
