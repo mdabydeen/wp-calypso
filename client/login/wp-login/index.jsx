@@ -379,9 +379,7 @@ export class Login extends Component {
 			socialConnect,
 			twoFactorAuthType,
 			locale,
-			isLoginView,
 			signupUrl,
-			isWoo,
 			isWCCOM,
 			isBlazePro,
 			currentQuery,
@@ -399,10 +397,6 @@ export class Login extends Component {
 			( isSocialFirst && currentRoute === '/log-in/lostpassword' )
 		) {
 			return null;
-		}
-
-		if ( isWoo && isLoginView ) {
-			return <LoginFooter lostPasswordLink={ this.getLostPasswordLink() } shouldRenderTos />;
 		}
 
 		if ( isSocialFirst ) {
@@ -488,7 +482,6 @@ export class Login extends Component {
 			translate,
 			isGenericOauth,
 			isGravPoweredClient,
-			isWoo,
 			isBlazePro,
 			isWhiteLogin,
 			isJetpack,
@@ -501,14 +494,17 @@ export class Login extends Component {
 			oauth2Client,
 			isWooJPC,
 			isWCCOM,
+			isWoo,
 			isFromAutomatticForAgenciesPlugin,
 			currentQuery,
-			wccomFrom,
+			currentRoute,
 			twoFactorEnabled,
 		} = this.props;
 
 		const canonicalUrl = localizeUrl( 'https://wordpress.com/log-in', locale );
-		const isSocialFirst = isWhiteLogin && ! isGravPoweredClient && ! isWoo;
+
+		// TODO: remove isGravPoweredClient when login pages are unified.
+		const isSocialFirst = isWhiteLogin && ! isGravPoweredClient;
 
 		const mainContent = (
 			<Main
@@ -553,7 +549,6 @@ export class Login extends Component {
 			isFromAkismet,
 			isFromAutomatticForAgenciesPlugin,
 			isGravPoweredClient,
-			wccomFrom,
 			twoFactorEnabled,
 			currentQuery,
 			translate
@@ -576,13 +571,17 @@ export class Login extends Component {
 			);
 		}
 
+		const isLostPassword =
+			currentRoute === '/log-in/lostpassword' || currentRoute === '/log-in/jetpack/lostpassword';
+
 		const shouldUseWideHeading =
 			isStudioAppOAuth2Client( oauth2Client ) ||
 			isFromAkismet ||
 			isCrowdsignalOAuth2Client( oauth2Client ) ||
 			isBlazePro ||
 			isJetpack ||
-			isJetpackCloudOAuth2Client( oauth2Client );
+			isJetpackCloudOAuth2Client( oauth2Client ) ||
+			isWoo;
 
 		return (
 			<>
@@ -605,6 +604,7 @@ export class Login extends Component {
 									<HeadingSubText
 										isSocialFirst={ isSocialFirst }
 										twoFactorAuthType={ twoFactorAuthType }
+										isLostPassword={ isLostPassword }
 									/>
 								}
 							/>
