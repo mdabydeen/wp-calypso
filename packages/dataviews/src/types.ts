@@ -129,6 +129,12 @@ export type FieldTypeDefinition< Item > = {
 	filterBy: FilterConfigForType | false;
 
 	/**
+	 * Whether the field is readOnly.
+	 * If `true`, the value will be rendered using the `render` callback.
+	 */
+	readOnly?: boolean;
+
+	/**
 	 * Whether the field is sortable.
 	 */
 	enableSorting: boolean;
@@ -220,6 +226,12 @@ export type Field< Item > = {
 	filterBy?: FilterByConfig | false;
 
 	/**
+	 * Whether the field is readOnly.
+	 * If `true`, the value will be rendered using the `render` callback.
+	 */
+	readOnly?: boolean;
+
+	/**
 	 * Callback used to retrieve the value of the field from the item.
 	 * Defaults to `item[ field.id ]`.
 	 */
@@ -237,6 +249,7 @@ export type NormalizedField< Item > = Omit< Field< Item >, 'Edit' > & {
 	enableHiding: boolean;
 	enableSorting: boolean;
 	filterBy: NormalizedFilterByConfig | false;
+	readOnly: boolean;
 };
 
 /**
