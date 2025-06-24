@@ -182,6 +182,26 @@ const DEFAULT_FIELDS: Field< Site >[] = [
 		render: ( { item } ) => <MediaStorage site={ item } />,
 		enableSorting: false,
 	},
+	{
+		id: 'host',
+		label: __( 'Host' ),
+		getValue: ( { item } ) => {
+			const provider = item.hosting_provider_guess;
+			if ( ! provider || provider === 'automattic' ) {
+				return 'WordPress.com';
+			}
+
+			switch ( provider ) {
+				case 'jurassic_ninja':
+					return 'Jurassic Ninja';
+				case 'pressable':
+					return 'Pressable';
+			}
+
+			return provider;
+		},
+		render: ( { field, item } ) => field.getValue( { item } ),
+	},
 ];
 
 const DEFAULT_LAYOUTS = {
