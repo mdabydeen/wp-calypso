@@ -9,6 +9,7 @@ import InlineSupportLink from 'calypso/components/inline-support-link';
 import StatsInfoArea from 'calypso/my-sites/stats/features/modules/shared/stats-info-area';
 import { trackStatsAnalyticsEvent } from 'calypso/my-sites/stats/utils';
 import { isJetpackSite } from 'calypso/state/sites/selectors';
+import getEnvStatsFeatureSupportChecks from 'calypso/state/sites/selectors/get-env-stats-feature-supports';
 import {
 	isRequestingSiteStatsForQuery,
 	getSiteStatsNormalizedData,
@@ -24,7 +25,7 @@ import useOptionLabels, {
 	SUB_STAT_TYPE,
 	StatType,
 	StatsModulePostsProps,
-	validQueryViewType,
+	getValidQueryViewType,
 } from './use-option-labels';
 import type { StatsStateProps } from '../types';
 
@@ -47,12 +48,16 @@ const StatsTopPosts: React.FC< StatsModulePostsProps > = ( {
 } ) => {
 	const translate = useTranslate();
 	const siteId = useSelector( getSelectedSiteId ) as number;
+	const { supportsArchiveStats } = useSelector( ( state: object ) =>
+		getEnvStatsFeatureSupportChecks( state, siteId )
+	);
+
+	const isArchiveBreakdownEnabled: boolean =
+		config.isEnabled( 'stats/archive-breakdown' ) && supportsArchiveStats;
 
 	const isSiteJetpackNotAtomic = useSelector( ( state ) =>
 		isJetpackSite( state, siteId, { treatAtomicAsJetpackSite: false } )
 	);
-
-	const isArchiveBreakdownEnabled: boolean = config.isEnabled( 'stats/archive-breakdown' );
 	const supportContext = isSiteJetpackNotAtomic
 		? 'stats-top-posts-and-pages-analyze-content-performance-jetpack'
 		: 'stats-top-posts-and-pages-analyze-content-performance';
@@ -84,7 +89,8 @@ const StatsTopPosts: React.FC< StatsModulePostsProps > = ( {
 		setLocalStatType( option.value );
 	};
 
-	const statType = localStatType || validQueryViewType( query.viewType ) || mainStatType;
+	const statType =
+		localStatType || getValidQueryViewType( query.viewType, supportsArchiveStats ) || mainStatType;
 
 	const data = useSelector( ( state ) =>
 		getSiteStatsNormalizedData( state, siteId, statType, query )
