@@ -9,6 +9,7 @@ import { getDisplayName, isExpired, isRenewing, purchaseType } from 'calypso/lib
 import { GetManagePurchaseUrlFor, MembershipSubscription } from 'calypso/lib/purchases/types';
 import { useSelector } from 'calypso/state';
 import { getSite } from 'calypso/state/sites/selectors';
+import { isTransferredOwnership } from '../hooks/use-is-transferred-ownership';
 import { Icon, MembershipType, MembershipTerms } from '../membership-item';
 import {
 	PurchaseItemSiteIcon,
@@ -67,6 +68,7 @@ export function getPurchasesFieldDefinitions( {
 	sites,
 	getManagePurchaseUrlFor,
 	fieldIds,
+	transferredOwnershipPurchases = [],
 }: {
 	translate: LocalizeProps[ 'translate' ];
 	moment: ReturnType< typeof useLocalizedMoment >;
@@ -74,6 +76,7 @@ export function getPurchasesFieldDefinitions( {
 	sites: SiteDetails[];
 	getManagePurchaseUrlFor: GetManagePurchaseUrlFor;
 	fieldIds?: string[];
+	transferredOwnershipPurchases?: Purchases.Purchase[];
 } ): Fields< Purchases.Purchase > {
 	const backupPaymentMethods = paymentMethods.filter(
 		( paymentMethod ) => paymentMethod.is_backup === true
@@ -156,18 +159,29 @@ export function getPurchasesFieldDefinitions( {
 				);
 			},
 			render: ( { item }: { item: Purchases.Purchase } ) => {
+				const hasTransferredOwnership = isTransferredOwnership(
+					item.id,
+					transferredOwnershipPurchases
+				);
 				return (
 					<div className="purchase-item__information">
 						<div className="purchase-item__title">
-							<Button
-								variant="link"
-								title={ translate( 'Manage purchase', { textOnly: true } ) }
-								label={ translate( 'Manage purchase', { textOnly: true } ) }
-								onClick={ () => goToPurchase( item ) }
-							>
-								{ getDisplayName( item ) }
-							</Button>
-							<OwnerInfo purchase={ item } />
+							{ hasTransferredOwnership ? (
+								<div>
+									{ getDisplayName( item ) }
+									&nbsp;
+									<OwnerInfo purchase={ item } isTransferredOwnership={ hasTransferredOwnership } />
+								</div>
+							) : (
+								<Button
+									variant="link"
+									title={ translate( 'Manage purchase', { textOnly: true } ) }
+									label={ translate( 'Manage purchase', { textOnly: true } ) }
+									onClick={ () => goToPurchase( item ) }
+								>
+									{ getDisplayName( item ) }
+								</Button>
+							) }
 						</div>
 					</div>
 				);
