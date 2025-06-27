@@ -16,6 +16,7 @@ import { isP2 } from '../utils/site-types';
 import AddNewSite from './add-new-site';
 import { canManageSite } from './features';
 import { getFields } from './fields';
+import { SitesNotices } from './notices';
 import type { FetchSitesOptions, Site } from '../data/types';
 import type {
 	Operator,
@@ -114,7 +115,8 @@ const getDefaultActions = ( router: AnyRouter ) => {
 };
 
 const getFetchSitesOptions = (
-	viewOptions: Partial< ViewTable | ViewGrid > | undefined = {}
+	viewOptions: Partial< ViewTable | ViewGrid > | undefined = {},
+	isRestoringAccount: boolean = false
 ): FetchSitesOptions => {
 	const filters = viewOptions.filters ?? [];
 
@@ -130,7 +132,8 @@ const getFetchSitesOptions = (
 	return {
 		// Some P2 sites are not retrievable unless site_visibility is set to 'all'.
 		// See: https://github.com/Automattic/wp-calypso/pull/104220.
-		site_visibility: viewOptions.search || shouldIncludeA8COwned ? 'all' : 'visible',
+		site_visibility:
+			viewOptions.search || shouldIncludeA8COwned || isRestoringAccount ? 'all' : 'visible',
 		include_a8c_owned: shouldIncludeA8COwned,
 	};
 };
@@ -138,17 +141,19 @@ const getFetchSitesOptions = (
 export default function Sites() {
 	const navigate = useNavigate( { from: sitesRoute.fullPath } );
 	const router = useRouter();
-	const viewOptions: Partial< ViewTable | ViewGrid > | undefined = sitesRoute.useSearch().view;
+	const currentSearchParams = sitesRoute.useSearch();
+	const viewOptions: Partial< ViewTable | ViewGrid > | undefined = currentSearchParams.view;
+	const isRestoringAccount = !! currentSearchParams.restored;
 	const { data: sites, isLoading: isLoadingSites } = useQuery(
-		sitesQuery( getFetchSitesOptions( viewOptions ) )
+		sitesQuery( getFetchSitesOptions( viewOptions, isRestoringAccount ) )
 	);
 	const { data: isAutomattician } = useQuery( isAutomatticianQuery() );
 
 	const defaultView = useMemo(
-		() =>
-			isAutomattician
+		() => ( {
+			...DEFAULT_VIEW,
+			...( isAutomattician
 				? {
-						...DEFAULT_VIEW,
 						filters: [
 							{
 								field: 'is_a8c',
@@ -157,14 +162,16 @@ export default function Sites() {
 							},
 						],
 				  }
-				: DEFAULT_VIEW,
-		[ isAutomattician ]
+				: {} ),
+			...( isRestoringAccount ? { type: 'table' as const } : {} ),
+		} ),
+		[ isAutomattician, isRestoringAccount ]
 	);
 
 	const view = useMemo(
 		() => ( {
 			...defaultView,
-			...DEFAULT_LAYOUTS[ viewOptions?.type ?? DEFAULT_VIEW.type ],
+			...DEFAULT_LAYOUTS[ viewOptions?.type ?? defaultView.type ],
 			...( viewOptions
 				? Object.fromEntries(
 						Object.entries( viewOptions ).filter( ( [ , v ] ) => v !== undefined )
@@ -209,6 +216,7 @@ export default function Sites() {
 					/>
 				}
 			>
+				<SitesNotices />
 				<DataViewsCard>
 					<DataViews< Site >
 						getItemId={ ( item ) => item.ID.toString() }
@@ -224,6 +232,7 @@ export default function Sites() {
 							const _defaultView = { ...defaultView, ...DEFAULT_LAYOUTS[ view.type ] };
 							navigate( {
 								search: {
+									...currentSearchParams,
 									view: Object.fromEntries(
 										Object.entries( view ).filter( ( [ key, value ] ) => {
 											return value !== _defaultView[ key as keyof typeof _defaultView ];
