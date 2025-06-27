@@ -234,14 +234,14 @@ const DEFAULT_FIELDS: Field< Site >[] = [
 ];
 
 export function getFields( {
-	hasA8CSites,
+	isAutomattician,
 	viewType,
 }: {
-	hasA8CSites?: boolean;
+	isAutomattician?: boolean;
 	viewType?: string;
 } ) {
 	return DEFAULT_FIELDS.filter( ( field ) => {
-		if ( field.id === 'is_a8c' && ! hasA8CSites ) {
+		if ( field.id === 'is_a8c' && ! isAutomattician ) {
 			return false;
 		}
 
