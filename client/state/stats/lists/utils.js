@@ -8,7 +8,8 @@ function getArchiveKeyLabel( key ) {
 		author: translate( 'Authors' ),
 		cat: translate( 'Categories' ),
 		err: translate( 'Error' ),
-		home: translate( 'Homepage' ),
+		// This category is dedicated to the homepage set to Latest posts under the Archive tab.
+		home: translate( 'Homepage (Latest posts)' ),
 		search: translate( 'Searches' ),
 		tag: translate( 'Tags' ),
 		tax: translate( 'Taxonomies' ),
@@ -474,8 +475,7 @@ export const normalizers = {
 			} else {
 				const hasItems = Array.isArray( archiveItems ) && archiveItems.length > 0;
 
-				// Ignore the Homepage item as it should be shown in the Posts & pages list.
-				if ( 'home' !== archiveKey && hasItems ) {
+				if ( hasItems ) {
 					let totalViews = 0;
 
 					const children = archiveItems
@@ -484,7 +484,7 @@ export const normalizers = {
 							totalViews += item.views;
 
 							return {
-								label: item.value,
+								label: [ 'home' ].includes( archiveKey ) ? item.href : item.value,
 								value: item.views,
 								link: item.href,
 							};
@@ -493,7 +493,8 @@ export const normalizers = {
 					accumulatedArchives.push( {
 						label: getArchiveKeyLabel( archiveKey ),
 						value: totalViews,
-						children: children,
+						// Show the Homepage without children if there are no other pages under it.
+						children: 'home' === archiveKey && children.length < 2 ? null : children,
 					} );
 				}
 			}
