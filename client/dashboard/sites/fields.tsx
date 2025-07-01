@@ -53,11 +53,12 @@ const DEFAULT_FIELDS: Field< Site >[] = [
 		enableGlobalSearch: true,
 		getValue: ( { item } ) => item.name || new URL( item.URL ).hostname,
 		render: ( { field, item } ) => (
-			<Link to={ getSiteManagementUrl( item ) }>
+			<Link to={ getSiteManagementUrl( item ) } disabled={ item.is_deleted }>
 				<HStack alignment="center" spacing={ 1 }>
 					<Text
 						as="span"
 						style={ { overflowX: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }
+						{ ...( item.is_deleted ? { variant: 'muted' } : {} ) }
 					>
 						{ field.getValue( { item } ) }
 					</Text>
@@ -145,6 +146,7 @@ const DEFAULT_FIELDS: Field< Site >[] = [
 			return (
 				<Link
 					to={ getSiteManagementUrl( item ) }
+					disabled={ item.is_deleted }
 					style={ { display: 'block', height: '100%', width: '100%' } }
 				>
 					{ resizeListener }
