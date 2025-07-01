@@ -1,4 +1,5 @@
 import page from '@automattic/calypso-router';
+import { Gridicon } from '@automattic/components';
 import { localizeUrl } from '@automattic/i18n-utils';
 import { Step } from '@automattic/onboarding';
 import clsx from 'clsx';
@@ -271,60 +272,52 @@ export class Login extends Component {
 			return null;
 		}
 
-		if ( this.props.isWCCOM || this.props.isBlazePro || this.props.isWooJPC ) {
-			return (
-				<a
-					className="login__lost-password-link"
-					href="/"
-					onClick={ ( event ) => {
-						event.preventDefault();
-						this.props.recordTracksEvent( 'calypso_login_reset_password_link_click' );
-						page(
-							login( {
-								redirectTo: this.props.redirectTo,
-								locale: this.props.locale,
-								action: this.props.isWooJPC ? 'jetpack/lostpassword' : 'lostpassword',
-								oauth2ClientId: this.props.oauth2Client && this.props.oauth2Client.id,
-								from: get( this.props.currentQuery, 'from' ),
-							} )
-						);
-					} }
-				>
-					{ this.props.translate( 'Lost your password?' ) }
-				</a>
-			);
-		}
-
-		let lostPasswordUrl = lostPassword( { locale: this.props.locale } );
-
-		// If we got here coming from Jetpack Cloud login page, we want to go back
-		// to it after we finish the process
-		if (
-			isJetpackCloudOAuth2Client( this.props.oauth2Client ) ||
-			isA4AOAuth2Client( this.props.oauth2Client )
-		) {
-			const currentUrl = new URL( window.location.href );
-			currentUrl.searchParams.append( 'lostpassword_flow', true );
-			const queryArgs = {
-				redirect_to: currentUrl.toString(),
-
-				// This parameter tells WPCOM that we are coming from Jetpack.com,
-				// so it can present the user a Lost password page that works in
-				// the context of Jetpack.com.
-				client_id: this.props.oauth2Client.id,
-			};
-			lostPasswordUrl = addQueryArgs( queryArgs, lostPasswordUrl );
-		}
-
 		return (
 			<a
-				href={ lostPasswordUrl }
-				key="lost-password-link"
 				className="login__lost-password-link"
-				onClick={ this.recordResetPasswordLinkClick }
-				rel="external"
+				href="/"
+				onClick={ ( event ) => {
+					event.preventDefault();
+					this.props.recordTracksEvent( 'calypso_login_reset_password_link_click' );
+					page(
+						login( {
+							redirectTo: this.props.redirectTo,
+							locale: this.props.locale,
+							action:
+								this.props.isWooJPC || this.props.isJetpack
+									? 'jetpack/lostpassword'
+									: 'lostpassword',
+							oauth2ClientId: this.props.oauth2Client && this.props.oauth2Client.id,
+							from: get( this.props.currentQuery, 'from' ),
+						} )
+					);
+				} }
 			>
 				{ this.props.translate( 'Lost your password?' ) }
+			</a>
+		);
+	}
+
+	getLoginLink() {
+		return (
+			<a
+				className="wp-login__main-footer-back-link"
+				href="/"
+				onClick={ ( event ) => {
+					event.preventDefault();
+					page(
+						login( {
+							redirectTo: this.props.redirectTo,
+							locale: this.props.locale,
+							oauth2ClientId: this.props.oauth2Client && this.props.oauth2Client.id,
+							from: get( this.props.currentQuery, 'from' ),
+							isJetpack: this.props.isJetpack,
+						} )
+					);
+				} }
+			>
+				<Gridicon icon="arrow-left" size={ 18 } />
+				{ this.props.translate( 'Back to Login' ) }
 			</a>
 		);
 	}
@@ -381,25 +374,22 @@ export class Login extends Component {
 			signupUrl,
 			isWCCOM,
 			isBlazePro,
-			currentQuery,
 			isWooJPC,
-			currentRoute,
+			isLoginView,
 		} = this.props;
 
 		if ( isGravPoweredLoginPage ) {
 			return this.renderGravPoweredLoginBlockFooter();
 		}
 
-		if (
-			( currentQuery.lostpassword_flow === 'true' && isWooJPC ) ||
-			// We don't want to show lost password option if the user is already on lost password's page
-			( isSocialFirst && currentRoute === '/log-in/lostpassword' )
-		) {
-			return null;
-		}
-
 		if ( isSocialFirst ) {
-			return <LoginFooter lostPasswordLink={ this.getLostPasswordLink() } />;
+			return (
+				<LoginFooter
+					isLoginView={ isLoginView }
+					lostPasswordLink={ this.getLostPasswordLink() }
+					loginLink={ this.getLoginLink() }
+				/>
+			);
 		}
 
 		const shouldRenderFooter = ! socialConnect && ! isWCCOM && ! isBlazePro && ! isWooJPC;
@@ -496,7 +486,6 @@ export class Login extends Component {
 			isWoo,
 			isFromAutomatticForAgenciesPlugin,
 			currentQuery,
-			currentRoute,
 			twoFactorEnabled,
 		} = this.props;
 
@@ -553,19 +542,17 @@ export class Login extends Component {
 			translate
 		);
 
-		const isLostPassword =
-			currentRoute === '/log-in/lostpassword' || currentRoute === '/log-in/jetpack/lostpassword';
-
 		const shouldUseWideHeading =
-			isStudioAppOAuth2Client( oauth2Client ) ||
-			isFromAkismet ||
-			isCrowdsignalOAuth2Client( oauth2Client ) ||
-			isBlazePro ||
-			isJetpack ||
-			isJetpackCloudOAuth2Client( oauth2Client ) ||
-			isWoo ||
-			isVIPOAuth2Client( oauth2Client ) ||
-			isPartnerPortalOAuth2Client( oauth2Client );
+			'lostpassword' !== action &&
+			( isStudioAppOAuth2Client( oauth2Client ) ||
+				isFromAkismet ||
+				isCrowdsignalOAuth2Client( oauth2Client ) ||
+				isBlazePro ||
+				isJetpack ||
+				isJetpackCloudOAuth2Client( oauth2Client ) ||
+				isWoo ||
+				isVIPOAuth2Client( oauth2Client ) ||
+				isPartnerPortalOAuth2Client( oauth2Client ) );
 
 		return (
 			<>
@@ -591,7 +578,7 @@ export class Login extends Component {
 									<HeadingSubText
 										isSocialFirst={ isSocialFirst }
 										twoFactorAuthType={ twoFactorAuthType }
-										isLostPassword={ isLostPassword }
+										action={ action }
 									/>
 								}
 							/>

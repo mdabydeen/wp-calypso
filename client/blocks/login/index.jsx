@@ -450,31 +450,9 @@ class Login extends Component {
 							isWoo={ isWoo }
 							isWooJPC={ isWooJPC }
 							from={ get( currentQuery, 'from' ) }
+							isJetpack={ isJetpack }
 						/>
 					</div>
-					{ ! isWooJPC && ! isBlazePro && (
-						<div className="login__lost-password-footer">
-							<p className="login__lost-password-no-account">
-								{ translate( 'Don’t have an account? {{signupLink}}Sign up{{/signupLink}}', {
-									components: {
-										signupLink,
-									},
-								} ) }
-							</p>
-						</div>
-					) }
-					{ isBlazePro && (
-						<div className="login__lost-password-footer">
-							<p className="login__lost-password-no-account">
-								<span>{ translate( 'Don’t have an account?' ) }&nbsp;</span>
-								{ translate( '{{signupLink}}Sign up{{/signupLink}}', {
-									components: {
-										signupLink,
-									},
-								} ) }
-							</p>
-						</div>
-					) }
 				</Fragment>
 			);
 		}
@@ -629,8 +607,10 @@ class Login extends Component {
 				className={ clsx( 'login', {
 					'is-akismet': isFromAkismet,
 					'is-jetpack': isJetpack,
+					// TODO: Confirm if `is-jetpack-cloud` is needed
 					'is-jetpack-cloud': isJetpackCloudOAuth2Client( oauth2Client ),
 					'is-automattic-for-agencies-flow': isFromAutomatticForAgenciesPlugin,
+					// TODO: Confirm if `is-a4a` is needed
 					'is-a4a': isA4AOAuth2Client( oauth2Client ),
 				} ) }
 			>
