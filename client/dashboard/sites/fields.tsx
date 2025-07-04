@@ -24,6 +24,7 @@ const DEFAULT_FIELDS: Field< Site >[] = [
 	{
 		id: 'name',
 		label: __( 'Site' ),
+		enableHiding: false,
 		enableGlobalSearch: true,
 		getValue: ( { item } ) => getSiteDisplayName( item ),
 		render: ( { field, item } ) => <Name site={ item } value={ field.getValue( { item } ) } />,
