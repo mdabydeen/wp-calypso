@@ -2,7 +2,11 @@ import { Button, Dropdown, MenuGroup, MenuItem } from '@wordpress/components';
 import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { chevronDown, cloudDownload, cloudUpload } from '@wordpress/icons';
-import AsyncLoad from 'calypso/components/async-load';
+import { lazy, Suspense } from 'react';
+
+const StagingSiteSyncModal = lazy(
+	() => import( 'calypso/sites/staging-site/components/staging-site-sync-modal' )
+);
 
 interface SyncDropdownProps {
 	className?: string;
@@ -78,14 +82,15 @@ export default function SyncDropdown( {
 				) }
 			/>
 			{ isModalOpen && (
-				<AsyncLoad
-					require="calypso/sites/staging-site/components/staging-site-sync-modal"
-					onClose={ handleCloseModal }
-					syncType={ syncType }
-					environment={ environment }
-					productionSiteId={ productionSiteId }
-					stagingSiteId={ stagingSiteId }
-				/>
+				<Suspense fallback={ null }>
+					<StagingSiteSyncModal
+						onClose={ handleCloseModal }
+						syncType={ syncType }
+						environment={ environment }
+						productionSiteId={ productionSiteId }
+						stagingSiteId={ stagingSiteId }
+					/>
+				</Suspense>
 			) }
 		</>
 	);
