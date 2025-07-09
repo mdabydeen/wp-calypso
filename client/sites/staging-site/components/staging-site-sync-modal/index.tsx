@@ -27,9 +27,19 @@ import { usePullFromStagingMutation } from 'calypso/sites/staging-site/hooks/use
 import { recordTracksEvent } from 'calypso/state/analytics/actions';
 import getBackupBrowserCheckList from 'calypso/state/rewind/selectors/get-backup-browser-check-list';
 import { getSiteSlug } from 'calypso/state/sites/selectors';
+import type { FileBrowserConfig } from 'calypso/my-sites/backup/backup-contents-page/file-browser';
 
 // TODO: Temporary style for the PoC
 import './style.scss';
+
+const fileBrowserConfig: FileBrowserConfig = {
+	restrictedTypes: [ 'plugin', 'theme' ],
+	restrictedPaths: [ 'wp-content' ],
+	excludeTypes: [ 'wordpress' ],
+	alwaysInclude: [ 'wp-config.php' ],
+	showHeaderButtons: false,
+	showFileCard: false,
+};
 
 const DirectionArrow = () => {
 	return (
@@ -223,7 +233,11 @@ export default function SyncModal( {
 				<SectionHeader level={ 3 } title={ syncConfig.syncSelectionHeading } />
 				{ querySiteId === stagingSiteId && (
 					<div className="staging-site-card">
-						<FileBrowser rewindId={ rewindId } showHeaderButtons={ false } siteId={ querySiteId } />
+						<FileBrowser
+							rewindId={ rewindId }
+							siteId={ querySiteId }
+							fileBrowserConfig={ fileBrowserConfig }
+						/>
 					</div>
 				) }
 				<Text>
