@@ -8,6 +8,7 @@ import {
 	isTestModeEnvironment,
 	SMOOCH_INTEGRATION_ID,
 	SMOOCH_INTEGRATION_ID_STAGING,
+	useCanConnectToZendeskMessaging,
 } from '@automattic/zendesk-client';
 import { useQueryClient, QueryClient } from '@tanstack/react-query';
 import { useSelect, useDispatch as useDataStoreDispatch } from '@wordpress/data';
@@ -86,6 +87,7 @@ const HelpCenterSmooch: React.FC< { enableAuth: boolean } > = ( { enableAuth } )
 	const { isEligibleForChat } = useChatStatus();
 	const queryClient = useQueryClient();
 	const smoochRef = useRef< HTMLDivElement >( null );
+	const { data: canConnectToZendesk } = useCanConnectToZendeskMessaging();
 	const { isHelpCenterShown, isChatLoaded, areSoundNotificationsEnabled, allowPremiumSupport } =
 		useSelect( ( select ) => {
 			const helpCenterSelect: HelpCenterSelect = select( HELP_CENTER_STORE );
@@ -97,7 +99,8 @@ const HelpCenterSmooch: React.FC< { enableAuth: boolean } > = ( { enableAuth } )
 			};
 		}, [] );
 
-	const allowChat = enableAuth && ( isEligibleForChat || allowPremiumSupport );
+	const allowChat =
+		canConnectToZendesk && enableAuth && ( isEligibleForChat || allowPremiumSupport );
 
 	const { data: authData } = useAuthenticateZendeskMessaging( allowChat, 'messenger' );
 
@@ -117,7 +120,7 @@ const HelpCenterSmooch: React.FC< { enableAuth: boolean } > = ( { enableAuth } )
 
 			Smooch.getConversationById( data?.conversation?.id ).then( () => getUnreadNotifications() );
 		},
-		[ isHelpCenterShown, areSoundNotificationsEnabled ]
+		[ isHelpCenterShown, areSoundNotificationsEnabled, getUnreadNotifications ]
 	);
 
 	const clientIdListener = useCallback(
