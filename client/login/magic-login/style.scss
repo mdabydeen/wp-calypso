@@ -117,10 +117,6 @@
 }
 
 .layout.is-wpcom-magic-login {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-
 	.magic-login__form-header-icon {
 		text-align: center;
 		img {
@@ -335,7 +331,7 @@
 	}
 }
 .is-section-login .app-promo.magic-link-app-promo {
-	margin-top: 4px;
+	margin-top: 3em;
 	box-shadow: 0 0 0 1px var(--color-border-subtle) inset;
 	border-radius: 16px; /* stylelint-disable-line scales/radii */
 	font-weight: 400;
@@ -374,23 +370,7 @@
 	}
 }
 
-.magic-login__gutenboarding-wordpress-logo {
-	height: 64px;
-	position: absolute;
-	left: 0;
-	top: 0;
-	padding: 0 24px;
-	box-sizing: border-box;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-
-	@include break-mobile {
-		padding: 8px 24px;
-	}
-}
-
-.studio-magic-login__tos {
+.magic-login__tos {
 	font-size: $font-body-extra-small;
 	margin: 20px 0 20px;
 	text-align: left;
