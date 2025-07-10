@@ -4,6 +4,7 @@ import { useNavigate, useRouter } from '@tanstack/react-router';
 import { Button, Modal } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { useState } from 'react';
+import { useAnalytics } from '../app/analytics';
 import { useAuth } from '../app/auth';
 import { isAutomatticianQuery } from '../app/queries/me-a8c';
 import { userPreferencesQuery, userPreferencesMutation } from '../app/queries/me-preferences';
@@ -16,7 +17,7 @@ import { getActions } from './actions';
 import AddNewSite from './add-new-site';
 import { getFields } from './fields';
 import { SitesNotices } from './notices';
-import { getView, mergeViews, DEFAULT_LAYOUTS } from './views';
+import { getView, mergeViews, DEFAULT_LAYOUTS, recordViewChanges } from './views';
 import type { ViewPreferences, ViewSearchParams } from './views';
 import type { FetchSitesOptions, Site } from '../data/types';
 import type { View, Filter } from '@automattic/dataviews';
@@ -42,6 +43,7 @@ const getFetchSitesOptions = ( view: View, isRestoringAccount: boolean ): FetchS
 };
 
 export default function Sites() {
+	const { recordTracksEvent } = useAnalytics();
 	const navigate = useNavigate( { from: sitesRoute.fullPath } );
 	const router = useRouter();
 	const currentSearchParams = sitesRoute.useSearch();
@@ -76,6 +78,8 @@ export default function Sites() {
 		if ( nextView.type === 'list' ) {
 			return;
 		}
+
+		recordViewChanges( view, nextView, recordTracksEvent );
 
 		const { updatedViewPreferences, updatedViewSearchParams } = mergeViews( {
 			defaultView,
