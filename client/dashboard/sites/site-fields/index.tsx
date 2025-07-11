@@ -280,7 +280,7 @@ function SiteLaunchNag( { site }: { site: Site } ) {
 					recordTracksEvent( 'calypso_dashboard_sites_site_launch_nag_click' );
 				} }
 			>
-				{ getSiteStatusLabel( site ) }
+				{ __( 'Finish setup' ) }
 			</ExternalLink>
 		</>
 	);
