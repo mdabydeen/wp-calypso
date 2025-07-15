@@ -684,19 +684,6 @@ $breakpoint-mobile: 660px;
 		}
 	}
 
-	.signup-form,
-	.login {
-		.auth-form__separator-text {
-			background: #fff;
-			padding: 0 27px !important;
-		}
-	}
-
-	.auth-form__separator .auth-form__separator-text {
-		padding: 0 27px;
-		background: #fff;
-	}
-
 	.app-promo.magic-link-app-promo {
 		padding: 24px;
 	}
@@ -1826,7 +1813,7 @@ $breakpoint-mobile: 660px;
 }
 
 .woo,
-.layout.is-jetpack-woo-dna-flow {
+.layout.is-woocommerce-core-profiler-flow {
 	--woo-purple-0: #F2EDFF;
 	--woo-purple-40: #873EFF;
 	--woo-purple-50: #720EEC;
