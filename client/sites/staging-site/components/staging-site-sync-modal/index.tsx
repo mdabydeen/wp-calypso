@@ -92,6 +92,7 @@ interface SyncModalProps {
 	environment: 'production' | 'staging';
 	productionSiteId: number;
 	stagingSiteId: number;
+	onSyncStart: () => void;
 }
 
 interface EnvironmentConfig {
@@ -169,6 +170,7 @@ export default function SyncModal( {
 	environment,
 	productionSiteId,
 	stagingSiteId,
+	onSyncStart,
 }: SyncModalProps ) {
 	const dispatch = useDispatch();
 	const syncConfig = getSyncConfig( syncType );
@@ -282,6 +284,8 @@ export default function SyncModal( {
 			// Sync everything
 			include_paths = '';
 		}
+
+		onSyncStart();
 
 		if (
 			( syncType === 'pull' && environment === 'production' ) ||
