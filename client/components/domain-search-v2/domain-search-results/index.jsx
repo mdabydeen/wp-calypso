@@ -11,7 +11,6 @@ import { get, times } from 'lodash';
 import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { connect } from 'react-redux';
-import DomainSkipSuggestion from 'calypso/components/domains/domain-skip-suggestion';
 import { isDomainMappingFree, isNextDomainFree } from 'calypso/lib/cart-values/cart-items';
 import { isSubdomain } from 'calypso/lib/domains';
 import { domainAvailability } from 'calypso/lib/domains/constants';
@@ -21,6 +20,7 @@ import { getCurrentUserCurrencyCode } from 'calypso/state/currency-code/selector
 import { getDesignType } from 'calypso/state/signup/steps/design-type/selectors';
 import DomainRegistrationSuggestion from '../domain-registration-suggestion';
 import PremiumBadge from '../domain-registration-suggestion/premium-badge';
+import DomainSkipSuggestion from '../domain-skip-suggestion';
 import FeaturedDomainSuggestions from '../featured-domain-suggestions';
 
 class DomainSearchResults extends Component {
@@ -265,12 +265,15 @@ class DomainSearchResults extends Component {
 	}
 
 	renderDomainSuggestions() {
-		const { isDomainOnly, suggestions, showStrikedOutPrice } = this.props;
+		const { isDomainOnly, suggestions, showStrikedOutPrice, showSkipButton } = this.props;
 		let featuredSuggestionElement;
 		let suggestionElements;
 		let domainSkipSuggestion;
 
 		if ( ! this.props.isLoadingSuggestions && this.props.suggestions ) {
+			const subdomainSuggestion = suggestions.find(
+				( suggestion ) => suggestion.isSubDomainSuggestion
+			);
 			const regularSuggestions = suggestions.filter(
 				( suggestion ) =>
 					! suggestion.isRecommended &&
@@ -343,10 +346,10 @@ class DomainSearchResults extends Component {
 				);
 			} );
 
-			domainSkipSuggestion = (
+			domainSkipSuggestion = showSkipButton && subdomainSuggestion && (
 				<DomainSkipSuggestion
-					selectedSiteSlug={ this.props.selectedSite?.slug }
-					onButtonClick={ () => this.props.onSkip() }
+					domain={ subdomainSuggestion.domain_name }
+					onSkip={ this.props.onSkip }
 				/>
 			);
 		} else {
@@ -357,7 +360,7 @@ class DomainSearchResults extends Component {
 		return (
 			<>
 				{ featuredSuggestionElement }
-				{ this.props.showSkipButton && domainSkipSuggestion }
+				{ domainSkipSuggestion }
 				<DomainSuggestionsList>{ suggestionElements }</DomainSuggestionsList>
 			</>
 		);
