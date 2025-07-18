@@ -19,11 +19,11 @@ import OverviewCard from '../overview-card';
 import OverviewCardUpsellDIFM from '../overview-card-upsell-difm';
 import AgencySiteShareCard from './agency-site-share-card';
 import BackupCard from './backup-card';
+import DomainsCard from './domains-card';
 import PerformanceCards from './performance-cards';
 import ScanCard from './scan-card';
 import SiteOverviewFields from './site-overview-fields';
 import SitePreviewCard from './site-preview-card';
-import StorageCard from './storage-card';
 import UptimeCard from './uptime-card';
 import './style.scss';
 
@@ -148,7 +148,7 @@ function SiteOverview( {
 					</VStack>
 					<VStack spacing={ spacing } justify="start">
 						<OverviewCardUpsellDIFM site={ site } />
-						<StorageCard site={ site } />
+						<DomainsCard site={ site } type={ isSmallViewport ? 'list' : 'table' } />
 						<UptimeCard site={ site } />
 					</VStack>
 				</HStack>
