@@ -141,8 +141,8 @@ function SiteOverview( {
 				>
 					<LatestActivitiesCard />
 					<VStack spacing={ spacing } justify="start">
+						<DomainsCard site={ site } isCompact={ isSmallViewport } />
 						<OverviewCardUpsellDIFM site={ site } />
-						<DomainsCard site={ site } type={ isSmallViewport ? 'list' : 'table' } />
 						<UptimeCard site={ site } />
 					</VStack>
 				</HStack>
