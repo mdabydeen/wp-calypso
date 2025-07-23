@@ -23,6 +23,7 @@ import DomainsCard from './domains-card';
 import LatestActivitiesCard from './latest-activities-card';
 import PlanCard from './plan-card';
 import ScanCard from './scan-card';
+import SiteActionMenu from './site-action-menu';
 import SiteOverviewFields from './site-overview-fields';
 import SitePreviewCard from './site-preview-card';
 import UptimeCard from './uptime-card';
@@ -92,14 +93,17 @@ function SiteOverview( {
 						title={ getSiteDisplayName( site ) }
 						actions={
 							site.options?.admin_url && (
-								<Button
-									__next40pxDefaultSize
-									variant="primary"
-									href={ site.options.admin_url }
-									icon={ wordpress }
-								>
-									{ __( 'WP Admin' ) }
-								</Button>
+								<>
+									<Button
+										__next40pxDefaultSize
+										variant="primary"
+										href={ site.options.admin_url }
+										icon={ wordpress }
+									>
+										{ __( 'WP Admin' ) }
+									</Button>
+									<SiteActionMenu site={ site } />
+								</>
 							)
 						}
 					/>
