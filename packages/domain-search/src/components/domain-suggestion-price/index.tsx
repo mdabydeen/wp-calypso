@@ -11,16 +11,16 @@ import type { ReactNode } from 'react';
 import './style.scss';
 
 interface DomainSuggestionPriceProps {
-	originalPrice?: string;
+	salePrice?: string;
 	price: string;
-	renewsAnually?: boolean;
+	renewPrice?: string;
 	subText?: ReactNode;
 }
 
 export const DomainSuggestionPrice = ( {
-	originalPrice,
+	salePrice,
 	price,
-	renewsAnually = true,
+	renewPrice,
 	subText: subTextProp,
 }: DomainSuggestionPriceProps ) => {
 	const { __ } = useI18n();
@@ -48,15 +48,19 @@ export const DomainSuggestionPrice = ( {
 			return subTextProp;
 		}
 
-		if ( originalPrice && renewsAnually ) {
-			return sprintf(
-				// translators: %(price)s is the price of the domain.
-				__( 'For first year. %(price)s/year renewal.' ),
-				{ price: originalPrice }
-			);
+		if ( ! renewPrice ) {
+			return null;
 		}
 
-		return null;
+		if ( ! salePrice && renewPrice === price ) {
+			return null;
+		}
+
+		return sprintf(
+			// translators: %(price)s is the price of the domain.
+			__( 'For first year. %(price)s/year renewal.' ),
+			{ price: renewPrice }
+		);
 	};
 
 	const subText = getSubText();
@@ -64,19 +68,19 @@ export const DomainSuggestionPrice = ( {
 	return (
 		<VStack spacing={ 0 }>
 			<HStack spacing={ 2 } justify={ alignment === 'left' ? 'start' : 'end' }>
-				{ originalPrice ? (
+				{ salePrice ? (
 					<>
 						<Text size={ priceSize } variant="muted" style={ { textDecoration: 'line-through' } }>
-							{ originalPrice }
+							{ price }
 						</Text>
 						<Text size={ priceSize } color="var( --domain-search-promotional-price-color )">
-							{ price }
+							{ salePrice }
 						</Text>
 					</>
 				) : (
 					<HStack spacing={ 1 } alignment={ alignment }>
 						<Text size={ priceSize }>{ price }</Text>
-						{ renewsAnually && <Text>{ __( '/year' ) }</Text> }
+						{ renewPrice && renewPrice === price && <Text>{ __( '/year' ) }</Text> }
 					</HStack>
 				) }
 			</HStack>
