@@ -1,7 +1,7 @@
 import { Button, Tooltip } from '@wordpress/components';
 import { arrowRight, warning } from '@wordpress/icons';
 import { useI18n } from '@wordpress/react-i18n';
-import { useEffect } from 'react';
+import { clsx } from 'clsx';
 import { useFocusedCartAction } from '../../hooks/use-focused-cart-action';
 import { useDomainSearch } from '../domain-search';
 import { shoppingCartIcon } from './shopping-cart-icon';
@@ -25,22 +25,10 @@ export const DomainSuggestionCTA = ( {
 }: DomainSuggestionCTAProps ) => {
 	const { __ } = useI18n();
 	const { cart, onContinue } = useDomainSearch();
-	const { isBusy, errorMessage, removeErrorMessage, callback } = useFocusedCartAction( () => {
+	const { isBusy, errorMessage, callback } = useFocusedCartAction( () => {
 		onClick?.( 'add-to-cart' );
 		cart.onAddItem( uuid );
 	} );
-
-	useEffect( () => {
-		if ( ! errorMessage ) {
-			return;
-		}
-
-		const timeout = setTimeout( () => {
-			removeErrorMessage();
-		}, 3000 );
-
-		return () => clearTimeout( timeout );
-	}, [ errorMessage, removeErrorMessage ] );
 
 	const isDomainOnCart = cart.hasItem( uuid );
 
@@ -68,22 +56,25 @@ export const DomainSuggestionCTA = ( {
 
 	if ( errorMessage ) {
 		return (
-			// @ts-expect-error open is not a valid prop for the WPDS Tooltip component, but accepted by the underlying Tooltip component.
-			<Tooltip delay={ 0 } text={ errorMessage } placement="top" open>
-				<div className="domain-suggestion-cta-error-container">
+			<div className="domain-suggestion-cta-error">
+				<Tooltip
+					delay={ 0 }
+					text={ errorMessage }
+					placement="top"
+					className="domain-suggestion-cta-error__tooltip"
+				>
 					<Button
-						className="domain-suggestion-cta"
+						className={ clsx( 'domain-suggestion-cta', 'domain-suggestion-cta--error' ) }
 						isDestructive
 						variant="primary"
-						disabled
 						__next40pxDefaultSize
+						onClick={ callback }
 						icon={ warning }
-						style={ { flex: 1 } }
 					>
 						{ compact ? undefined : __( 'Add to Cart' ) }
 					</Button>
-				</div>
-			</Tooltip>
+				</Tooltip>
+			</div>
 		);
 	}
 
