@@ -1,4 +1,4 @@
-import { DomainSearchControls } from '@automattic/domain-search';
+import { DomainSearchControls, useTypedPlaceholder } from '@automattic/domain-search';
 import { useState, useEffect, useRef, useMemo } from '@wordpress/element';
 import { _x } from '@wordpress/i18n';
 import { debounce } from 'lodash';
@@ -27,10 +27,19 @@ interface DomainSearchInputProps {
 	inputLabel?: string;
 	minLength?: number;
 	maxLength?: number;
+	placeholderAnimation?: boolean;
 	onBlur?: ( event: React.FocusEvent< HTMLInputElement > ) => void;
 	onSearch?: ( value: string ) => void;
 	onSearchChange?: ( value: string ) => void;
 }
+
+const PLACEHOLDER_PHRASES = [
+	'dailywine.blog',
+	'creatortools.shop',
+	'literatiagency.com',
+	'democratizework.org',
+	'discardedobject.art',
+];
 
 const DomainSearchInput = function DomainSearchInput( {
 	autoFocus,
@@ -43,11 +52,17 @@ const DomainSearchInput = function DomainSearchInput( {
 	inputLabel,
 	minLength,
 	maxLength,
+	placeholderAnimation,
 	onBlur = () => {},
 	onSearch,
 	onSearchChange,
 }: DomainSearchInputProps ) {
 	const [ , setValue ] = useState( defaultValue || controlledValue || '' );
+
+	// We want to pause the placeholder animation
+	// if the placeholder animation is disabled or if the input is not empty
+	const pausePlaceholderAnimation = ! placeholderAnimation || !! controlledValue;
+	const { placeholder } = useTypedPlaceholder( PLACEHOLDER_PHRASES, pausePlaceholderAnimation );
 
 	const doSearch = useMemo( () => {
 		if ( ! onSearch ) {
@@ -87,6 +102,7 @@ const DomainSearchInput = function DomainSearchInput( {
 		<DomainSearchControls.Input
 			label={ searchControlLabel }
 			value={ controlledValue ?? '' }
+			placeholder={ placeholderAnimation ? placeholder : undefined }
 			onChange={ handleChange }
 			onReset={ handleReset }
 			// eslint-disable-next-line jsx-a11y/no-autofocus
