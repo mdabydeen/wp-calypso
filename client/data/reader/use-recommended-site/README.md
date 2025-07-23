@@ -73,7 +73,7 @@ The implementation uses the established WordPress.com `bypassDataLayer` pattern:
 ### Running Tests
 
 ```bash
-yarn test-client client/landing/subscriptions/hooks/test/use-recommended-site.test.ts
+yarn test-client client/data/reader/use-recommended-site/index.test.ts
 yarn test-client client/state/reader/lists/test/reducer.js
 ```
 
