@@ -12,6 +12,7 @@ import { Callout } from '../../components/callout';
 import { TextBlur } from '../../components/text-blur';
 import UpsellCTAButton from '../../components/upsell-cta-button';
 import { DomainUpsellIllustraction } from './upsell-illustration';
+import illustrationTransferDomainUrl from './upsell-illustration-transfer-domain.svg';
 import type { Site } from '../../data/types';
 
 const useDomainSuggestion = ( site: Site ) => {
@@ -121,11 +122,37 @@ const OverviewCardUpsellDomainContent = ( {
 				<UpsellCTAButton
 					target="_blank"
 					text={ upsellCTAButtonText }
-					variant="primary"
 					size="compact"
 					tracksId={ tracksId }
 					isBusy={ isSubmitting }
 					onClick={ handleUpsell }
+				/>
+			}
+		/>
+	);
+};
+
+export const OverviewCardUpsellDomainTransfer = () => {
+	return (
+		<Callout
+			title={ __( 'Transfer your domain' ) }
+			titleAs="h2"
+			description={
+				<Text variant="muted">
+					{ __(
+						'Transfer your domain and benefit from some of the lowest prices in the business.'
+					) }
+				</Text>
+			}
+			image={ illustrationTransferDomainUrl }
+			imageVariant="full-bleed"
+			actions={
+				<UpsellCTAButton
+					href="/setup/domain-transfer"
+					text={ __( 'Transfer domain' ) }
+					size="compact"
+					tracksId="transfer-domain"
+					variant="secondary"
 				/>
 			}
 		/>
