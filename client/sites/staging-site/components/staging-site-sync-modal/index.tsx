@@ -10,11 +10,19 @@ import {
 	CheckboxControl,
 	SelectControl,
 	Notice,
+	Tooltip,
 } from '@wordpress/components';
-import { createInterpolateElement, useState, useCallback, useMemo } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	useState,
+	useCallback,
+	useMemo,
+	useEffect,
+} from '@wordpress/element';
 import { __, isRTL } from '@wordpress/i18n';
 import { chevronRight, chevronLeft } from '@wordpress/icons';
 import QueryRewindState from 'calypso/components/data/query-rewind-state';
+import useGetDisplayDate from 'calypso/components/jetpack/daily-backup-status/use-get-display-date';
 import InlineSupportLink from 'calypso/dashboard/components/inline-support-link';
 import { SectionHeader } from 'calypso/dashboard/components/section-header';
 import SiteEnvironmentBadge, {
@@ -37,6 +45,7 @@ import type { FileBrowserConfig } from 'calypso/my-sites/backup/backup-contents-
 
 import './style.scss';
 
+const ROOT_PATH = '/';
 const WP_CONFIG_PATH = '/wp-config.php';
 const WP_CONTENT_PATH = '/wp-content';
 const SQL_PATH = '/sql';
@@ -195,12 +204,15 @@ export default function SyncModal( {
 	const stagingSiteTitle = useSelector( ( state ) => getSiteTitle( state, stagingSiteId ) ) || '';
 
 	const targetSiteSlug = targetEnvironment === 'production' ? productionSiteSlug : stagingSiteSlug;
+	const sourceSiteSlug = sourceEnvironment === 'staging' ? stagingSiteSlug : productionSiteSlug;
 
 	const sourceSiteTitle = sourceEnvironment === 'staging' ? stagingSiteTitle : productionSiteTitle;
 	const targetSiteTitle =
 		targetEnvironment === 'production' ? productionSiteTitle : stagingSiteTitle;
 
 	const querySiteId = sourceEnvironment === 'staging' ? stagingSiteId : productionSiteId;
+
+	const getDisplayDate = useGetDisplayDate( querySiteId );
 
 	const browserCheckList = useSelector( ( state ) =>
 		getBackupBrowserCheckList( state, querySiteId )
@@ -277,10 +289,24 @@ export default function SyncModal( {
 	} );
 	const rewindId = lastKnownBackupAttempt?.rewindId;
 
+	const shouldDisableGranularSync = ! lastKnownBackupAttempt;
+
+	useEffect( () => {
+		if ( shouldDisableGranularSync ) {
+			dispatch( setNodeCheckState( querySiteId, ROOT_PATH, 'checked' ) );
+			dispatch( setNodeCheckState( querySiteId, WP_CONTENT_PATH, 'checked' ) );
+			dispatch( setNodeCheckState( querySiteId, WP_CONFIG_PATH, 'checked' ) );
+			dispatch( setNodeCheckState( querySiteId, SQL_PATH, 'checked' ) );
+		}
+	}, [ dispatch, querySiteId, shouldDisableGranularSync ] );
+
 	const handleConfirm = () => {
 		let include_paths = browserCheckList.includeList.map( ( item ) => item.id ).join( ',' );
 		let exclude_paths = browserCheckList.excludeList.map( ( item ) => item.id ).join( ',' );
-		if ( filesAndFoldersNodesCheckState === 'checked' && sqlNode?.checkState === 'checked' ) {
+		if (
+			shouldDisableGranularSync ||
+			( filesAndFoldersNodesCheckState === 'checked' && sqlNode?.checkState === 'checked' )
+		) {
 			// Sync everything
 			include_paths = '';
 			exclude_paths = '';
@@ -346,7 +372,11 @@ export default function SyncModal( {
 
 	const isButtonDisabled =
 		( showDomainConfirmation && domainConfirmation !== productionSiteSlug ) ||
-		! browserCheckList.totalItems;
+		( browserCheckList.totalItems === 0 && browserCheckList.includeList.length === 0 );
+
+	const displayBackupDate = lastKnownBackupAttempt
+		? getDisplayDate( lastKnownBackupAttempt.activityTs, false )
+		: null;
 
 	return (
 		<Modal
@@ -377,34 +407,46 @@ export default function SyncModal( {
 				<SectionHeader level={ 3 } title={ syncConfig.syncSelectionHeading } />
 
 				<div className="staging-site-card">
-					<HStack spacing={ 2 } justify="space-between" alignment="center">
-						<CheckboxControl
-							__nextHasNoMarginBottom
-							label={ __( 'Files and folders' ) }
-							checked={ filesAndFoldersNodesCheckState === 'checked' }
-							indeterminate={ filesAndFoldersNodesCheckState === 'mixed' }
-							onChange={ onCheckboxChange }
-						/>
-						<SelectControl
-							value={ isFileBrowserVisible ? 'true' : 'false' }
-							variant="minimal"
-							options={ [
-								{
-									label: __( 'All files and folders' ),
-									value: 'false',
-								},
-								{
-									label: __( 'Specific files and folders' ),
-									value: 'true',
-								},
-							] }
-							onChange={ handleExpanderChange }
-							__next40pxDefaultSize
-							__nextHasNoMarginBottom
-							aria-label={ __( 'Select files and folders to sync' ) }
-						/>
-					</HStack>
-
+					<Tooltip
+						text={
+							shouldDisableGranularSync
+								? __( 'Selective Sync will be enabled automatically once your backup is complete.' )
+								: ''
+						}
+					>
+						<HStack spacing={ 2 } justify="space-between" alignment="center">
+							<CheckboxControl
+								__nextHasNoMarginBottom
+								label={ __( 'Files and folders' ) }
+								disabled={ shouldDisableGranularSync }
+								checked={
+									shouldDisableGranularSync || filesAndFoldersNodesCheckState === 'checked'
+								}
+								indeterminate={ filesAndFoldersNodesCheckState === 'mixed' }
+								onChange={ onCheckboxChange }
+							/>
+							<SelectControl
+								style={ shouldDisableGranularSync ? { backgroundColor: 'white' } : {} }
+								value={ isFileBrowserVisible ? 'true' : 'false' }
+								variant="minimal"
+								disabled={ shouldDisableGranularSync }
+								options={ [
+									{
+										label: __( 'All files and folders' ),
+										value: 'false',
+									},
+									{
+										label: __( 'Specific files and folders' ),
+										value: 'true',
+									},
+								] }
+								onChange={ handleExpanderChange }
+								__next40pxDefaultSize
+								__nextHasNoMarginBottom
+								aria-label={ __( 'Select files and folders to sync' ) }
+							/>
+						</HStack>
+					</Tooltip>
 					{ /*
 					 * Keep the FileBrowser component rendered (using a CSS 'hidden' class instead of conditional rendering)
 					 * to ensure its child nodes initialize properly and can be selected by default.
@@ -420,7 +462,8 @@ export default function SyncModal( {
 						<CheckboxControl
 							__nextHasNoMarginBottom
 							label={ __( 'Database tables' ) }
-							checked={ sqlNode?.checkState === 'checked' }
+							disabled={ shouldDisableGranularSync }
+							checked={ shouldDisableGranularSync || sqlNode?.checkState === 'checked' }
 							onChange={ handleDatabaseCheckboxChange }
 						/>
 					</div>
@@ -460,6 +503,19 @@ export default function SyncModal( {
 								/>
 							</VStack>
 						) }
+						<HStack alignment="left" spacing={ 1 }>
+							<Text color="var(--studio-gray-40)">
+								{ displayBackupDate
+									? createInterpolateElement( __( 'Backup contents from: <date />.' ), {
+											date: <span>{ displayBackupDate }</span>,
+									  } )
+									: __( 'There are no backups.' ) }{ ' ' }
+								<ExternalLink
+									href={ `/backup/${ sourceSiteSlug }` }
+									children={ __( 'Backup now' ) }
+								/>
+							</Text>
+						</HStack>
 					</VStack>
 				</div>
 				<HStack className="staging-site-card__footer">
