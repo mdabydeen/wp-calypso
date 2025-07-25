@@ -13,6 +13,7 @@ import {
 	NEW_HOSTED_SITE_FLOW,
 	DOMAIN_FOR_GRAVATAR_FLOW,
 	isDomainForGravatarFlow,
+	AI_SITE_BUILDER_FLOW,
 } from '@automattic/onboarding';
 import { withShoppingCart } from '@automattic/shopping-cart';
 import { Button } from '@wordpress/components';
@@ -693,6 +694,7 @@ class RenderDomainsStepComponent extends Component {
 			DOMAIN_FOR_GRAVATAR_FLOW,
 			'onboarding-with-email',
 			NEW_HOSTED_SITE_FLOW,
+			AI_SITE_BUILDER_FLOW,
 		].includes( flowName );
 	};
 
@@ -1323,15 +1325,11 @@ class RenderDomainsStepComponent extends Component {
 			return '';
 		}
 
-		if ( shouldUseDomainSearchV2 ) {
-			return translate( 'Make it yours with a .com, .blog, or one of 350+ domain options.' );
-		}
-
 		if ( isAllDomains ) {
 			return translate( 'Find the domain that defines you' );
 		}
 
-		if ( isNewHostedSiteCreationFlow( flowName ) ) {
+		if ( isNewHostedSiteCreationFlow( flowName ) && ! shouldUseDomainSearchV2 ) {
 			return translate(
 				'Help your site stand out with a custom domain. Not sure yet? {{decideLater}}Decide later{{/decideLater}}.',
 				{
@@ -1365,6 +1363,10 @@ class RenderDomainsStepComponent extends Component {
 		}
 
 		if ( ! stepSectionName ) {
+			if ( shouldUseDomainSearchV2 ) {
+				return translate( 'Make it yours with a .com, .blog, or one of 350+ domain options.' );
+			}
+
 			return translate( 'Enter some descriptive keywords to get started.' );
 		}
 
@@ -1387,16 +1389,16 @@ class RenderDomainsStepComponent extends Component {
 			return '';
 		}
 
-		if ( shouldUseDomainSearchV2 ) {
-			return translate( 'Claim your space on the web' );
-		}
-
 		if ( headerText ) {
 			return headerText;
 		}
 
 		if ( isAllDomains ) {
 			return translate( 'Your next big idea starts here' );
+		}
+
+		if ( shouldUseDomainSearchV2 ) {
+			return translate( 'Claim your space on the web' );
 		}
 
 		if ( shouldUseMultipleDomainsInCart( flowName ) ) {
@@ -1528,6 +1530,16 @@ class RenderDomainsStepComponent extends Component {
 				<span>{ translate( 'Use a domain I already own' ) }</span>
 			</Button>
 		);
+	}
+
+	shouldRenderStickyNavigation() {
+		if ( this.props.shouldUseDomainSearchV2 ) {
+			return false;
+		}
+
+		if ( shouldUseMultipleDomainsInCart( this.props.flowName ) ) {
+			return false;
+		}
 	}
 
 	render() {
@@ -1711,7 +1723,9 @@ class RenderDomainsStepComponent extends Component {
 						/>
 					}
 					backLabelText={ backLabelText }
-					hideSkip
+					hideSkip={ ! shouldUseDomainSearchV2 || AI_SITE_BUILDER_FLOW !== flowName }
+					skipLabelText={ translate( 'Decide later' ) }
+					onSkip={ () => this.handleSkip( undefined, true ) }
 					align="center"
 					isWideLayout
 					goBack={ goBack }
@@ -1748,7 +1762,7 @@ class RenderDomainsStepComponent extends Component {
 				goToNextStep={ this.handleSkip }
 				align="center"
 				isWideLayout
-				isSticky={ ! shouldUseDomainSearchV2 }
+				isSticky={ this.shouldRenderStickyNavigation() }
 				customizedActionButtons={ useDomainIOwnLink }
 			/>
 		);

@@ -16,6 +16,7 @@ import {
 	HUNDRED_YEAR_PLAN_FLOW,
 	isHundredYearDomainFlow,
 	isDomainForGravatarFlow,
+	NEW_HOSTED_SITE_FLOW,
 } from '@automattic/onboarding';
 import { withShoppingCart } from '@automattic/shopping-cart';
 import {
@@ -608,7 +609,9 @@ class RegisterDomainStep extends Component {
 		const notices = this.renderGeneralNotices();
 
 		const showFreeDomainPromo =
-			this.props.isPlanSelectionAvailableInFlow || this.props.showFreeDomainPromo;
+			this.props.showFreeDomainPromo === false
+				? false
+				: this.props.isPlanSelectionAvailableInFlow || this.props.showFreeDomainPromo;
 
 		const showHelperTerm =
 			this.state.helperTermSubmitted || ( this.state.hasSubmitted && ! this.state.lastQuery );
@@ -1754,6 +1757,14 @@ class RegisterDomainStep extends Component {
 		return this.goToUseYourDomainStep;
 	};
 
+	getUseYourDomainHandler = () => {
+		if ( [ NEW_HOSTED_SITE_FLOW, AI_SITE_BUILDER_FLOW ].includes( this.props.flowName ) ) {
+			return null;
+		}
+
+		return this.props.handleClickUseYourDomain ?? this.useYourDomainFunction();
+	};
+
 	renderSearchResults() {
 		const {
 			exactMatchDomain,
@@ -1786,7 +1797,7 @@ class RegisterDomainStep extends Component {
 				onAddMapping={ onAddMapping }
 				onClickMapping={ this.goToMapDomainStep }
 				onAddTransfer={ this.props.onAddTransfer }
-				onClickUseYourDomain={ this.props.handleClickUseYourDomain ?? this.useYourDomainFunction() }
+				onClickUseYourDomain={ this.getUseYourDomainHandler() }
 				tracksButtonClickSource="exact-match-top"
 				suggestions={ suggestions }
 				premiumDomains={ premiumDomains }

@@ -34,20 +34,32 @@ body:has( .wpcom-domain-search-v2 ) {
 		height: 60px;
 	}
 
-	.step-wrapper__content {
-		padding: 0 16px 32px 16px;
+	.step-route.domains:has( .step-container ),
+	.step-wrapper {
+		padding-inline: 16px;
 
 		@include break-small {
 			padding-inline: 24px;
 		}
+	}
+
+	.domains-mini-cart {
+		@include break-small {
+			padding-inline: 24px;
+		}
+	}
+
+	.domains-mini-cart__content {
+		max-width: 1040px;
+	}
+
+	&:has( .step-container-v2 ) {
+		.domains-mini-cart {
+			padding-inline: var( --step-container-v2-content-inline-padding );
+		}
 
 		.domains-mini-cart__content {
-			padding-inline: 16px;
-			max-width: 1040px;
-
-			@include break-small {
-				padding-inline: 24px;
-			}
+			max-width: var( --step-container-v2-content-row-max-width );
 		}
 	}
 
@@ -82,31 +94,17 @@ body:has( .wpcom-domain-search-v2 ) {
 		}
 
 		.domains-mini-cart {
-			display: flex;
-			justify-content: center;
-			padding-inline: 1rem;
-			box-sizing: border-box;
-
-			@include break-small {
-				padding-inline: 24px;
-			}
-
 			@include break-large {
 				padding-inline: 32px;
 			}
 		}
 
-		.domains-mini-cart__content {
-			max-width: 1040px;
-			padding: 1rem 0;
-		}
-	}
-
-	&:not( .is-domain-plan-package-flow ):has( .site-domains-add-page ) {
-		.domains-mini-cart {
-			@include break-medium {
-				width: calc( 100% - var( --sidebar-width-min ) );
-				left: var( --sidebar-width-min );
+		&:not( .is-domain-plan-package-flow ) {
+			.domains-mini-cart__container {
+				@include break-medium {
+					width: calc( 100% - var( --sidebar-width-min ) );
+					left: var( --sidebar-width-min );
+				}
 			}
 		}
 	}
@@ -119,12 +117,6 @@ body.domain-search-legacy--unified {
 	}
 
 	.signup__step.is-domains {
-		.action-buttons.step-wrapper__navigation {
-			@media ( max-width: $break-mobile ) {
-				display: none;
-			}
-		}
-
 		.async-load__placeholder {
 			margin: 12px;
 		}
