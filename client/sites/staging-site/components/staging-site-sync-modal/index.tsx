@@ -6,6 +6,7 @@ import {
 	__experimentalText as Text,
 	__experimentalHStack as HStack,
 	__experimentalVStack as VStack,
+	// eslint-disable-next-line wpcalypso/no-unsafe-wp-apis
 	__experimentalInputControl as InputControl,
 	CheckboxControl,
 	SelectControl,
@@ -22,7 +23,6 @@ import {
 import { __, isRTL } from '@wordpress/i18n';
 import { error, chevronRight, chevronLeft } from '@wordpress/icons';
 import QueryRewindState from 'calypso/components/data/query-rewind-state';
-import useGetDisplayDate from 'calypso/components/jetpack/daily-backup-status/use-get-display-date';
 import InlineSupportLink from 'calypso/dashboard/components/inline-support-link';
 import { SectionHeader } from 'calypso/dashboard/components/section-header';
 import SiteEnvironmentBadge, {
@@ -57,6 +57,7 @@ const fileBrowserConfig: FileBrowserConfig = {
 	alwaysInclude: [ 'wp-config.php' ],
 	showHeaderButtons: false,
 	showFileCard: false,
+	showBackupTime: true,
 };
 
 const DirectionArrow = () => {
@@ -204,15 +205,12 @@ export default function SyncModal( {
 	const stagingSiteTitle = useSelector( ( state ) => getSiteTitle( state, stagingSiteId ) ) || '';
 
 	const targetSiteSlug = targetEnvironment === 'production' ? productionSiteSlug : stagingSiteSlug;
-	const sourceSiteSlug = sourceEnvironment === 'staging' ? stagingSiteSlug : productionSiteSlug;
 
 	const sourceSiteTitle = sourceEnvironment === 'staging' ? stagingSiteTitle : productionSiteTitle;
 	const targetSiteTitle =
 		targetEnvironment === 'production' ? productionSiteTitle : stagingSiteTitle;
 
 	const querySiteId = sourceEnvironment === 'staging' ? stagingSiteId : productionSiteId;
-
-	const getDisplayDate = useGetDisplayDate( querySiteId );
 
 	const browserCheckList = useSelector( ( state ) =>
 		getBackupBrowserCheckList( state, querySiteId )
@@ -372,10 +370,6 @@ export default function SyncModal( {
 		( showDomainConfirmation && domainConfirmation !== productionSiteSlug ) ||
 		( browserCheckList.totalItems === 0 && browserCheckList.includeList.length === 0 );
 
-	const displayBackupDate = lastKnownBackupAttempt
-		? getDisplayDate( lastKnownBackupAttempt.activityTs, false )
-		: null;
-
 	return (
 		<Modal
 			title={ syncConfig[ environment ].title }
@@ -488,19 +482,6 @@ export default function SyncModal( {
 						</Tooltip>
 					</HStack>
 					<VStack spacing={ 7 }>
-						<HStack alignment="left" spacing={ 1 }>
-							<Text color="var(--studio-gray-40)">
-								{ displayBackupDate
-									? createInterpolateElement( __( 'Backup contents from: <date />.' ), {
-											date: <span>{ displayBackupDate }</span>,
-									  } )
-									: __( 'There are no backups.' ) }{ ' ' }
-								<ExternalLink
-									href={ `/backup/${ sourceSiteSlug }` }
-									children={ __( 'Backup now' ) }
-								/>
-							</Text>
-						</HStack>
 						{ showWooCommerceWarning && (
 							<Notice status="warning" isDismissible={ false }>
 								<Text as="p" weight="bold" style={ { lineHeight: '24px' } }>
