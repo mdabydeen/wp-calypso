@@ -252,14 +252,16 @@ export default function SyncModal( {
 	}, [ wpContentNode, wpConfigNode ] );
 
 	const { pullFromStaging } = usePullFromStagingMutation( productionSiteId, stagingSiteId, {
-		onSuccess: () => {
-			dispatch( recordTracksEvent( 'calypso_hosting_configuration_staging_site_pull_success' ) );
-			// setSyncError( null );
+		onSuccess: ( _, options ) => {
+			dispatch(
+				recordTracksEvent( 'calypso_hosting_configuration_staging_site_pull_success', options )
+			);
 		},
-		onError: ( error ) => {
+		onError: ( error, options ) => {
 			dispatch(
 				recordTracksEvent( 'calypso_hosting_configuration_staging_site_pull_failure', {
 					code: error.code,
+					...options,
 				} )
 			);
 			// setSyncError( error.code );
@@ -267,14 +269,16 @@ export default function SyncModal( {
 	} );
 
 	const { pushToStaging } = usePushToStagingMutation( productionSiteId, stagingSiteId, {
-		onSuccess: () => {
-			dispatch( recordTracksEvent( 'calypso_hosting_configuration_staging_site_push_success' ) );
-			// setSyncError( null );
+		onSuccess: ( _, options ) => {
+			dispatch(
+				recordTracksEvent( 'calypso_hosting_configuration_staging_site_push_success', options )
+			);
 		},
-		onError: ( error ) => {
+		onError: ( error, options ) => {
 			dispatch(
 				recordTracksEvent( 'calypso_hosting_configuration_staging_site_push_failure', {
 					code: error.code,
+					...options,
 				} )
 			);
 			// setSyncError( error.code );
