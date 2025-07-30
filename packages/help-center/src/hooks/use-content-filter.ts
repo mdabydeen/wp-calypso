@@ -1,15 +1,20 @@
 import { isSameOrigin } from '@automattic/calypso-url';
 import { isThisASupportArticleLink } from '@automattic/urls';
+import { useViewportMatch } from '@wordpress/compose';
+import { useDispatch } from '@wordpress/data';
 import { useEffect, useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useHelpCenterContext } from '../contexts/HelpCenterContext';
+import { HELP_CENTER_STORE } from '../stores';
 
 export const useContentFilter = ( node: HTMLDivElement | null ) => {
 	const navigate = useNavigate();
 	const [ searchParams ] = useSearchParams();
 	const link = searchParams.get( 'link' ) || '';
 	const { site } = useHelpCenterContext();
+	const { setIsMinimized } = useDispatch( HELP_CENTER_STORE );
+	const isDesktop = useViewportMatch( 'medium' );
 
 	const filters = useMemo(
 		() => [
@@ -114,6 +119,12 @@ export const useContentFilter = ( node: HTMLDivElement | null ) => {
 					// We should remove that in the context of Calypso.
 					if ( isSameOrigin( href ) ) {
 						element.removeAttribute( 'target' );
+						// On mobile, clicking a local link in the Help Center means the user wants to
+						// interact with that linked page, the Help Center should tuck itself away
+						// to make the page accessible, because the screen doesn't fit both.
+						if ( ! isDesktop ) {
+							element.addEventListener( 'click', () => setIsMinimized( true ) );
+						}
 						return;
 					}
 
@@ -143,7 +154,7 @@ export const useContentFilter = ( node: HTMLDivElement | null ) => {
 				},
 			},
 		],
-		[ navigate, link, node, site?.domain ]
+		[ navigate, link, node, site?.domain, setIsMinimized, isDesktop ]
 	);
 
 	useEffect( () => {
