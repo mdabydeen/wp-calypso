@@ -321,7 +321,7 @@ class DomainRegistrationSuggestion extends Component {
 		if ( isFeatured && this.isExactMatch() ) {
 			badges.push(
 				<DomainSuggestionBadge variation="success">
-					{ translate( 'It’s available!' ) }
+					{ translate( "It's available!" ) }
 				</DomainSuggestionBadge>
 			);
 		} else if ( isRecommended && isFeatured ) {
@@ -360,6 +360,10 @@ class DomainRegistrationSuggestion extends Component {
 					domainName={ this.props.suggestion.domain_name }
 				/>
 			);
+		}
+
+		if ( badges.length === 0 ) {
+			return null;
 		}
 
 		return badges;
