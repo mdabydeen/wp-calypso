@@ -6,20 +6,22 @@ import {
 	FeedRecommendation,
 	useFeedRecommendationsQuery,
 } from 'calypso/data/reader/use-feed-recommendations-query';
-import { UserData } from 'calypso/lib/user/user';
 import UserRecommendedBlogs from '../recommended-blogs';
+import type { UserData } from 'calypso/lib/user/user';
 
 jest.mock( '@automattic/components', () => ( {
 	LoadingPlaceholder: () => <div data-testid="loading-placeholder">Loading...</div>,
 } ) );
 
-jest.mock(
-	'calypso/components/gravatar-with-hovercards/recommended-blogs/item',
-	() =>
-		( { blog, classPrefix }: { blog: { ID: number; name: string }; classPrefix: string } ) => (
-			<li data-class-prefix={ classPrefix }>{ blog.name }</li>
-		)
-);
+jest.mock( 'calypso/reader/recommended-feed', () => ( {
+	RecommendedFeed: ( {
+		blog,
+		classPrefix,
+	}: {
+		blog: { ID: number; name: string };
+		classPrefix: string;
+	} ) => <li data-class-prefix={ classPrefix }>{ blog.name }</li>,
+} ) );
 
 jest.mock( 'calypso/components/empty-content', () => ( {
 	__esModule: true,
@@ -36,6 +38,10 @@ jest.mock( 'calypso/data/reader/use-feed-recommendations-query', () => ( {
 } ) );
 
 describe( 'UserRecommendedBlogs', () => {
+	afterEach( () => {
+		jest.clearAllMocks();
+	} );
+
 	const defaultUser: UserData = {
 		ID: 123,
 		user_login: 'testuser',
@@ -55,7 +61,7 @@ describe( 'UserRecommendedBlogs', () => {
 		jest.mocked( useFeedRecommendationsQuery ).mockReturnValue( {
 			data: [],
 			isLoading: true,
-			isSuccess: false,
+			isFetched: false,
 		} );
 
 		render( <UserRecommendedBlogs user={ defaultUser } /> );
@@ -69,7 +75,7 @@ describe( 'UserRecommendedBlogs', () => {
 		jest.mocked( useFeedRecommendationsQuery ).mockReturnValue( {
 			data: [],
 			isLoading: false,
-			isSuccess: true,
+			isFetched: true,
 		} );
 
 		render( <UserRecommendedBlogs user={ defaultUser } /> );
@@ -96,7 +102,7 @@ describe( 'UserRecommendedBlogs', () => {
 		jest.mocked( useFeedRecommendationsQuery ).mockReturnValue( {
 			data: mockRecommendedBlogs,
 			isLoading: false,
-			isSuccess: true,
+			isFetched: true,
 		} );
 
 		render( <UserRecommendedBlogs user={ defaultUser } /> );
