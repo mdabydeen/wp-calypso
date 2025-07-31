@@ -57,6 +57,7 @@ import {
 	recordShowMoreResults,
 	recordTransferDomainButtonClick,
 	recordUseYourDomainButtonClick,
+	recordDomainClickMissing,
 	resetSearchCount,
 	enqueueSearchStatReport,
 } from 'calypso/components/domains/register-domain-step/analytics';
@@ -517,11 +518,29 @@ class RegisterDomainStep extends Component {
 			} ),
 			total,
 			onAddItem: ( domain_name ) => {
+				// Try to find and add subdomain first
+				const subdomain = this.state.subdomainSearchResults?.find(
+					( suggestion ) => suggestion.domain_name === domain_name
+				);
+
+				if ( subdomain ) {
+					const position = this.state.subdomainSearchResults.indexOf( subdomain );
+					return this.onAddDomain( subdomain, position, false );
+				}
+
 				const suggestionPosition = searchResults.findIndex(
 					( result ) => result.domain_name === domain_name
 				);
 
 				if ( suggestionPosition === -1 ) {
+					// Not found in regular results, track it
+					this.props.recordDomainClickMissing(
+						domain_name,
+						this.props.analyticsSection,
+						this.props.flowName,
+						this.state.lastQuery,
+						'domain'
+					);
 					return;
 				}
 
@@ -1820,6 +1839,7 @@ class RegisterDomainStep extends Component {
 				wpcomSubdomainSelected={ this.props.wpcomSubdomainSelected }
 				temporaryCart={ this.props.temporaryCart }
 				domainRemovalQueue={ this.props.domainRemovalQueue }
+				flowName={ this.props.flowName }
 			/>
 		);
 	}
@@ -1969,6 +1989,7 @@ export default connect(
 	{
 		recordDomainAvailabilityReceive,
 		recordDomainAddAvailabilityPreCheck,
+		recordDomainClickMissing,
 		recordFiltersReset,
 		recordFiltersSubmit,
 		recordMapDomainButtonClick,
