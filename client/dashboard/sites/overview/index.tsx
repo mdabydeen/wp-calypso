@@ -14,6 +14,7 @@ import { siteBySlugQuery } from '../../app/queries/site';
 import { PageHeader } from '../../components/page-header';
 import PageLayout from '../../components/page-layout';
 import { getSiteDisplayName } from '../../utils/site-name';
+import { isSelfHostedJetpackConnected } from '../../utils/site-types';
 import AgencySiteShareCard from '../overview-agency-site-share-card';
 import BackupCard from '../overview-backup-card';
 import OverviewCard from '../overview-card';
@@ -21,6 +22,7 @@ import DIFMUpsellCard from '../overview-difm-upsell-card';
 import DomainsCard from '../overview-domains-card';
 import LatestActivityCard from '../overview-latest-activity-card';
 import MigrateSiteCard from '../overview-migrate-site-card';
+import PerformanceCard from '../overview-performance-card';
 import PlanCard from '../overview-plan-card';
 import ScanCard from '../overview-scan-card';
 import SiteActionMenu from '../overview-site-action-menu';
@@ -122,10 +124,10 @@ function SiteOverview( {
 							if ( site.is_a4a_dev_site ) {
 								return <AgencySiteShareCard site={ site } />;
 							}
-							if ( site.is_wpcom_atomic ) {
+							if ( isSelfHostedJetpackConnected( site ) ) {
 								return (
 									<OverviewCard
-										title={ __( 'Performance' ) }
+										title="TBA"
 										icon={ chartBar }
 										heading="TBA"
 										description="TBA"
@@ -133,7 +135,10 @@ function SiteOverview( {
 									/>
 								);
 							}
-							return <MigrateSiteCard site={ site } />;
+							if ( site.plan?.is_free && ! site.is_wpcom_staging_site ) {
+								return <MigrateSiteCard site={ site } />;
+							}
+							return <PerformanceCard site={ site } />;
 						} )() }
 						<ScanCard site={ site } />
 					</Grid>
