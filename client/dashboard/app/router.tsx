@@ -12,7 +12,6 @@ import { canViewHundredYearPlanSettings, canViewWordPressSettings } from '../sit
 import { hasHostingFeature } from '../utils/site-features';
 import NotFound from './404';
 import UnknownError from './500';
-import { domainsQuery } from './queries/domains';
 import { emailsQuery } from './queries/emails';
 import { isAutomatticianQuery } from './queries/me-a8c';
 import { rawUserPreferencesQuery } from './queries/me-preferences';
@@ -40,6 +39,25 @@ import { siteWordPressVersionQuery } from './queries/site-wordpress-version';
 import { sitesQuery } from './queries/sites';
 import { queryClient } from './query-client';
 import Root from './root';
+import {
+	setSiteRoute,
+	setRootRoute,
+	domainsRoute,
+	siteDomainsRoute,
+	siteDomainRoute,
+	siteDomainChildRoutes,
+	siteDomainDnsRoute,
+	siteDomainDnsAddRoute,
+	siteDomainDnsEditRoute,
+	siteDomainForwardingRoute,
+	siteDomainForwardingAddRoute,
+	siteDomainForwardingEditRoute,
+	siteDomainContactInfoRoute,
+	siteDomainNameServersRoute,
+	siteDomainGlueRecordsRoute,
+	siteDomainDnssecRoute,
+	siteDomainTransferRoute,
+} from './routes/domain-routes';
 import type { AppConfig } from './context';
 import type { AnyRoute } from '@tanstack/react-router';
 
@@ -192,17 +210,6 @@ const siteBackupsRoute = createRoute( {
 } ).lazy( () =>
 	import( '../sites/backups' ).then( ( d ) =>
 		createLazyRoute( 'site-backups' )( {
-			component: d.default,
-		} )
-	)
-);
-
-const siteDomainsRoute = createRoute( {
-	getParentRoute: () => siteRoute,
-	path: 'domains',
-} ).lazy( () =>
-	import( '../sites/domains' ).then( ( d ) =>
-		createLazyRoute( 'site-domains' )( {
 			component: d.default,
 		} )
 	)
@@ -478,18 +485,6 @@ const siteSettingsWebApplicationFirewallRoute = createRoute( {
 	)
 );
 
-const domainsRoute = createRoute( {
-	getParentRoute: () => rootRoute,
-	path: 'domains',
-	loader: () => queryClient.ensureQueryData( domainsQuery() ),
-} ).lazy( () =>
-	import( '../domains' ).then( ( d ) =>
-		createLazyRoute( 'domains' )( {
-			component: d.default,
-		} )
-	)
-);
-
 const emailsRoute = createRoute( {
 	getParentRoute: () => rootRoute,
 	path: 'emails',
@@ -627,6 +622,12 @@ const notificationsRoute = createRoute( {
 const createRouteTree = ( config: AppConfig ) => {
 	const children = [];
 
+	// Set up the rootRoute reference for domain routes
+	setRootRoute( rootRoute );
+
+	// Set up the siteRoute reference for domain routes
+	setSiteRoute( siteRoute );
+
 	children.push( indexRoute );
 
 	if ( config.supports.overview ) {
@@ -675,6 +676,7 @@ const createRouteTree = ( config: AppConfig ) => {
 
 		if ( config.supports.sites.domains ) {
 			siteChildren.push( siteDomainsRoute );
+			siteChildren.push( siteDomainRoute.addChildren( siteDomainChildRoutes ) );
 		}
 
 		if ( config.supports.sites.emails ) {
@@ -741,6 +743,18 @@ export {
 	siteLogsRoute,
 	siteBackupsRoute,
 	siteDomainsRoute,
+	siteDomainRoute,
+	siteDomainDnsRoute,
+	siteDomainDnsAddRoute,
+	siteDomainDnsEditRoute,
+	siteDomainForwardingRoute,
+	siteDomainForwardingAddRoute,
+	siteDomainForwardingEditRoute,
+	siteDomainContactInfoRoute,
+	siteDomainNameServersRoute,
+	siteDomainGlueRecordsRoute,
+	siteDomainDnssecRoute,
+	siteDomainTransferRoute,
 	siteEmailsRoute,
 	siteSettingsRoute,
 	siteSettingsSiteVisibilityRoute,
