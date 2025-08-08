@@ -17,6 +17,7 @@ import { emailsQuery } from './queries/emails';
 import { isAutomatticianQuery } from './queries/me-a8c';
 import { rawUserPreferencesQuery } from './queries/me-preferences';
 import { profileQuery } from './queries/me-profile';
+import { userPurchasesQuery } from './queries/me-purchases';
 import { siteByIdQuery, siteBySlugQuery } from './queries/site';
 import { siteLastFiveActivityLogEntriesQuery } from './queries/site-activity-log';
 import { siteAgencyBlogQuery } from './queries/site-agency';
@@ -31,7 +32,7 @@ import { sitePHPVersionQuery } from './queries/site-php-version';
 import { siteCurrentPlanQuery } from './queries/site-plans';
 import { sitePreviewLinksQuery } from './queries/site-preview-links';
 import { sitePrimaryDataCenterQuery } from './queries/site-primary-data-center';
-import { sitePurchaseQuery } from './queries/site-purchases';
+import { sitePurchaseQuery, sitePurchasesQuery } from './queries/site-purchases';
 import { siteScanQuery } from './queries/site-scan';
 import { siteSettingsQuery } from './queries/site-settings';
 import { siteSftpUsersQuery } from './queries/site-sftp';
@@ -172,7 +173,7 @@ const siteOverviewRoute = createRoute( {
 				site.is_a4a_dev_site && queryClient.ensureQueryData( sitePreviewLinksQuery( site.ID ) ),
 			] ).then( ( [ currentPlan ] ) => {
 				if ( currentPlan.id ) {
-					queryClient.ensureQueryData( sitePurchaseQuery( site.ID, currentPlan.id ) );
+					queryClient.ensureQueryData( sitePurchaseQuery( site.ID, parseInt( currentPlan.id ) ) );
 				}
 			} );
 		}
@@ -619,12 +620,30 @@ const billingHistoryRoute = createRoute( {
 	)
 );
 
-const activeSubscriptionsRoute = createRoute( {
+const purchasesRoute = createRoute( {
 	getParentRoute: () => meRoute,
-	path: 'billing/active-subscriptions',
+	loader: async () => {
+		queryClient.ensureQueryData( userPurchasesQuery() );
+	},
+	path: 'billing/purchases',
 } ).lazy( () =>
-	import( '../me/active-subscriptions' ).then( ( d ) =>
-		createLazyRoute( 'active-subscriptions' )( {
+	import( '../me/billing-purchases' ).then( ( d ) =>
+		createLazyRoute( 'purchases' )( {
+			component: d.default,
+		} )
+	)
+);
+
+const purchasesSiteRoute = createRoute( {
+	getParentRoute: () => meRoute,
+	loader: async ( { params: { siteSlug } } ) => {
+		const site = await queryClient.ensureQueryData( siteBySlugQuery( siteSlug ) );
+		queryClient.ensureQueryData( sitePurchasesQuery( site.ID ) );
+	},
+	path: 'billing/purchases/$siteSlug',
+} ).lazy( () =>
+	import( '../me/billing-purchases/site' ).then( ( d ) =>
+		createLazyRoute( 'purchases-site' )( {
 			component: d.default,
 		} )
 	)
@@ -767,7 +786,8 @@ const createRouteTree = ( config: AppConfig ) => {
 				profileRoute,
 				billingRoute,
 				billingHistoryRoute,
-				activeSubscriptionsRoute,
+				purchasesRoute,
+				purchasesSiteRoute,
 				paymentMethodsRoute,
 				taxDetailsRoute,
 				securityRoute,
@@ -845,7 +865,8 @@ export {
 	profileRoute,
 	billingRoute,
 	billingHistoryRoute,
-	activeSubscriptionsRoute,
+	purchasesRoute,
+	purchasesSiteRoute,
 	paymentMethodsRoute,
 	taxDetailsRoute,
 	securityRoute,
