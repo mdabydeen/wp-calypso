@@ -1,5 +1,6 @@
 import {
 	domainManagementDNS,
+	domainManagementEditContactInfo,
 	domainManagementLink,
 	domainMappingSetup,
 } from '@automattic/domains-table/src/utils/paths';
@@ -15,6 +16,8 @@ import { DomainTypes, DomainTransferStatus } from '../../data/domains';
 import {
 	isRecentlyRegistered,
 	isDomainRenewable,
+	isDomainUpdatable,
+	isDomainInGracePeriod,
 	canSetAsPrimary,
 	getDomainSiteSlug,
 } from '../../utils/domain';
@@ -85,9 +88,26 @@ export const useActions = ( { user, site }: { user: User; site?: Site } ) => {
 			{
 				id: 'manage-contact-info',
 				label: __( 'Manage contact information' ),
-				supportsBulk: true,
-				callback: () => {},
-				isEligible: () => false,
+				supportsBulk: false,
+				callback: ( items: DomainSummary[] ) => {
+					const domain = items[ 0 ];
+					const siteSlug = getDomainSiteSlug( domain );
+					window.location.pathname = domainManagementEditContactInfo(
+						siteSlug,
+						domain.domain,
+						null,
+						context
+					);
+				},
+				isEligible: ( item: DomainSummary ) => {
+					return (
+						!! item.current_user_is_owner &&
+						item.can_update_contact_info &&
+						! item.wpcom_domain &&
+						item.has_registration &&
+						( isDomainUpdatable( item ) || isDomainInGracePeriod( item ) )
+					);
+				},
 			},
 			{
 				id: 'set-primary-site-address',
@@ -158,7 +178,7 @@ export const useActions = ( { user, site }: { user: User; site?: Site } ) => {
 			{
 				id: 'manage-auto-renew',
 				label: __( 'Manage auto-renew' ),
-				supportsBulk: true,
+				supportsBulk: false,
 				callback: () => {},
 				isEligible: () => false,
 			},
