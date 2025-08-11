@@ -118,7 +118,6 @@ interface SyncConfig {
 	production: EnvironmentConfig;
 	fromLabel: string;
 	toLabel: string;
-	syncSelectionHeading: string;
 	learnMore: string;
 	submit: string;
 }
@@ -144,7 +143,6 @@ const getSyncConfig = ( type: 'pull' | 'push' ): SyncConfig => {
 			},
 			fromLabel: __( 'Pull' ),
 			toLabel: __( 'To' ),
-			syncSelectionHeading: __( 'What would you like to pull?' ),
 			learnMore: __( 'Read more about <a>environment pull</a>.' ),
 			submit: __( 'Pull' ),
 		};
@@ -169,7 +167,6 @@ const getSyncConfig = ( type: 'pull' | 'push' ): SyncConfig => {
 		},
 		fromLabel: __( 'Push' ),
 		toLabel: __( 'To' ),
-		syncSelectionHeading: __( 'What would you like to push?' ),
 		learnMore: __( 'Read more about <a>environment push</a>.' ),
 		submit: __( 'Push' ),
 	};
@@ -374,7 +371,7 @@ export default function SyncModal( {
 			style={ { maxWidth: '668px' } }
 		>
 			<QueryRewindState siteId={ querySiteId } />
-			<VStack spacing={ 6 }>
+			<VStack spacing={ 5 }>
 				<Text>
 					{ createInterpolateElement( syncConfig[ environment ].description, {
 						a: <ExternalLink href={ `/backup/${ targetSiteSlug }` } children={ null } />,
@@ -393,7 +390,6 @@ export default function SyncModal( {
 						siteTitle={ targetSiteTitle }
 					/>
 				</HStack>
-				<SectionHeader level={ 3 } title={ syncConfig.syncSelectionHeading } />
 
 				<div
 					className={ clsx( 'staging-site-card', {
@@ -462,7 +458,8 @@ export default function SyncModal( {
 							borderBottom: '1px solid var(--wp-components-color-gray-300, #ddd)',
 							padding: '16px 0',
 							marginTop: '8px',
-							marginBottom: '24px',
+							marginBottom:
+								shouldDisableGranularSync || sqlNode?.checkState === 'checked' ? '0px' : '24px',
 						} }
 					>
 						{ isLoadingBackupAttempt ? (
@@ -478,7 +475,7 @@ export default function SyncModal( {
 						) }
 					</HStack>
 					{ ( shouldDisableGranularSync || sqlNode?.checkState === 'checked' ) && (
-						<VStack style={ { paddingBottom: '52px' } }>
+						<VStack style={ { paddingTop: '20px', paddingBottom: '48px' } }>
 							<Notice status="warning" isDismissible={ false }>
 								<Text as="p" weight="bold" style={ { lineHeight: '24px' } }>
 									{ __( 'Warning! Database will be overwritten.' ) }
