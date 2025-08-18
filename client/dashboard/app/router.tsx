@@ -278,6 +278,17 @@ const siteLogsChildRoutes = [ siteLogsIndexRoute, siteLogsPhpRoute, siteLogsServ
 const siteBackupsRoute = createRoute( {
 	getParentRoute: () => siteRoute,
 	path: 'backups',
+} ).lazy( () =>
+	import( '../sites/backups' ).then( ( d ) =>
+		createLazyRoute( 'site-backups' )( {
+			component: d.default,
+		} )
+	)
+);
+
+const siteBackupsIndexRoute = createRoute( {
+	getParentRoute: () => siteBackupsRoute,
+	path: '/',
 	loader: async ( { params: { siteSlug } } ) => {
 		const site = await queryClient.ensureQueryData( siteBySlugQuery( siteSlug ) );
 		// Preload activity log backup-related entries.
@@ -285,7 +296,18 @@ const siteBackupsRoute = createRoute( {
 	},
 } ).lazy( () =>
 	import( '../sites/backups' ).then( ( d ) =>
-		createLazyRoute( 'site-backups' )( {
+		createLazyRoute( 'site-backups-index' )( {
+			component: d.BackupsListPage,
+		} )
+	)
+);
+
+const siteBackupRestoreRoute = createRoute( {
+	getParentRoute: () => siteBackupsRoute,
+	path: '$rewindId/restore',
+} ).lazy( () =>
+	import( '../sites/backup-restore' ).then( ( d ) =>
+		createLazyRoute( 'site-backup-restore' )( {
 			component: d.default,
 		} )
 	)
@@ -810,7 +832,9 @@ const createRouteTree = ( config: AppConfig ) => {
 		}
 
 		if ( config.supports.sites.backups ) {
-			siteChildren.push( siteBackupsRoute );
+			siteChildren.push(
+				siteBackupsRoute.addChildren( [ siteBackupsIndexRoute, siteBackupRestoreRoute ] )
+			);
 		}
 
 		if ( config.supports.sites.domains ) {
@@ -887,6 +911,7 @@ export {
 	siteMonitoringRoute,
 	siteLogsRoute,
 	siteBackupsRoute,
+	siteBackupRestoreRoute,
 	siteDomainsRoute,
 	siteEmailsRoute,
 	siteSettingsRoute,
