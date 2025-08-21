@@ -6,6 +6,7 @@ import { isMigrationInProgress } from 'calypso/data/site-migration';
 import ItemView from 'calypso/layout/hosting-dashboard/item-view';
 import { useSetTabBreadcrumb } from 'calypso/sites/hooks/breadcrumbs/use-set-tab-breadcrumb';
 import HostingFeaturesIcon from 'calypso/sites/hosting/components/hosting-features-icon';
+import { useStagingSite } from 'calypso/sites/staging-site/hooks/use-staging-site';
 import SitesProductionBadge from 'calypso/sites-dashboard/components/sites-production-badge';
 import { useSelector } from 'calypso/state';
 import { canCurrentUserSwitchEnvironment } from 'calypso/state/sites/selectors/can-current-user-switch-environment';
@@ -164,7 +165,7 @@ const DotcomPreviewPane = ( {
 		site,
 		selectedSiteFeature,
 		selectedSiteFeaturePreview,
-		isEnabled,
+		isHostingFeaturesCalloutEnabled,
 	] );
 
 	const itemData: ItemData = {
@@ -176,6 +177,26 @@ const DotcomPreviewPane = ( {
 		adminUrl: site.options?.admin_url || `${ site.URL }/wp-admin`,
 		withIcon: true,
 	};
+
+	const { data: stagingSites } = useStagingSite( site.ID, {
+		enabled: ! site.is_wpcom_staging_site && site.is_wpcom_atomic,
+	} );
+
+	const siteWithStagingIds = useMemo( () => {
+		if ( ! site.options || ! site.is_wpcom_atomic ) {
+			return site;
+		}
+
+		const stagingBlogIds = stagingSites?.map( ( stagingSite ) => stagingSite.id ) ?? [];
+
+		return {
+			...site,
+			options: {
+				...site.options,
+				wpcom_staging_blog_ids: stagingBlogIds,
+			},
+		};
+	}, [ site, stagingSites ] );
 
 	const stagingStatus = useSelector( ( state ) => getStagingSiteStatus( state, site.ID ) );
 	const isStagingStatusFinished =
@@ -194,8 +215,9 @@ const DotcomPreviewPane = ( {
 		selectedFeatureId: selectedSiteFeature,
 	} );
 
-	const isProduction = site.is_wpcom_atomic && ! site.is_wpcom_staging_site;
-	const hasNoStagingSites = ! site.options?.wpcom_staging_blog_ids?.length;
+	const isProduction =
+		siteWithStagingIds.is_wpcom_atomic && ! siteWithStagingIds.is_wpcom_staging_site;
+	const hasNoStagingSites = ! siteWithStagingIds.options?.wpcom_staging_blog_ids?.length;
 
 	const shouldShowProductionBadge =
 		isProduction && ( hasNoStagingSites || ! isStagingStatusFinished );
@@ -205,7 +227,9 @@ const DotcomPreviewPane = ( {
 			itemData={ itemData }
 			closeItemView={ closeSitePreviewPane }
 			features={ features }
-			className={ site.is_wpcom_staging_site && ! stagingSitesRedesign ? 'is-staging-site' : '' }
+			className={
+				siteWithStagingIds.is_wpcom_staging_site && ! stagingSitesRedesign ? 'is-staging-site' : ''
+			}
 			enforceTabsView
 			itemViewHeaderExtraProps={ {
 				externalIconSize: 16,
@@ -221,7 +245,12 @@ const DotcomPreviewPane = ( {
 					}
 
 					if ( hasEnvironmentPermission && isStagingStatusFinished ) {
-						return <SiteEnvironmentSwitcher onChange={ changeSitePreviewPane } site={ site } />;
+						return (
+							<SiteEnvironmentSwitcher
+								onChange={ changeSitePreviewPane }
+								site={ siteWithStagingIds }
+							/>
+						);
 					}
 				},
 			} }
