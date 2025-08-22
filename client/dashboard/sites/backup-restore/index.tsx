@@ -8,9 +8,11 @@ import {
 	ExternalLink,
 	__experimentalVStack as VStack,
 } from '@wordpress/components';
+import { useDispatch } from '@wordpress/data';
 import { createInterpolateElement, useState } from '@wordpress/element';
 import { __, isRTL, sprintf } from '@wordpress/i18n';
 import { Icon, cloud, chevronLeft, chevronRight } from '@wordpress/icons';
+import { store as noticesStore } from '@wordpress/notices';
 import { siteBySlugQuery } from '../../app/queries/site';
 import { siteBackupRestoreRoute, siteBackupsRoute } from '../../app/router/sites';
 import { useFormattedTime } from '../../components/formatted-time';
@@ -29,6 +31,7 @@ function SiteBackupRestore() {
 	const { data: site } = useSuspenseQuery( siteBySlugQuery( siteSlug ) );
 	const [ currentStep, setCurrentStep ] = useState< RestoreStep >( 'form' );
 	const [ restoreId, setRestoreId ] = useState< number | null >( null );
+	const { createSuccessNotice } = useDispatch( noticesStore );
 
 	const router = useRouter();
 
@@ -39,6 +42,9 @@ function SiteBackupRestore() {
 
 	const handleRestoreComplete = () => {
 		setCurrentStep( 'success' );
+		createSuccessNotice( __( 'Site restore completed.' ), {
+			type: 'snackbar',
+		} );
 	};
 
 	const handleRestoreError = () => {
@@ -53,7 +59,6 @@ function SiteBackupRestore() {
 	const restorePointDate = useFormattedTime(
 		new Date( parseFloat( rewindId ) * 1000 ).toISOString(),
 		{
-			dateStyle: 'medium',
 			timeStyle: 'short',
 		}
 	);
@@ -95,7 +100,7 @@ function SiteBackupRestore() {
 	return (
 		<PageLayout
 			size="small"
-			header={ <PageHeader prefix={ backButton } title={ __( 'Restore your site' ) } /> }
+			header={ <PageHeader prefix={ backButton } title={ __( 'Site restore' ) } /> }
 		>
 			<Card>
 				<CardHeader>
