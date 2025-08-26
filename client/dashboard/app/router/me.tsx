@@ -166,6 +166,17 @@ export const blockedSitesRoute = createRoute( {
 	)
 );
 
+export const appsRoute = createRoute( {
+	getParentRoute: () => meRoute,
+	path: 'apps',
+} ).lazy( () =>
+	import( '../../me/apps' ).then( ( d ) =>
+		createLazyRoute( 'apps' )( {
+			component: d.default,
+		} )
+	)
+);
+
 export const createMeRoutes = ( config: AppConfig ) => {
 	if ( ! config.supports.me ) {
 		return [];
@@ -189,6 +200,10 @@ export const createMeRoutes = ( config: AppConfig ) => {
 
 	if ( config.supports.reader ) {
 		meRoutes.push( blockedSitesRoute );
+	}
+
+	if ( config.supports.me.apps ) {
+		meRoutes.push( appsRoute );
 	}
 
 	return [ meRoute.addChildren( meRoutes ) ];
