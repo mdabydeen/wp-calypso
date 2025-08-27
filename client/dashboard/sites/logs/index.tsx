@@ -24,6 +24,7 @@ import { HostingFeatures } from '../../data/constants';
 import { LogType, PHPLog, ServerLog, SiteLogsParams } from '../../data/site-logs';
 import { parseYmdLocal, formatYmd } from '../../utils/datetime';
 import { hasHostingFeature } from '../../utils/site-features';
+import { useActions } from './dataviews/actions';
 import { useFields } from './dataviews/fields';
 import { getInitialFiltersFromSearch, getAllowedFields } from './dataviews/filters';
 import { useView, toFilterParams } from './dataviews/views';
@@ -292,24 +293,7 @@ function SiteLogs( { logType }: { logType: LogType } ) {
 		}
 	};
 
-	// @todo, this will be replaced when importing the use-action data.
-	const actions = useMemo(
-		() => [
-			{
-				id: 'copy-msg',
-				label: 'Copy message',
-				disabled: isFetching,
-				supportsBulk: false,
-				callback: async ( items: ( PHPLog | ServerLog )[] ) => {
-					const message = ( items[ 0 ] as PHPLog ).message;
-					// Removing any actual message confirmation functionality for now, with dummy data
-					// eslint-disable-next-line no-console
-					console.log( 'Copied message:', message );
-				},
-			},
-		],
-		[ isFetching ]
-	);
+	const actions = useActions( { logType, isLoading: isFetching, gmtOffset, timezoneString } );
 
 	const [ notice, setNotice ] = useState< {
 		variant: 'success' | 'error';
