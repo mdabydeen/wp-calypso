@@ -1,7 +1,10 @@
 import { domainAvailabilityQuery } from '../queries/availability';
 import { domainSuggestionsQuery, freeSuggestionQuery } from '../queries/suggestions';
-import type { DomainSuggestion, FreeDomainSuggestion } from '@automattic/data';
-import type { QueryClient } from '@tanstack/react-query';
+import type {
+	DomainSuggestion,
+	DomainSuggestionQueryVendor,
+	FreeDomainSuggestion,
+} from '@automattic/data';
 import type { ComponentType } from 'react';
 
 export interface SelectedDomain {
@@ -25,6 +28,11 @@ export interface DomainSearchEvents {
 	onSkip: ( suggestion?: FreeDomainSuggestion ) => void;
 }
 
+export interface DomainSearchConfig {
+	vendor: DomainSuggestionQueryVendor;
+	skippable: boolean;
+}
+
 export interface DomainSearchProps {
 	slots?: {
 		BeforeResults?: ComponentType;
@@ -35,11 +43,14 @@ export interface DomainSearchProps {
 	initialQuery?: string;
 	events?: Partial< DomainSearchEvents >;
 	currentSiteUrl?: string;
-	queryClient?: QueryClient;
+	config?: Partial< DomainSearchConfig >;
 }
 
 export interface DomainSearchContextType
-	extends Omit< DomainSearchProps, 'className' | 'initialQuery' | 'events' | 'queryClient' > {
+	extends Omit<
+		DomainSearchProps,
+		'className' | 'initialQuery' | 'events' | 'queryClient' | 'config'
+	> {
 	events: DomainSearchEvents;
 	isFullCartOpen: boolean;
 	closeFullCart: () => void;
@@ -51,4 +62,5 @@ export interface DomainSearchContextType
 		domainAvailability: ( domainName: string ) => ReturnType< typeof domainAvailabilityQuery >;
 		freeSuggestion: ( query: string ) => ReturnType< typeof freeSuggestionQuery >;
 	};
+	config: DomainSearchConfig;
 }
