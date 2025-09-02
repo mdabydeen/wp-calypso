@@ -912,12 +912,26 @@ object PlaywrightTestPRMatrix : BuildType({
 	name = "E2E Tests (Playwright Test)"
 	description = "Runs Calypso e2e tests using Playwright Test runner with build matrix"
 
+	vcs {
+		root(Settings.WpCalypso)
+		cleanCheckout = true
+	}
+
 	features {
 		matrix {
 			param("playwrightProject", listOf(
 				value("desktop", label = "Desktop"),
 				value("mobile", label = "Mobile")
 			))
+		}
+		pullRequests {
+			vcsRootExtId = "${Settings.WpCalypso.id}"
+			provider = github {
+				authType = token {
+					token = "credentialsJSON:57e22787-e451-48ed-9fea-b9bf30775b36"
+				}
+				filterAuthorRole = PullRequests.GitHubRoleFilter.EVERYBODY
+			}
 		}
 	}
 
@@ -934,13 +948,23 @@ object PlaywrightTestPRMatrix : BuildType({
 		}
 	}
 
+	dependencies {
+		snapshot(BuildDockerImage) {
+			onDependencyFailure = FailureAction.FAIL_TO_START
+		}
+	}
+
 	steps {
-		script {
+		bashNodeScript {
 			name = "Test step"
 			scriptContent = """
 				echo "Running Playwright tests for project: %playwrightProject%"
-				echo "hello, it works"
+				pwd
+				ls -la
+				# cd test/e2e
+				# yarn playwright:%playwrightProject% --list
 			"""
+			dockerImage = "%docker_image_e2e%"
 		}
 	}
 })
@@ -966,12 +990,16 @@ object PlaywrightTestPreReleaseMatrix : BuildType({
 		}
 	}
 
+	vcs {
+		root(Settings.WpCalypso)
+		cleanCheckout = true
+	}
+
 	steps {
-		script {
+		bashNodeScript {
 			name = "Test step"
 			scriptContent = """
 				echo "Running pre-release Playwright tests for project: %playwrightProject%"
-				echo "hello, it works"
 			"""
 		}
 	}
