@@ -37,3 +37,16 @@ export interface ValidateSecurityKeyRegistrationArgs {
 	name: string;
 	hostname?: string;
 }
+export interface ApplicationPassword {
+	ID: string;
+	name: string;
+	generated: string;
+}
+
+export interface CreateApplicationPasswordArgs {
+	application_name: string;
+}
+
+export interface CreateApplicationPasswordResponse {
+	application_password: string;
+}
