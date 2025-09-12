@@ -266,6 +266,8 @@ function SyncModal( {
 
 	const shouldDisableGranularSync = ! lastKnownBackupAttempt && ! isLoadingBackupAttempt;
 
+	const hasWarning = shouldDisableGranularSync || sqlNode?.checkState === 'checked';
+
 	useEffect( () => {
 		if ( shouldDisableGranularSync ) {
 			// Ensure all content and database are marked as selected in state when granular sync is disabled
@@ -389,6 +391,25 @@ function SyncModal( {
 
 	const showDomainConfirmation = targetEnvironment === 'production' && ! isLoadingBackupAttempt;
 
+	const calculateWarningPaddingBottom = useCallback( () => {
+		const basePadding = showDomainConfirmation ? '130px' : '40px';
+
+		let extraPadding = '0px';
+		if ( hasWarning ) {
+			if ( isFileBrowserVisible && showWooCommerceWarning ) {
+				extraPadding = '180px';
+			} else if ( isFileBrowserVisible ) {
+				extraPadding = '110px';
+			} else if ( showWooCommerceWarning ) {
+				extraPadding = '180px';
+			} else {
+				extraPadding = '120px';
+			}
+		}
+
+		return `calc(${ basePadding } + ${ extraPadding })`;
+	}, [ showDomainConfirmation, hasWarning, isFileBrowserVisible, showWooCommerceWarning ] );
+
 	// Allow button if there is no backup if the confirmation passes
 	// regardless of browserCheckList
 	const isButtonDisabled =
@@ -406,7 +427,12 @@ function SyncModal( {
 			style={ { maxWidth: '668px' } }
 		>
 			<QueryRewindState siteId={ querySiteId } />
-			<VStack spacing={ 5 }>
+			<VStack
+				spacing={ 5 }
+				style={ {
+					paddingBottom: calculateWarningPaddingBottom(),
+				} }
+			>
 				<Text>
 					{ createInterpolateElement( syncConfig[ environment ].description, {
 						a: <ExternalLink href={ `/activity-log/${ targetSiteSlug }` } children={ null } />,
@@ -429,6 +455,9 @@ function SyncModal( {
 				<div
 					className={ clsx( 'staging-site-card', {
 						'confirmation-input': showDomainConfirmation,
+						'has-warning': hasWarning,
+						'has-file-browser': isFileBrowserVisible,
+						'has-woocommerce-warning': showWooCommerceWarning,
 					} ) }
 				>
 					<Tooltip
@@ -504,8 +533,6 @@ function SyncModal( {
 									borderBottom: '1px solid var(--wp-components-color-gray-300, #ddd)',
 									padding: '16px 0',
 									marginTop: '8px',
-									marginBottom:
-										shouldDisableGranularSync || sqlNode?.checkState === 'checked' ? '0px' : '24px',
 								} }
 							>
 								{ isLoadingBackupAttempt ? (
@@ -515,46 +542,46 @@ function SyncModal( {
 										__nextHasNoMarginBottom
 										label={ __( 'Database' ) }
 										disabled={ shouldDisableGranularSync }
-										checked={ shouldDisableGranularSync || sqlNode?.checkState === 'checked' }
+										checked={ hasWarning }
 										onChange={ handleDatabaseCheckboxChange }
 									/>
 								) }
 							</HStack>
-							{ ( shouldDisableGranularSync || sqlNode?.checkState === 'checked' ) && (
-								<VStack style={ { paddingTop: '20px', paddingBottom: '48px' } }>
-									<Notice status="warning" isDismissible={ false }>
-										<Text as="p" weight="bold" style={ { lineHeight: '24px' } }>
-											{ __( 'Warning! Database will be overwritten.' ) }
-										</Text>
-										<Text as="p">
-											{ __(
-												'Selecting this option will overwrite the site database, including any posts, pages, products, or orders.'
-											) }
-										</Text>
-										{ showWooCommerceWarning && (
-											<Text as="p" style={ { marginTop: '16px' } }>
-												{ createInterpolateElement(
-													__(
-														'This site also has WooCommerce installed. We do not recommend syncing or pushing data from a staging site to live production news sites or sites that use eCommerce plugins. <a>Learn more</a>'
-													),
-													{
-														a: (
-															<ExternalLink
-																href="https://developer.wordpress.com/docs/developer-tools/staging-sites/sync-staging-production/#staging-to-production"
-																children={ null }
-															/>
-														),
-													}
-												) }
-											</Text>
-										) }
-									</Notice>
-								</VStack>
-							) }
 						</div>
 					</Tooltip>
 				</div>
 				<VStack className="staging-site-card__footer" spacing={ 6 }>
+					{ hasWarning && (
+						<VStack>
+							<Notice status="warning" isDismissible={ false }>
+								<Text as="p" weight="bold" style={ { lineHeight: '24px' } }>
+									{ __( 'Warning! Database will be overwritten.' ) }
+								</Text>
+								<Text as="p">
+									{ __(
+										'Selecting database option will overwrite the site database, including any posts, pages, products, or orders.'
+									) }
+								</Text>
+								{ showWooCommerceWarning && (
+									<Text as="p" style={ { marginTop: '16px' } }>
+										{ createInterpolateElement(
+											__(
+												'This site also has WooCommerce installed. We do not recommend syncing or pushing data from a staging site to live production news sites or sites that use eCommerce plugins. <a>Learn more</a>'
+											),
+											{
+												a: (
+													<ExternalLink
+														href="https://developer.wordpress.com/docs/developer-tools/staging-sites/sync-staging-production/#staging-to-production"
+														children={ null }
+													/>
+												),
+											}
+										) }
+									</Text>
+								) }
+							</Notice>
+						</VStack>
+					) }
 					{ showDomainConfirmation && (
 						<InputControl
 							__next40pxDefaultSize
