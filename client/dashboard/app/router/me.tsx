@@ -2,6 +2,7 @@ import { fetchTwoStep } from '@automattic/api-core';
 import {
 	userSettingsQuery,
 	userPurchasesQuery,
+	rawUserPreferencesQuery,
 	purchaseQuery,
 	sitesQuery,
 	queryClient,
@@ -51,6 +52,7 @@ export const profileRoute = createRoute( {
 const preferencesRoute = createRoute( {
 	getParentRoute: () => meRoute,
 	path: 'preferences',
+	loader: () => queryClient.ensureQueryData( rawUserPreferencesQuery() ),
 } ).lazy( () =>
 	import( '../../me/preferences' ).then( ( d ) =>
 		createLazyRoute( 'preferences' )( {
