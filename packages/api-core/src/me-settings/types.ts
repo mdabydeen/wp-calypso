@@ -34,4 +34,5 @@ export interface UserSettings {
 	subscription_delivery_hour: number;
 	subscription_delivery_jabber_default: boolean;
 	p2_disable_autofollow_on_comment: boolean;
+	mcp_abilities?: any;
 }
