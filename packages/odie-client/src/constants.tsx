@@ -34,7 +34,7 @@ export const getOdieForwardToForumsMessage = (): string =>
 
 export const getOdieForwardToZendeskMessage = (): string =>
 	__(
-		'It sounds like you want to talk to a human. We’re here to help! Use the option below to message our Happiness Engineers.',
+		'We noticed you have an ongoing conversation. Would you like to continue it?',
 		__i18n_text_domain__
 	);
 
@@ -79,22 +79,6 @@ export const getOdieThirdPartyMessageContent = (): string =>
 		__i18n_text_domain__
 	) }`;
 
-export const getOdieWrongFileTypeMessage = (): Message => ( {
-	content: __(
-		'Sorry! The file you are trying to upload is not supported. Please upload a .jpg, .png, or .gif file.',
-		__i18n_text_domain__
-	),
-	role: 'bot',
-	type: 'message',
-	context: {
-		flags: {
-			hide_disclaimer_content: true,
-			show_contact_support_msg: false,
-		},
-		site_id: null,
-	},
-} );
-
 export const getOdieEmailFallbackMessageContent = (): string =>
 	__(
 		'We’re sorry, but live chat is temporarily unavailable for scheduled maintenance. Please feel free to reach out via email or check our Support Guides in the meantime.',
@@ -112,6 +96,22 @@ export const getOdieEmailFallbackMessage = (): Message => ( {
 		},
 		question_tags: {
 			inquiry_type: 'request-for-human-support',
+		},
+		site_id: null,
+	},
+} );
+
+export const getExistingConversationMessage = (): Message => ( {
+	content: '',
+	role: 'bot',
+	internal_message_id: 'existing-conversation-message',
+	type: 'message',
+	context: {
+		question_tags: {
+			inquiry_type: 'request-for-human-support',
+		},
+		flags: {
+			forward_to_human_support: true,
 		},
 		site_id: null,
 	},
