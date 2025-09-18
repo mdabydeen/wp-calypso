@@ -26,6 +26,7 @@ export * from './me-payment-methods';
 export * from './me-preferences';
 export * from './me-purchases';
 export * from './me-settings';
+export * from './me-notifications-settings';
 export * from './me-ssh';
 export * from './me-tax-details';
 export * from './me-two-step';
