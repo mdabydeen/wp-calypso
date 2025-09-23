@@ -123,11 +123,17 @@ export const SitesWithThisPlugin = ( { pluginSlug }: { pluginSlug: string } ) =>
 					const pluginItem = pluginBySiteId.get( item.ID );
 					const checked = pluginItem?.autoupdate ?? false;
 					const isBusy = isEnablingAutoupdate || isDisablingAutoupdate || isFetching;
+
+					// Determine if this plugin is managed on this site; if so, disable interaction
+					const { autoupdate } = getAllowedPluginActions( item, pluginSlug );
+					// when not allowed, it's either managed or user lacks permission
+					const isManaged = ! autoupdate;
+
 					return (
 						<FieldActionToggle
 							label={ __( 'Autoupdate' ) }
 							checked={ checked }
-							disabled={ isBusy }
+							disabled={ isBusy || isManaged }
 							onToggle={ ( next ) => {
 								if ( next ) {
 									return enableAutoupdateMutate( { siteId: item.ID, pluginId: plugin?.id || '' } );
