@@ -30,6 +30,19 @@ const DomainSearchUI = ( props: StepProps & { locale: string } ) => {
 
 	const events = useMemo( () => {
 		return {
+			onAddDomainToCart: ( product: MinimalRequestCartProduct ) => {
+				if ( isDomainForGravatarFlow( flowName ) ) {
+					return {
+						...product,
+						extra: {
+							...product.extra,
+							is_gravatar_domain: true,
+						},
+					};
+				}
+
+				return product;
+			},
 			onMoveDomainToSiteClick( otherSiteDomain: string, domainName: string ) {
 				page( domainManagementTransferToOtherSite( otherSiteDomain, domainName ) );
 			},
@@ -64,6 +77,24 @@ const DomainSearchUI = ( props: StepProps & { locale: string } ) => {
 					},
 					{ domainItem, siteUrl: domainItem.meta, domainCart }
 				);
+
+				if ( isDomainForGravatarFlow( flowName ) ) {
+					submitSignupStep(
+						{
+							stepName: 'site-or-domain',
+							domainItem,
+							designType: 'domain',
+							siteSlug: domainItem.meta,
+							siteUrl: domainItem.meta,
+							isPurchasingItem: true,
+						},
+						{ designType: 'domain', domainItem, siteUrl: domainItem.meta }
+					);
+					submitSignupStep(
+						{ stepName: 'site-picker', wasSkipped: true },
+						{ themeSlugWithRepo: 'pub/twentysixteen' }
+					);
+				}
 
 				goToNextStep();
 			},
