@@ -6,11 +6,7 @@ import {
 } from '@automattic/api-queries';
 import { useSuspenseQuery, useQuery } from '@tanstack/react-query';
 import { Outlet, useParams, useRouter } from '@tanstack/react-router';
-import {
-	__experimentalGrid as Grid,
-	__experimentalText as Text,
-	Button,
-} from '@wordpress/components';
+import { __experimentalGrid as Grid, Button } from '@wordpress/components';
 import { useViewportMatch } from '@wordpress/compose';
 import { useDispatch } from '@wordpress/data';
 import { __, isRTL } from '@wordpress/i18n';
@@ -24,6 +20,7 @@ import { siteRoute, siteBackupsIndexRoute, siteBackupDetailRoute } from '../../a
 import { DateRangePicker } from '../../components/date-range-picker';
 import { PageHeader } from '../../components/page-header';
 import PageLayout from '../../components/page-layout';
+import { Text } from '../../components/text';
 import { hasHostingFeature } from '../../utils/site-features';
 import HostingFeatureGatedWithCallout from '../hosting-feature-gated-with-callout';
 import { BackupDetails } from './backup-details';

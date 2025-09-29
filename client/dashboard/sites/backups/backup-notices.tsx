@@ -94,8 +94,7 @@ export function BackupNotices( { backupState, timezoneString, gmtOffset }: Backu
 						backupDate
 					),
 					{
-						// @ts-expect-error children prop is injected by createInterpolateElement
-						external: <ExternalLink href="https://jetpack.com/support/backup/" />,
+						external: <ExternalLink href="https://jetpack.com/support/backup/" children={ null } />,
 					}
 				) }
 			</Notice>
