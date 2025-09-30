@@ -10,6 +10,8 @@ import { useDispatch } from '@wordpress/data';
 import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { store as noticesStore } from '@wordpress/notices';
+import { useEffect } from 'react';
+import { useAnalytics } from '../../../app/analytics';
 import { ButtonStack } from '../../../components/button-stack';
 import { Notice } from '../../../components/notice';
 import { CODEABLE_JETPACK_SCAN_URL } from '../constants';
@@ -25,22 +27,34 @@ interface IgnoreThreatModalProps extends RenderModalProps< Threat > {
 export function IgnoreThreatModal( { items, closeModal, site }: IgnoreThreatModalProps ) {
 	const threat = items[ 0 ];
 
+	const { recordTracksEvent } = useAnalytics();
 	const ignoreThreat = useMutation( ignoreThreatMutation( site.ID ) );
 	const { createSuccessNotice, createErrorNotice } = useDispatch( noticesStore );
 
+	useEffect( () => {
+		recordTracksEvent( 'calypso_dashboard_scan_ignore_threat_modal_open' );
+	}, [ recordTracksEvent ] );
+
 	const handleIgnoreThreat = () => {
+		recordTracksEvent( 'calypso_dashboard_scan_ignore_threat_click' );
 		ignoreThreat.mutate( threat.id, {
 			onSuccess: () => {
 				closeModal?.();
+				recordTracksEvent( 'calypso_dashboard_scan_ignore_threat_success' );
 				createSuccessNotice( __( 'Threat ignored.' ), { type: 'snackbar' } );
 			},
 			onError: () => {
 				closeModal?.();
+				recordTracksEvent( 'calypso_dashboard_scan_ignore_threat_failed' );
 				createErrorNotice( __( 'Failed to ignore threat. Please try again.' ), {
 					type: 'snackbar',
 				} );
 			},
 		} );
+	};
+
+	const handleCodeableClick = () => {
+		recordTracksEvent( 'calypso_dashboard_scan_codeable_estimate_click' );
 	};
 
 	return (
@@ -54,7 +68,11 @@ export function IgnoreThreatModal( { items, closeModal, site }: IgnoreThreatModa
 						'By ignoring this threat you confirm that you have reviewed the detected code and assume the risks of keeping a potentially malicious file on your site. If you are unsure please request an estimate with <codeable />.'
 					),
 					{
-						codeable: <ExternalLink href={ CODEABLE_JETPACK_SCAN_URL }>Codeable</ExternalLink>,
+						codeable: (
+							<ExternalLink href={ CODEABLE_JETPACK_SCAN_URL } onClick={ handleCodeableClick }>
+								Codeable
+							</ExternalLink>
+						),
 					}
 				) }
 			</Notice>

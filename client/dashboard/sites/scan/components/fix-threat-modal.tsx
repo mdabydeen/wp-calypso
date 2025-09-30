@@ -3,6 +3,7 @@ import { useDispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { store as noticesStore } from '@wordpress/notices';
 import { useEffect } from 'react';
+import { useAnalytics } from '../../../app/analytics';
 import { ButtonStack } from '../../../components/button-stack';
 import { Text } from '../../../components/text';
 import { useFixThreats } from '../hooks/use-fix-threats';
@@ -20,23 +21,37 @@ export function FixThreatModal( { items, closeModal, site }: FixThreatModalProps
 	const threat = items[ 0 ];
 	const threatIds = [ threat.id ];
 
+	const { recordTracksEvent } = useAnalytics();
 	const { createSuccessNotice, createErrorNotice } = useDispatch( noticesStore );
 
 	const { startFix, isFixing, status, error } = useFixThreats( site.ID, threatIds );
+
+	const isExtensionDeleteFixer =
+		threat.signature === 'Vulnerable.WP.Extension' && threat.fixable?.fixer === 'delete';
+
+	useEffect( () => {
+		if ( isExtensionDeleteFixer ) {
+			recordTracksEvent( 'calypso_dashboard_scan_fix_threat_confirmation_modal_open' );
+		} else {
+			recordTracksEvent( 'calypso_dashboard_scan_fix_threat_modal_open' );
+		}
+	}, [ recordTracksEvent, isExtensionDeleteFixer ] );
 
 	useEffect( () => {
 		if ( status.isComplete && ! isFixing ) {
 			closeModal?.();
 
 			if ( status.allFixed ) {
+				recordTracksEvent( 'calypso_dashboard_scan_fix_threat_success' );
 				createSuccessNotice( __( 'Threat fixed.' ), { type: 'snackbar' } );
 			} else {
+				recordTracksEvent( 'calypso_dashboard_scan_fix_threat_failed' );
 				createErrorNotice( __( 'Failed to fix threat. Please contact support.' ), {
 					type: 'snackbar',
 				} );
 			}
 		}
-	}, [ status, isFixing, closeModal, createSuccessNotice, createErrorNotice ] );
+	}, [ status, isFixing, closeModal, createSuccessNotice, createErrorNotice, recordTracksEvent ] );
 
 	useEffect( () => {
 		if ( error ) {
@@ -48,11 +63,9 @@ export function FixThreatModal( { items, closeModal, site }: FixThreatModalProps
 	}, [ error, closeModal, createErrorNotice ] );
 
 	const handleFixThreat = () => {
+		recordTracksEvent( 'calypso_dashboard_scan_fix_threat_click' );
 		startFix();
 	};
-
-	const isExtensionDeleteFixer =
-		threat.signature === 'Vulnerable.WP.Extension' && threat.fixable?.fixer === 'delete';
 
 	return (
 		<VStack spacing={ 4 }>

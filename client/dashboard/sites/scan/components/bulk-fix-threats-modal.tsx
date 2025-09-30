@@ -3,6 +3,7 @@ import { useDispatch } from '@wordpress/data';
 import { __, _n } from '@wordpress/i18n';
 import { store as noticesStore } from '@wordpress/notices';
 import { useEffect } from 'react';
+import { useAnalytics } from '../../../app/analytics';
 import { ButtonStack } from '../../../components/button-stack';
 import { Text } from '../../../components/text';
 import { useFixThreats } from '../hooks/use-fix-threats';
@@ -21,6 +22,7 @@ export function BulkFixThreatsModal( { items, closeModal, site }: BulkFixThreats
 	const bulkFixableIds = new Set( bulkFixableThreats.map( ( item ) => item.id ) );
 	const remainingThreats = items.filter( ( item ) => ! bulkFixableIds.has( item.id ) );
 
+	const { recordTracksEvent } = useAnalytics();
 	const { createSuccessNotice, createErrorNotice } = useDispatch( noticesStore );
 
 	const { startFix, isFixing, status, error } = useFixThreats(
@@ -29,10 +31,17 @@ export function BulkFixThreatsModal( { items, closeModal, site }: BulkFixThreats
 	);
 
 	useEffect( () => {
+		recordTracksEvent( 'calypso_dashboard_scan_bulk_fix_threats_modal_open', {
+			threat_count: bulkFixableThreats.length,
+		} );
+	}, [ recordTracksEvent, bulkFixableThreats.length ] );
+
+	useEffect( () => {
 		if ( status.isComplete && ! isFixing ) {
 			closeModal?.();
 
 			if ( status.allFixed ) {
+				recordTracksEvent( 'calypso_dashboard_scan_bulk_fix_threats_success' );
 				createSuccessNotice(
 					_n( 'Threat fixed.', 'All threats were successfully fixed.', bulkFixableThreats.length ),
 					{
@@ -40,6 +49,7 @@ export function BulkFixThreatsModal( { items, closeModal, site }: BulkFixThreats
 					}
 				);
 			} else {
+				recordTracksEvent( 'calypso_dashboard_scan_bulk_fix_threats_failed' );
 				createErrorNotice(
 					_n(
 						'Failed to fix threat. Please contact support.',
@@ -59,6 +69,7 @@ export function BulkFixThreatsModal( { items, closeModal, site }: BulkFixThreats
 		createSuccessNotice,
 		createErrorNotice,
 		bulkFixableThreats.length,
+		recordTracksEvent,
 	] );
 
 	useEffect( () => {
@@ -78,6 +89,9 @@ export function BulkFixThreatsModal( { items, closeModal, site }: BulkFixThreats
 	}, [ error, closeModal, createErrorNotice, bulkFixableThreats.length ] );
 
 	const handleFixThreats = () => {
+		recordTracksEvent( 'calypso_dashboard_scan_bulk_fix_threats_click', {
+			threat_count: bulkFixableThreats.length,
+		} );
 		startFix();
 	};
 
