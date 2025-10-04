@@ -112,7 +112,7 @@ const DomainSearchStep: StepType< {
 
 	const events = useMemo( () => {
 		return {
-			onAddDomainToCart: ( product: MinimalRequestCartProduct ) => {
+			beforeAddDomainToCart: ( product: MinimalRequestCartProduct ) => {
 				if ( isHundredYearDomainFlow( flow ) ) {
 					return {
 						...product,
@@ -242,6 +242,7 @@ const DomainSearchStep: StepType< {
 				isDomainAndPlanFlow( flow )
 			}
 			slots={ slots }
+			analyticsSection="signup"
 		/>
 	);
 
