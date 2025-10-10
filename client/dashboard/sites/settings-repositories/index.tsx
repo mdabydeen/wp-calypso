@@ -1,9 +1,14 @@
 import { CodeDeploymentData, HostingFeatures } from '@automattic/api-core';
-import { siteBySlugQuery, codeDeploymentsQuery } from '@automattic/api-queries';
+import {
+	siteBySlugQuery,
+	codeDeploymentsQuery,
+	githubInstallationsQuery,
+} from '@automattic/api-queries';
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { useNavigate, useRouter } from '@tanstack/react-router';
 import { Button, Snackbar, __experimentalHStack as HStack } from '@wordpress/components';
 import { DataViews, filterSortAndPaginate } from '@wordpress/dataviews';
+import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { keyboardReturn, Icon } from '@wordpress/icons';
 import { useState } from 'react';
@@ -32,9 +37,15 @@ function RepositoriesList() {
 	const router = useRouter();
 	const { siteSlug } = siteRoute.useParams();
 	const { data: site } = useSuspenseQuery( siteBySlugQuery( siteSlug ) );
+	const { error: githubInstallationsError, isLoading: isLoadingInstallations } = useQuery(
+		githubInstallationsQuery()
+	);
+
 	const [ view, setView ] = useState< View >( DEFAULT_VIEW );
 
-	const { data: deployments = [], isLoading } = useQuery( codeDeploymentsQuery( site.ID ) );
+	const { data: deployments = [], isLoading: isLoadingDeployments } = useQuery(
+		codeDeploymentsQuery( site.ID )
+	);
 
 	const fields = useRepositoryFields();
 	const { data: filteredData, paginationInfo } = filterSortAndPaginate( deployments, view, fields );
@@ -92,20 +103,38 @@ function RepositoriesList() {
 		},
 	];
 
+	let emptyTitle;
 	const hasFilterOrSearch = ( view.filters && view.filters.length > 0 ) || view.search;
-	const emptyTitle = hasFilterOrSearch
-		? __( 'No repositories found' )
-		: __( 'No repositories connected' );
+
+	if ( githubInstallationsError ) {
+		emptyTitle = createInterpolateElement(
+			__( 'No repositories available. <a>Check your GitHub connection</a>.' ),
+			{
+				a: (
+					<Button
+						variant="link"
+						onClick={ () =>
+							router.navigate( { to: siteSettingsRepositoriesConnectRoute.fullPath } )
+						}
+					/>
+				),
+			}
+		);
+	} else if ( hasFilterOrSearch ) {
+		emptyTitle = __( 'No repositories found' );
+	} else {
+		emptyTitle = __( 'No repositories connected' );
+	}
 
 	return (
 		<DataViewsCard>
 			<DataViews
-				data={ filteredData }
+				data={ isLoadingInstallations || githubInstallationsError ? [] : filteredData }
 				fields={ fields }
 				view={ view }
 				onChangeView={ setView }
 				actions={ actions }
-				isLoading={ isLoading }
+				isLoading={ isLoadingDeployments || isLoadingInstallations }
 				defaultLayouts={ DEFAULT_LAYOUTS }
 				paginationInfo={ paginationInfo }
 				getItemId={ ( item ) => item.id.toString() }
