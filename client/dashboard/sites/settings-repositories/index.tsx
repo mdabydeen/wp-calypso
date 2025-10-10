@@ -120,6 +120,8 @@ function SiteRepositories() {
 	const { data: site } = useSuspenseQuery( siteBySlugQuery( siteSlug ) );
 	const navigate = useNavigate( { from: siteSettingsRepositoriesRoute.fullPath } );
 	const canConnect = hasHostingFeature( site, HostingFeatures.DEPLOYMENT );
+	const search = siteSettingsRepositoriesRoute.useSearch();
+	const showBackToDeployments = search?.from === 'deployments';
 
 	const handleConnectRepository = () => {
 		navigate( { to: siteSettingsRepositoriesConnectRoute.fullPath } );
@@ -158,24 +160,26 @@ function SiteRepositories() {
 					<RepositoriesList />
 				</HostingFeatureGatedWithCallout>
 			</PageLayout>
-			<HStack className="dashboard-snackbars">
-				<Snackbar
-					icon={ <Icon icon={ keyboardReturn } style={ { fill: 'currentcolor' } } /> }
-					actions={ [
-						{
-							label: __( 'Navigate' ),
-							onClick: () => {
-								navigate( {
-									to: siteDeploymentsListRoute.fullPath,
-									params: { siteSlug },
-								} );
+			{ showBackToDeployments && (
+				<HStack className="dashboard-snackbars">
+					<Snackbar
+						icon={ <Icon icon={ keyboardReturn } style={ { fill: 'currentcolor' } } /> }
+						actions={ [
+							{
+								label: __( 'Navigate' ),
+								onClick: () => {
+									navigate( {
+										to: siteDeploymentsListRoute.fullPath,
+										params: { siteSlug },
+									} );
+								},
 							},
-						},
-					] }
-				>
-					{ __( 'Back to Deployments' ) }
-				</Snackbar>
-			</HStack>
+						] }
+					>
+						{ __( 'Back to Deployments' ) }
+					</Snackbar>
+				</HStack>
+			) }
 		</>
 	);
 }
