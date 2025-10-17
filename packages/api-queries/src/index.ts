@@ -1,6 +1,7 @@
 export * from './query-client';
 
 export * from './domain-availability';
+export * from './domain-can-redirect';
 export * from './domain-connection-setup';
 export * from './domain-contact-verification';
 export * from './domain-dns-records';
@@ -49,6 +50,7 @@ export * from './odie';
 export * from './p2';
 export * from './payment-methods';
 export * from './plugin';
+export * from './products';
 export * from './purchase';
 export * from './site-activity-log';
 export * from './site-activity-log-backup';
@@ -84,6 +86,7 @@ export * from './site-performance';
 export * from './site-preview-links';
 export * from './site-primary-data-center';
 export * from './site-purchases';
+export * from './site-redirect';
 export * from './site-reset';
 export * from './site-scan';
 export * from './site-settings';
