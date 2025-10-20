@@ -27,15 +27,6 @@ function Domains() {
 		type: 'table',
 		filters: [
 			{
-				field: 'subtype',
-				operator: 'isAny',
-				value: [
-					DomainSubtype.DOMAIN_REGISTRATION,
-					DomainSubtype.DOMAIN_TRANSFER,
-					DomainSubtype.DOMAIN_CONNECTION,
-				],
-			},
-			{
 				field: 'owner',
 				operator: 'isAny',
 				value: [ 'owned-by-me' ],
@@ -43,7 +34,13 @@ function Domains() {
 		],
 	} ) );
 
-	const { data: domains, isLoading } = useQuery( domainsQuery() );
+	const { data: domains, isLoading } = useQuery( {
+		...domainsQuery(),
+		select: ( data ) => {
+			return data.filter( ( domain ) => domain.subtype.id !== DomainSubtype.DEFAULT_ADDRESS );
+		},
+	} );
+
 	const { data: filteredData, paginationInfo } = filterSortAndPaginate(
 		domains ?? [],
 		view,
