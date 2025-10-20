@@ -86,7 +86,15 @@ export function hostingFeaturesCallout(
 					</HostingFeatureCallout>
 				);
 
-			context.primary = <div className="hosting-features-callout">{ callout }</div>;
+			context.primary = (
+				<div className="hosting-features-callout">
+					<PageViewTracker
+						title="Sites > Hosting Feature Callout"
+						path={ getRouteFromContext( context ) }
+					/>
+					{ callout }
+				</div>
+			);
 		}
 
 		next();
