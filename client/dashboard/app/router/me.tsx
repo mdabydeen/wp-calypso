@@ -2,6 +2,7 @@ import { fetchTwoStep } from '@automattic/api-core';
 import {
 	userSettingsQuery,
 	userPurchasesQuery,
+	userReceiptsQuery,
 	purchaseQuery,
 	receiptQuery,
 	sitesQuery,
@@ -129,6 +130,9 @@ export const billingHistoryRoute = createRoute( {
 		],
 	} ),
 	getParentRoute: () => billingRoute,
+	loader: async () => {
+		await queryClient.ensureQueryData( userReceiptsQuery() );
+	},
 	path: '/billing-history',
 } );
 
