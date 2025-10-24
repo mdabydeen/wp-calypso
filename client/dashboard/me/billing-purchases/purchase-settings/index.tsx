@@ -270,9 +270,11 @@ function CancelOrRemoveActionButton( { purchase }: { purchase: Purchase } ) {
 					<Button
 						variant="secondary"
 						size="compact"
-						onClick={ () => ( {
+						onClick={ () =>
 							// FIXME: add refund, cancel, and downgrade action
-						} ) }
+							// This is a stopgap solution to allow customers to cancel until the cancellation flow is migrated to the dashboard.
+							( window.location.href = `/me/purchases/${ purchase.site_slug }/${ purchase.ID }/cancel` )
+						}
 					>
 						{ __( 'Downgrade or cancel' ) }
 					</Button>
@@ -289,9 +291,11 @@ function CancelOrRemoveActionButton( { purchase }: { purchase: Purchase } ) {
 					<Button
 						variant="secondary"
 						size="compact"
-						onClick={ () => ( {
+						onClick={ () =>
 							// FIXME: add remove action
-						} ) }
+							// This is a stopgap solution to allow customers to cancel until the cancellation flow is migrated to the dashboard.
+							( window.location.href = `/me/purchases/${ purchase.site_slug }/${ purchase.ID }/remove` )
+						}
 					>
 						{ __( 'Remove subscription' ) }
 					</Button>
