@@ -11672,6 +11672,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vgs/collect-js-react@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@vgs/collect-js-react@npm:2.0.0"
+  peerDependencies:
+    react: ^16.0 || ^17.0 || ^18.0
+    react-dom: ^16.0 || ^17.0 || ^18.0
+  checksum: acd509593174d152a850d5483a8713631967b49f4a2c40bf6910bd7224a89bf1181e425b925261dbb2f817d29d73d00a9fb5e4e319bb4416e2c9200fb00e305f
+  languageName: node
+  linkType: hard
+
+"@vgs/collect-js@npm:^0.7.2":
+  version: 0.7.2
+  resolution: "@vgs/collect-js@npm:0.7.2"
+  dependencies:
+    core-js: "npm:^3.30.0"
+    uuid: "npm:^8.3.2"
+  checksum: 1b5edaaa20fd421cfe5f9f119dd3555fa5545d58fc5249625cb0b274becd63ab316a2d563570e8e47bb048bbb470bb86106a8fb13afe33909e2bd50439cc1b0c
+  languageName: node
+  linkType: hard
+
 "@visx/annotation@npm:3.12.0, @visx/annotation@npm:^3.12.0":
   version: 3.12.0
   resolution: "@visx/annotation@npm:3.12.0"
@@ -17248,10 +17268,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"core-js@npm:^3.31.0, core-js@npm:^3.31.1, core-js@npm:^3.42.0, core-js@npm:^3.6.4":
-  version: 3.42.0
-  resolution: "core-js@npm:3.42.0"
-  checksum: 2913d3d5452d54ad92f058d66046782d608c05e037bcc523aab79c04454fe640998f94e6011292969d66dfa472f398b085ce843dcb362056532a5799c627184e
+"core-js@npm:^3.30.0, core-js@npm:^3.31.0, core-js@npm:^3.31.1, core-js@npm:^3.42.0, core-js@npm:^3.6.4":
+  version: 3.46.0
+  resolution: "core-js@npm:3.46.0"
+  checksum: 12d559d39a58227881bc6c86c36d24dcfbe2d56e52dac42e35e8643278172596ab67f57ede98baf40b153ca1b830f37420ea32c3f7417c0c5a1fed46438ae187
   languageName: node
   linkType: hard
 
@@ -39707,6 +39727,8 @@ __metadata:
     "@types/wordpress__blocks": "npm:^12.5.17"
     "@typescript-eslint/eslint-plugin": "npm:^6.21.0"
     "@typescript-eslint/parser": "npm:^6.21.0"
+    "@vgs/collect-js": "npm:^0.7.2"
+    "@vgs/collect-js-react": "npm:^2.0.0"
     "@visx/glyph": "npm:^3.12.0"
     "@wordpress/base-styles": "npm:^5.23.0"
     "@wordpress/block-editor": "npm:^14.18.0"
