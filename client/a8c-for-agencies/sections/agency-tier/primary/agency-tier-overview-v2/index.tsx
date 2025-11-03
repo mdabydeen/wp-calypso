@@ -11,6 +11,8 @@ import { useSelector } from 'calypso/state';
 import { getActiveAgency } from 'calypso/state/a8c-for-agencies/agency/selectors';
 import AgencyTierOverviewContent from '../../overview-content';
 
+import './style.scss';
+
 export default function AgencyTierOverviewV2() {
 	const translate = useTranslate();
 

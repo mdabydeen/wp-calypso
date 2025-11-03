@@ -7,6 +7,7 @@ import {
 	__experimentalHStack as HStack,
 	__experimentalVStack as VStack,
 } from '@wordpress/components';
+import { useViewportMatch } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
 import { SectionHeader } from 'calypso/dashboard/components/section-header';
 import { ALL_TIERS } from './constants';
@@ -14,12 +15,12 @@ import type { AgencyTierType } from './types';
 
 export default function TierCards( {
 	currentAgencyTierId,
-	isSmallViewport,
 }: {
 	currentAgencyTierId?: AgencyTierType;
-	isSmallViewport: boolean;
 } ) {
 	const currentTier = ALL_TIERS.find( ( tier ) => tier.id === currentAgencyTierId );
+
+	const isSmallViewport = useViewportMatch( 'huge', '<' );
 
 	const content = ALL_TIERS.map( ( tier ) => {
 		const hasLowerTier = currentTier && currentTier.level > tier.level;
