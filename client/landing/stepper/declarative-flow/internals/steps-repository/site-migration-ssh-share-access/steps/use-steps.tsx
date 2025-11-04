@@ -345,7 +345,7 @@ export const useSteps = ( {
 		const canClick = index === 0 || index <= lastCompleteStep + 1;
 		const onItemClick = canClick
 			? () => {
-					setCurrentStep( index );
+					setCurrentStep( ( prev ) => ( prev === index ? -1 : index ) );
 			  }
 			: undefined;
 
