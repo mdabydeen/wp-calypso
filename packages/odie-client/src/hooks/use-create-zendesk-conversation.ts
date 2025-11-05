@@ -6,15 +6,7 @@ import { useManageSupportInteraction } from '../data';
 import { useCurrentSupportInteraction } from '../data/use-current-support-interaction';
 import type { OdieAllBotSlugs } from '../types';
 
-export const useCreateZendeskConversation = (): ( ( {
-	interactionId,
-	createdFrom,
-	isFromError,
-}: {
-	interactionId?: string;
-	createdFrom?: string;
-	isFromError?: boolean;
-} ) => Promise< string > ) => {
+export const useCreateZendeskConversation = () => {
 	const {
 		selectedSiteId,
 		selectedSiteURL,
@@ -34,10 +26,12 @@ export const useCreateZendeskConversation = (): ( ( {
 		interactionId = '',
 		createdFrom = '',
 		isFromError = false,
+		errorReason = '',
 	}: {
 		interactionId?: string;
 		createdFrom?: string;
 		isFromError?: boolean;
+		errorReason?: string;
 	} ) => {
 		const currentInteractionID = interactionId || currentSupportInteraction!.uuid;
 
@@ -49,6 +43,7 @@ export const useCreateZendeskConversation = (): ( ( {
 			interaction_id: currentInteractionID,
 			created_from: createdFrom,
 			is_from_error: isFromError,
+			error_reason: errorReason || 'Unknown error',
 		} );
 
 		if (
