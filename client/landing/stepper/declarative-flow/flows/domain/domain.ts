@@ -1,3 +1,4 @@
+import { isDomainMapping } from '@automattic/calypso-products';
 import { OnboardActions, OnboardSelect } from '@automattic/data-stores';
 import {
 	DOMAIN_FLOW,
@@ -164,21 +165,29 @@ const domain: FlowV2< typeof initialize > = {
 						return navigate( destination as typeof currentStepSlug );
 					}
 
-					if ( siteSlug && providedDependencies && 'domainCartItem' in providedDependencies ) {
-						// For garden sites with domain mapping, skip plans and map directly
-						if (
-							site &&
-							( site as { is_garden?: boolean } ).is_garden &&
-							providedDependencies.domainCartItem &&
-							providedDependencies.domainCartItem?.product_slug === 'domain_map'
-						) {
-							const domain = providedDependencies.domainCartItem.meta as string;
+					if ( ! providedDependencies || ! ( 'domainCartItem' in providedDependencies ) ) {
+						throw new Error( 'No domain cart item found' );
+					}
 
-							try {
-								await wpcom.req.post( `/sites/${ site.ID }/add-domain-mapping`, { domain } );
-								return window.location.assign( `/ciab/sites/${ domain }/domains` );
-							} catch ( error ) {
-								// If mapping fails, fall through to original flow
+					if ( site ) {
+						if ( isDomainMapping( providedDependencies.domainCartItem ) ) {
+							const isGardenSite = ( site as { is_garden?: boolean } ).is_garden;
+							const hasPaidPlan = siteHasPaidPlan( site );
+
+							if ( isGardenSite || hasPaidPlan ) {
+								setPendingAction( async () => {
+									const domain = providedDependencies.domainCartItem.meta;
+
+									await wpcom.req.post( `/sites/${ site.ID }/add-domain-mapping`, { domain } );
+
+									return {
+										redirectTo: isGardenSite
+											? `/ciab/sites/${ domain }/domains`
+											: `/v2/domains/${ domain }/domain-connection-setup`,
+									};
+								} );
+
+								return navigate( STEPS.PROCESSING.slug );
 							}
 						}
 
@@ -208,12 +217,10 @@ const domain: FlowV2< typeof initialize > = {
 						return navigate( STEPS.PROCESSING.slug );
 					}
 
-					if ( providedDependencies && 'domainCartItem' in providedDependencies ) {
-						setSignupDomainOrigin( SIGNUP_DOMAIN_ORIGIN.USE_YOUR_DOMAIN );
-						setHideFreePlan( true );
-						setDomainCartItem( providedDependencies.domainCartItem );
-						setDomainCartItems( [ providedDependencies.domainCartItem ] );
-					}
+					setSignupDomainOrigin( SIGNUP_DOMAIN_ORIGIN.USE_YOUR_DOMAIN );
+					setHideFreePlan( true );
+					setDomainCartItem( providedDependencies.domainCartItem );
+					setDomainCartItems( [ providedDependencies.domainCartItem ] );
 
 					return navigate( STEPS.NEW_OR_EXISTING_SITE.slug );
 
@@ -251,6 +258,24 @@ const domain: FlowV2< typeof initialize > = {
 
 					setPendingAction( async () => {
 						if ( domainCartItems ) {
+							const hasOnlyDomainMappingInCart =
+								domainCartItems.length === 1 && isDomainMapping( domainCartItems[ 0 ] );
+
+							if ( hasOnlyDomainMappingInCart ) {
+								const domain = domainCartItems[ 0 ].meta;
+
+								await wpcom.req.post(
+									`/sites/${ providedDependencies.site.ID }/add-domain-mapping`,
+									{
+										domain,
+									}
+								);
+
+								return {
+									redirectTo: `/v2/domains/${ domain }/domain-connection-setup`,
+								};
+							}
+
 							await addProductsToCart( providedDependencies.siteSlug, this.name, domainCartItems );
 						}
 
@@ -319,6 +344,10 @@ const domain: FlowV2< typeof initialize > = {
 					return navigate( STEPS.PROCESSING.slug, undefined, true );
 				case STEPS.PROCESSING.slug: {
 					if ( providedDependencies.processingResult === ProcessingResult.SUCCESS ) {
+						if ( providedDependencies.redirectTo ) {
+							return window.location.replace( providedDependencies.redirectTo );
+						}
+
 						const destination = `/v2/sites/${ providedDependencies.siteSlug }/domains`;
 
 						persistSignupDestination( destination );
