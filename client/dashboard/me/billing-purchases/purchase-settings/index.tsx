@@ -1162,7 +1162,7 @@ export default function PurchaseSettings() {
 							title={ __( 'Site' ) }
 							heading={ site.name }
 							description={ purchase.site_slug }
-							link={ `/v2/sites/${ purchase.site_slug }` }
+							link={ `/sites/${ purchase.site_slug }` }
 						/>
 					) }
 					<OverviewCard
