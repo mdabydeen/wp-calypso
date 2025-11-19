@@ -189,7 +189,7 @@ const domain: FlowV2< typeof initialize > = {
 						const mappingIsFree = hasPlanFeature( site, DotcomFeatures.DOMAIN_MAPPING );
 						const hasPaidPlan = siteHasPaidPlan( site );
 
-						if ( ( isDomainMapping && mappingIsFree ) || hasPaidPlan ) {
+						if ( isDomainMapping && ( mappingIsFree || hasPaidPlan ) ) {
 							const queryArgs = getQueryArgs( window.location.href );
 							let redirectTo = queryArgs.redirect_to as string | undefined;
 
