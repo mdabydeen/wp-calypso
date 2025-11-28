@@ -8,9 +8,10 @@ type Aggregated = {
 	count: number;
 	activeSites: number[];
 	inactiveSites: number[];
-	updateCount: number;
+	updatableSites: number[];
 	autoupdateAllowedCount: number;
-	autoupdateCount: number;
+	autoupdatedSites: number[];
+	notAutoupdatedSites: number[];
 	siteIds: number[];
 	isManaged: boolean;
 };
@@ -49,9 +50,10 @@ export function mapApiPluginsToDataViewPlugins(
 				count: 0,
 				activeSites: [],
 				inactiveSites: [],
-				updateCount: 0,
+				updatableSites: [],
+				autoupdatedSites: [],
+				notAutoupdatedSites: [],
 				autoupdateAllowedCount: 0,
-				autoupdateCount: 0,
 				isManaged: false,
 				siteIds: [],
 			};
@@ -64,10 +66,7 @@ export function mapApiPluginsToDataViewPlugins(
 				entry.inactiveSites.push( siteId );
 			}
 			if ( p.update ) {
-				entry.updateCount += 1;
-			}
-			if ( p.autoupdate ) {
-				entry.autoupdateCount += 1;
+				entry.updatableSites.push( siteId );
 			}
 			if ( p.is_managed ) {
 				entry.isManaged = true;
@@ -79,7 +78,16 @@ export function mapApiPluginsToDataViewPlugins(
 					{ isPluginActive: p.active, ...site, isPluginManaged: entry.isManaged },
 					p.slug
 				);
+
 				entry.autoupdateAllowedCount += autoupdate ? 1 : 0;
+
+				if ( autoupdate ) {
+					if ( p.autoupdate ) {
+						entry.autoupdatedSites.push( siteId );
+					} else {
+						entry.notAutoupdatedSites.push( siteId );
+					}
+				}
 			}
 
 			map.set( p.id, entry );
@@ -95,9 +103,10 @@ export function mapApiPluginsToDataViewPlugins(
 				count,
 				activeSites,
 				inactiveSites,
-				updateCount,
+				updatableSites,
+				autoupdatedSites,
+				notAutoupdatedSites,
 				autoupdateAllowedCount,
-				autoupdateCount,
 				siteIds,
 				isManaged,
 			},
@@ -109,10 +118,13 @@ export function mapApiPluginsToDataViewPlugins(
 			sitesCount: count,
 			sitesWithPluginActive: activeSites,
 			sitesWithPluginInactive: inactiveSites,
-			hasUpdate: mapCountToQuantifier( updateCount, count ),
+			sitesWithPluginUpdate: updatableSites,
+			sitesWithPluginAutoupdated: autoupdatedSites,
+			sitesWithPluginNotAutoupdated: notAutoupdatedSites,
+			hasUpdate: mapCountToQuantifier( updatableSites.length, count ),
 			isActive: mapCountToQuantifier( activeSites.length, count ),
 			areAutoUpdatesAllowed: mapCountToQuantifier( autoupdateAllowedCount, count ),
-			areAutoUpdatesEnabled: mapCountToQuantifier( autoupdateCount, count ),
+			areAutoUpdatesEnabled: mapCountToQuantifier( autoupdatedSites.length, count ),
 			siteIds,
 			isManaged,
 		} )

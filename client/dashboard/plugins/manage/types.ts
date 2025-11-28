@@ -8,6 +8,9 @@ export type PluginListRow = {
 	sitesCount: number;
 	sitesWithPluginActive: number[];
 	sitesWithPluginInactive: number[];
+	sitesWithPluginUpdate: number[];
+	sitesWithPluginAutoupdated: number[];
+	sitesWithPluginNotAutoupdated: number[];
 	isActive: 'all' | 'some' | 'none';
 	hasUpdate: 'all' | 'some' | 'none';
 	areAutoUpdatesAllowed: 'all' | 'some' | 'none';

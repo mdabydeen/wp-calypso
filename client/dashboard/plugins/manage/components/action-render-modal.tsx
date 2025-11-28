@@ -68,10 +68,9 @@ function getConfirmText( actionId: string, items: PluginListRow[] ) {
 	if ( items.length === 1 ) {
 		const pluginName = items[ 0 ].name;
 		const count = items[ 0 ].sitesCount;
-		const activeCount = items[ 0 ].sitesWithPluginActive.length;
-		const inactiveCount = items[ 0 ].sitesWithPluginInactive.length;
 		switch ( actionId ) {
-			case 'activate':
+			case 'activate': {
+				const inactiveCount = items[ 0 ].sitesWithPluginInactive.length;
 				return sprintf(
 					// translators: %1$s is the plugin name. %2$d is the number of sites.
 					_n(
@@ -82,7 +81,9 @@ function getConfirmText( actionId: string, items: PluginListRow[] ) {
 					pluginName,
 					inactiveCount
 				);
-			case 'deactivate':
+			}
+			case 'deactivate': {
+				const activeCount = items[ 0 ].sitesWithPluginActive.length;
 				return sprintf(
 					// Translators: %1$s is the plugin name. %2$d is the number of sites.
 					_n(
@@ -93,39 +94,46 @@ function getConfirmText( actionId: string, items: PluginListRow[] ) {
 					pluginName,
 					activeCount
 				);
-			case 'update':
+			}
+			case 'update': {
+				const updateCount = items[ 0 ].sitesWithPluginUpdate.length;
 				return sprintf(
 					// Translators: %1$s is the plugin name. %2$d is the number of sites.
 					_n(
 						'You are about to update the %1$s plugin installed on %2$d site.',
 						'You are about to update the %1$s plugin installed on %2$d sites.',
-						count
+						updateCount
 					),
 					pluginName,
-					count
+					updateCount
 				);
-			case 'enable-autoupdate':
+			}
+			case 'enable-autoupdate': {
+				const disabledCount = items[ 0 ].sitesWithPluginNotAutoupdated.length;
 				return sprintf(
 					// Translators: %1$s is the plugin name. %2$d is the number of sites.
 					_n(
 						'You are about to enable auto‑updates for the %1$s plugin installed on %2$d site.',
 						'You are about to enable auto‑updates for the %1$s plugin installed on %2$d sites.',
-						count
+						disabledCount
 					),
 					pluginName,
-					count
+					disabledCount
 				);
-			case 'disable-autoupdate':
+			}
+			case 'disable-autoupdate': {
+				const enabledCount = items[ 0 ].sitesWithPluginAutoupdated.length;
 				return sprintf(
 					// Translators: %1$s is the plugin name. %2$d is the number of sites.
 					_n(
 						'You are about to disable auto‑updates for the %1$s plugin installed on %2$d site.',
 						'You are about to disable auto‑updates for the %1$s plugin installed on %2$d sites.',
-						count
+						enabledCount
 					),
 					pluginName,
-					count
+					enabledCount
 				);
+			}
 			case 'delete':
 				return sprintf(
 					// Translators: %1$s is the plugin name. %2$d is the number of sites.
@@ -215,34 +223,50 @@ function getConfirmText( actionId: string, items: PluginListRow[] ) {
 }
 
 function getSiteList( actionId: string, items: PluginListRow[], sitesById: Map< number, Site > ) {
-	if ( items.length === 1 && [ 'activate', 'deactivate' ].includes( actionId ) ) {
-		const [ plugin ] = items;
-
-		let sites: number[] = [];
-		if ( actionId === 'activate' ) {
-			sites = plugin.sitesWithPluginInactive;
-		} else if ( actionId === 'deactivate' ) {
-			sites = plugin.sitesWithPluginActive;
-		}
-
-		if ( ! sites?.length ) {
-			return null;
-		}
-
-		return (
-			<ul>
-				{ sites.map( ( siteId ) => {
-					const site = sitesById.get( siteId );
-
-					if ( ! site ) {
-						return null;
-					}
-
-					return <li key={ siteId }>{ `${ site.name } (${ site.slug })` }</li>;
-				} ) }
-			</ul>
-		);
+	if ( items.length !== 1 ) {
+		return null;
 	}
+
+	const [ plugin ] = items;
+
+	let sites: number[] = [];
+	switch ( actionId ) {
+		case 'activate':
+			sites = plugin.sitesWithPluginInactive;
+			break;
+		case 'deactivate':
+			sites = plugin.sitesWithPluginActive;
+			break;
+		case 'update':
+			sites = plugin.sitesWithPluginUpdate;
+			break;
+		case 'enable-autoupdate':
+			sites = plugin.sitesWithPluginNotAutoupdated;
+			break;
+		case 'disable-autoupdate':
+			sites = plugin.sitesWithPluginAutoupdated;
+			break;
+		default:
+			return null;
+	}
+
+	if ( ! sites?.length ) {
+		return null;
+	}
+
+	return (
+		<ul>
+			{ sites.map( ( siteId ) => {
+				const site = sitesById.get( siteId );
+
+				if ( ! site ) {
+					return null;
+				}
+
+				return <li key={ siteId }>{ `${ site.name } (${ site.slug })` }</li>;
+			} ) }
+		</ul>
+	);
 }
 
 export default function ActionRenderModal( {
