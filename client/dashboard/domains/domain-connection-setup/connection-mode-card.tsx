@@ -10,7 +10,7 @@ import {
 	__experimentalHStack as HStack,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ButtonStack } from '../../components/button-stack';
 import { Card, CardBody, CardDivider } from '../../components/card';
 import Notice from '../../components/notice';
@@ -87,11 +87,29 @@ export default function ConnectionModeCard( {
 		} );
 	};
 
+	const handleModeClick = useCallback(
+		( event: React.MouseEvent< HTMLDivElement > ) => {
+			const target = event.target as HTMLElement;
+			// Skip if clicking directly on the RadioControl (fieldset or input)
+			if ( target.closest( 'fieldset' ) || target.tagName === 'INPUT' ) {
+				return;
+			}
+
+			onModeChange( mode );
+		},
+		[ mode, onModeChange ]
+	);
+
 	return (
 		<Card>
 			<CardBody>
 				<VStack spacing={ 4 }>
-					<HStack spacing={ 2 } justify="flex-start">
+					<HStack
+						spacing={ 2 }
+						justify="flex-start"
+						onClick={ handleModeClick }
+						style={ { cursor: 'pointer' } }
+					>
 						<RadioControl
 							selected={ selectedMode }
 							options={ [ { label: '', value: mode } ] }
