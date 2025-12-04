@@ -5,6 +5,7 @@ import { useDispatch } from '@wordpress/data';
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import AsyncLoad from 'calypso/components/async-load';
+import isA8CForAgencies from 'calypso/lib/a8c-for-agencies/is-a8c-for-agencies';
 import { getGoogleMailServiceFamily } from 'calypso/lib/gsuite';
 import { onboardingUrl } from 'calypso/lib/paths';
 import { getCurrentUser } from 'calypso/state/current-user/selectors';
@@ -45,6 +46,12 @@ export default function HelpCenterLoader( {
 		return null;
 	}
 
+	const additionalHelpCenterProps = isA8CForAgencies()
+		? {
+				newInteractionsBotSlug: 'automattic-chat-support_a4a',
+		  }
+		: {};
+
 	return (
 		<AsyncLoad
 			require="@automattic/help-center"
@@ -61,6 +68,7 @@ export default function HelpCenterLoader( {
 			onboardingUrl={ onboardingUrl() }
 			googleMailServiceFamily={ getGoogleMailServiceFamily() }
 			source={ source }
+			{ ...additionalHelpCenterProps }
 		/>
 	);
 }
