@@ -9,5 +9,5 @@
 	},
 	"include": [ "src", "src/*.json", "types" ],
 	"exclude": [ "**/test/*" ],
-	"references": [ { "path": "../odie-client" } ]
+	"references": [ { "path": "../support-articles" }, { "path": "../odie-client" } ]
 }

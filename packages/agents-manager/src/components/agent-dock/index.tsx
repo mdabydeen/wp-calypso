@@ -17,7 +17,6 @@ import {
 	type MarkdownExtensions,
 	type Suggestion,
 } from '@automattic/agenttic-ui';
-import { AgentsManagerSelect } from '@automattic/data-stores';
 import { useManagedOdieChat } from '@automattic/odie-client';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { useCallback, useEffect, useRef } from '@wordpress/element';
@@ -33,6 +32,9 @@ import { lastConversationCache } from '../../utils/conversation-cache';
 import AgentChat from '../agent-chat';
 import AgentHistory from '../agent-history';
 import { type Options as ChatHeaderOptions } from '../chat-header';
+import SupportGuide from '../support-guide';
+import SupportGuides from '../support-guides';
+import type { AgentsManagerSelect, HelpCenterSite } from '@automattic/data-stores';
 
 /**
  * Navigation continuation hook type
@@ -45,6 +47,12 @@ type NavigationContinuationHook = ( props: {
 } ) => void;
 
 interface AgentDockProps {
+	/** The selected site object. */
+	site?: HelpCenterSite | null;
+	/** The name of the current section (e.g., 'posts', 'pages'). */
+	sectionName: string;
+	/** Indicates if the user is eligible for chat. */
+	isEligibleForChat: boolean;
 	/** Agent configuration for the chat client. */
 	agentConfig: UseAgentChatConfig;
 	/** Suggestions displayed when the chat is empty. */
@@ -59,6 +67,9 @@ interface AgentDockProps {
 
 export default function AgentDock( {
 	agentConfig,
+	site,
+	sectionName,
+	isEligibleForChat,
 	emptyViewSuggestions = [],
 	markdownComponents = {},
 	markdownExtensions = {},
@@ -331,6 +342,29 @@ export default function AgentDock( {
 		/>
 	);
 
+	const SupportGuideRoute = (
+		<SupportGuide
+			isEligibleForChat={ isEligibleForChat }
+			onAbort={ abortCurrentRequest }
+			onClose={ closeSidebar }
+			isOpen={ isOpen }
+			sectionName={ sectionName }
+			currentSiteDomain={ site?.domain }
+			chatHeaderOptions={ getChatHeaderOptions() }
+			isChatDocked={ isDocked }
+		/>
+	);
+
+	const SupportGuidesRoute = (
+		<SupportGuides
+			onAbort={ abortCurrentRequest }
+			onClose={ closeSidebar }
+			isOpen={ isOpen }
+			chatHeaderOptions={ getChatHeaderOptions() }
+			isChatDocked={ isDocked }
+		/>
+	);
+
 	if ( ! isStoreReady ) {
 		return null;
 	}
@@ -340,6 +374,8 @@ export default function AgentDock( {
 			<Route path="/" element={ Chat } />
 			<Route path="/odie" element={ OdieChat } />
 			<Route path="/chat" element={ Chat } />
+			<Route path="/post" element={ SupportGuideRoute } />
+			<Route path="/support-guides" element={ SupportGuidesRoute } />
 			<Route path="/history" element={ History } />
 			<Route path="*" element={ <Navigate to="/" replace /> } />
 		</Routes>

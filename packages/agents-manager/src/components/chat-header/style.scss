@@ -1,3 +1,12 @@
+.agents-manager-chat--docked {
+	.agents-manager-chat-header {
+		.agents-manager-chat-header__back-btn svg {
+			fill: #fff;
+			margin-left: 0;
+		}
+	}
+}
+
 .agents-manager-chat-header {
 	width: 100%;
 	display: flex;
@@ -5,6 +14,11 @@
 	justify-content: end;
 	height: 56px;
 	padding: 4px 16px;
+
+	.agents-manager-chat-header__back-btn {
+		padding: 0;
+		padding-right: 4px;
+	}
 
 	&:has( .agents-manager-chat-header__title ) {
 		justify-content: space-between;
