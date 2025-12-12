@@ -11,20 +11,6 @@
 	}
 }
 
-.plugin-icon-placeholder {
-	width: 32px;
-	height: 32px;
-	background-color: var(--color-neutral-10, #c3c4c7);
-	border-radius: 4px;
-	animation: pulse 1.4s ease-in-out infinite;
-	will-change: opacity, transform;
-}
-
-img.plugin-icon {
-	width: 32px;
-	height: 32px;
-}
-
 .plugin-icon-fallback {
 	position: absolute;
 	top: 50%;
@@ -32,20 +18,13 @@ img.plugin-icon {
 	transform: translate(-50%, -50%);
 }
 
-.plugin-switcher-card-body,.plugin-sites-card-body {
+.plugin-switcher-card-body {
 	// take into account header and nav plus border (64+1), page layout padding (32),
 	// page title/description (80), and gap between title/description and the cards (32)
 	max-height: calc(100vh - 2 * ( 64px + 1px ) - 2 * 32px - 80px - 32px);
 	padding-inline-start: 0;
 	padding-inline-end: 0;
-}
-
-.plugin-switcher-card-body {
 	overflow-y: auto;
-}
-
-.plugin-sites-card-body {
-	overflow-y: hidden;
 }
 
 .plugin-switcher-search {
@@ -74,14 +53,3 @@ img.plugin-icon {
 	text-overflow: ellipsis;
 	text-wrap-mode: nowrap;
 }
-
-.plugin-sites-card-header {
-	margin-bottom: 8px;
-	padding-inline-start: 20px;
-
-	.dashboard-section-header__decoration {
-		width: 32px;
-		height: 32px;
-	}
-}
-
