@@ -14,6 +14,7 @@ import BigSkyIcon from '../big-sky-icon';
 import ChatHeader, { type Options as ChatHeaderOptions } from '../chat-header';
 import ChatMessageSkeleton from '../chat-message-skeleton';
 import { AI } from '../icons';
+import SelectedBlock from '../selected-block';
 import type { Message } from '@automattic/agenttic-ui/dist/types';
 import type { AgentsManagerSelect } from '@automattic/data-stores';
 
@@ -116,6 +117,7 @@ export default function AgentChat( {
 				<AgentUI.Footer>
 					<AgentUI.Suggestions />
 					<AgentUI.Notice />
+					<SelectedBlock />
 					<AgentUI.Input />
 				</AgentUI.Footer>
 			</AgentUI.ConversationView>
