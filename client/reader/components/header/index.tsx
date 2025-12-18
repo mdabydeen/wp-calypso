@@ -7,6 +7,7 @@ import clsx from 'clsx';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import ReaderIcon from 'calypso/assets/icons/reader/reader-icon';
+import { dashboardLink } from 'calypso/dashboard/utils/link';
 import { useSelector } from 'calypso/state';
 import { getCurrentUser } from 'calypso/state/current-user/selectors';
 import { setNextLayoutFocus, activateNextLayoutFocus } from 'calypso/state/ui/layout-focus/actions';
@@ -54,8 +55,8 @@ const ReaderHeader = () => {
 				<Button
 					style={ { flexShrink: 0 } }
 					icon={ <Logo /> }
+					href={ dashboardLink( '/' ) }
 					label={ __( 'WordPress.com Home' ) }
-					href="/v2"
 				/>
 			</HStack>
 
