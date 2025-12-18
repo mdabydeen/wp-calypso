@@ -1,4 +1,3 @@
-import { DomainSummary } from '@automattic/api-core';
 import { emailForwardersQuery } from '@automattic/api-queries';
 import { useQueries } from '@tanstack/react-query';
 import { useMemo } from 'react';
@@ -7,12 +6,12 @@ export const useForwardingAddresses = ( {
 	domains,
 	forwardingAddresses,
 }: {
-	domains: DomainSummary[];
+	domains: string[];
 	forwardingAddresses: string[];
 } ) => {
 	const emailForwardersQueries = useQueries( {
-		queries: domains.map( ( d ) => ( {
-			...emailForwardersQuery( d.domain ),
+		queries: domains.map( ( domain ) => ( {
+			...emailForwardersQuery( domain ),
 		} ) ),
 	} );
 
