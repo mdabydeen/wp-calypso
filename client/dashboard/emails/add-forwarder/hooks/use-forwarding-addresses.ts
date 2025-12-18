@@ -19,10 +19,10 @@ export const useForwardingAddresses = ( {
 	const forwards = emailForwardersQueries.flatMap( ( q ) => q.data?.forwards ?? [] );
 
 	const forwardsByMailbox = forwards.reduce( ( acc, f ) => {
-		acc.set( f.email, f.forward_address );
+		const forwards: string[] = acc.has( f.email ) ? acc.get( f.email )! : [];
+		acc.set( f.email, forwards.concat( f.forward_address ) );
 		return acc;
-	}, new Map< string, string >() );
-
+	}, new Map< string, string[] >() );
 	const uniqueEmailForwarders = useMemo(
 		() => Array.from( new Set( forwards.map( ( f ) => f.forward_address ) ) ),
 		[ forwards ]
