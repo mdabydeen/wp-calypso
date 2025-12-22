@@ -14,20 +14,21 @@ import { useUpgradeCreditsNoticeData } from 'calypso/my-sites/plans-features-mai
 import { useSelector } from 'calypso/state';
 import { getCurrentUserCurrencyCode } from 'calypso/state/currency-code/selectors';
 import { getSitePurchases } from 'calypso/state/purchases/selectors/get-site-purchases';
-import type { UpgradeCreditsNoticeSource } from '../hooks/use-upgrade-credits-notice';
 import type { PlanSlug } from '@automattic/calypso-products';
 import type { PlansIntent } from '@automattic/plans-grid-next';
+import type { Purchase } from 'calypso/lib/purchases/types';
+import type { UpgradeCreditsNoticeSource } from 'calypso/my-sites/plans-features-main/hooks/use-upgrade-credits-notice';
 
 type UpgradeCreditsNoticeTextProps = {
 	variant: 'compact' | 'full';
-	effectiveSource?: UpgradeCreditsNoticeSource | null;
 	amountInCurrency: string;
+	source?: UpgradeCreditsNoticeSource | null;
 };
 
 const UpgradeCreditsNoticeText = ( {
 	variant,
-	effectiveSource,
 	amountInCurrency,
+	source,
 }: UpgradeCreditsNoticeTextProps ) => {
 	const translate = useTranslate();
 
@@ -41,7 +42,7 @@ const UpgradeCreditsNoticeText = ( {
 		<InlineSupportLink supportContext="plans-upgrade-credit" showIcon={ false } />
 	);
 
-	switch ( effectiveSource ) {
+	switch ( source ) {
 		case 'plan':
 			return translate(
 				'You have {{b}}%(amountInCurrency)s{{/b}} in {{a}}upgrade credits{{/a}} available from your current plan. This credit will be applied to the pricing below at checkout if you upgrade today!',
@@ -78,6 +79,31 @@ const UpgradeCreditsNoticeText = ( {
 	}
 };
 
+function hasOtherUpgradesPurchase( sitePurchases: Purchase[] | undefined ): boolean {
+	return (
+		sitePurchases?.some( ( purchase ) => {
+			const productSlug = purchase?.productSlug;
+			if ( ! productSlug ) {
+				return false;
+			}
+
+			// "Other upgrades" means non-domain and non-plan purchases (e.g. themes add-on, storage, etc).
+			if ( isWpComPlan( productSlug ) ) {
+				return false;
+			}
+			if (
+				isDomainRegistration( purchase ) ||
+				isDomainTransfer( purchase ) ||
+				isDomainMapping( purchase )
+			) {
+				return false;
+			}
+
+			return true;
+		} ) ?? false
+	);
+}
+
 type Props = {
 	className?: string;
 	onDismissClick?: () => void;
@@ -112,30 +138,8 @@ const PlanNoticeUpgradeCredit = ( {
 		stripZeros: isUpgradeFlow,
 	} );
 
-	const hasOtherUpgradesPurchase =
-		sitePurchases?.some( ( purchase ) => {
-			const productSlug = purchase?.productSlug;
-			if ( ! productSlug ) {
-				return false;
-			}
-
-			// "Other upgrades" means non-domain and non-plan purchases (e.g. themes add-on, storage, etc).
-			if ( isWpComPlan( productSlug ) ) {
-				return false;
-			}
-			if (
-				isDomainRegistration( purchase ) ||
-				isDomainTransfer( purchase ) ||
-				isDomainMapping( purchase )
-			) {
-				return false;
-			}
-
-			return true;
-		} ) ?? false;
-
 	const effectiveSource =
-		upgradeCreditsNoticeData?.source === 'domain' && hasOtherUpgradesPurchase
+		upgradeCreditsNoticeData?.source === 'domain' && hasOtherUpgradesPurchase( sitePurchases )
 			? 'domain-and-other-upgrades'
 			: upgradeCreditsNoticeData?.source;
 	return (
@@ -157,7 +161,7 @@ const PlanNoticeUpgradeCredit = ( {
 				>
 					<UpgradeCreditsNoticeText
 						variant="full"
-						effectiveSource={ effectiveSource }
+						source={ effectiveSource }
 						amountInCurrency={ amountInCurrency }
 					/>
 				</Notice>
