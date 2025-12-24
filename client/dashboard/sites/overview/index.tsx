@@ -13,6 +13,7 @@ import { wordpress } from '@wordpress/icons';
 import clsx from 'clsx';
 import { useRef } from 'react';
 import { GuidedTourContextProvider, GuidedTourStep } from '../../components/guided-tour';
+import OptInSurvey from '../../components/opt-in-survey';
 import { PageHeader } from '../../components/page-header';
 import PageLayout from '../../components/page-layout';
 import { getSiteDisplayName } from '../../utils/site-name';
@@ -225,6 +226,7 @@ function SiteOverview( {
 					actions={ renderActions() }
 				/>
 			}
+			notices={ <OptInSurvey /> }
 		>
 			<VStack alignment="stretch" spacing={ isSmallViewport ? 5 : 10 }>
 				<StorageWarningBanner site={ site } />
