@@ -65,6 +65,11 @@ export const getRouter = ( config: AppConfig ) => {
 		defaultErrorComponent: UnknownError,
 		defaultNotFoundComponent: NotFound,
 		defaultOnCatch: ( error: Error, errorInfo: ErrorInfo ) => {
+			const code = ( error as any ).error;
+			if ( code === 'authorization_required' || code === 'reauthorization_required' ) {
+				return;
+			}
+
 			logToLogstash( {
 				feature: 'calypso_client',
 				message: error.message,
