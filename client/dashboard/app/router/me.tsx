@@ -29,6 +29,7 @@ import {
 	userTaxDetailsQuery,
 	userTransferredPurchasesQuery,
 } from '@automattic/api-queries';
+import { isEnabled } from '@automattic/calypso-config';
 import { createRoute, createLazyRoute } from '@tanstack/react-router';
 import { __ } from '@wordpress/i18n';
 import { getMonetizeSubscriptionsPageTitle } from '../../me/billing-monetize-subscriptions/title';
@@ -820,6 +821,50 @@ export const appsRoute = createRoute( {
 	)
 );
 
+export const mcpRoute = createRoute( {
+	head: () => ( {
+		meta: [
+			{
+				title: __( 'MCP Account Settings' ),
+			},
+		],
+	} ),
+	getParentRoute: () => meRoute,
+	path: 'mcp',
+	loader: async () => {
+		await queryClient.ensureQueryData( userSettingsQuery() );
+	},
+} );
+
+export const mcpIndexRoute = createRoute( {
+	getParentRoute: () => mcpRoute,
+	path: '/',
+} ).lazy( () =>
+	import( '../../me/mcp' ).then( ( d ) =>
+		createLazyRoute( 'mcp' )( {
+			component: d.default,
+		} )
+	)
+);
+
+export const mcpSetupRoute = createRoute( {
+	head: () => ( {
+		meta: [
+			{
+				title: __( 'MCP Client Setup' ),
+			},
+		],
+	} ),
+	getParentRoute: () => mcpRoute,
+	path: 'setup',
+} ).lazy( () =>
+	import( '../../me/mcp/setup' ).then( ( d ) =>
+		createLazyRoute( 'mcp-setup' )( {
+			component: d.default,
+		} )
+	)
+);
+
 export const createMeRoutes = ( config: AppConfig ) => {
 	if ( ! config.supports.me ) {
 		return [];
@@ -887,6 +932,10 @@ export const createMeRoutes = ( config: AppConfig ) => {
 
 	if ( config.supports.reader ) {
 		meRoutes.push( blockedSitesRoute );
+	}
+
+	if ( isEnabled( 'mcp-settings' ) ) {
+		meRoutes.push( mcpRoute.addChildren( [ mcpIndexRoute, mcpSetupRoute ] ) );
 	}
 
 	if ( config.supports.me.apps ) {
