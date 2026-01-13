@@ -149,6 +149,26 @@ export default function () {
 		clientRender
 	);
 
+	// Passport Marketplace checkout custom URLs
+	page(
+		`/checkout/passport/:productSlug`,
+		setLocaleMiddleware(),
+		noSite,
+		checkoutMarketplaceSiteless,
+		makeLayout,
+		clientRender
+	);
+
+	page(
+		`/checkout/passport/:productSlug/renew/:purchaseId`,
+		setLocaleMiddleware(),
+		redirectLoggedOut,
+		noSite,
+		checkoutMarketplaceSiteless,
+		makeLayout,
+		clientRender
+	);
+
 	// Akismet siteless checkout works logged-out, so do not include redirectLoggedOut or siteSelection.
 	page(
 		`/checkout/akismet/:productSlug`,
